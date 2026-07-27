@@ -1,0 +1,299 @@
+[
+  {
+    "id": 1,
+    "student_id": "test_child_001",
+    "created_at": "2026-07-17T09:17:43.119Z",
+    "levels": {
+      "level1": {
+        "duration_seconds": 127,
+        "raw_metrics": {
+          "block_drag_count": 12,
+          "species_placement_attempts": 10,
+          "block_gravity_fall_failures": 1,
+          "check_attempts": 3,
+          "removal_count": 2,
+          "successful_pairs": 4,
+          "check_history": [
+            {
+              "time": 1000,
+              "all_done": false,
+              "pairs": [
+                {
+                  "id": "a",
+                  "done": false
+                },
+                {
+                  "id": "b",
+                  "done": false
+                },
+                {
+                  "id": "c",
+                  "done": false
+                },
+                {
+                  "id": "d",
+                  "done": false
+                }
+              ]
+            },
+            {
+              "time": 2000,
+              "all_done": false,
+              "pairs": [
+                {
+                  "id": "a",
+                  "done": true
+                },
+                {
+                  "id": "b",
+                  "done": false
+                },
+                {
+                  "id": "c",
+                  "done": true
+                },
+                {
+                  "id": "d",
+                  "done": false
+                }
+              ]
+            },
+            {
+              "time": 3000,
+              "all_done": true,
+              "pairs": [
+                {
+                  "id": "a",
+                  "done": true
+                },
+                {
+                  "id": "b",
+                  "done": true
+                },
+                {
+                  "id": "c",
+                  "done": true
+                },
+                {
+                  "id": "d",
+                  "done": true
+                }
+              ]
+            }
+          ]
+        },
+        "assessment": {
+          "efficiency_index": 0.29,
+          "spatial_correction_rate": 0.9,
+          "natural_schema_mastery": 0.7,
+          "cognitive_persistence_score": 0.86,
+          "strategic_flexibility_index": 0.01,
+          "assessment_evidence": [
+            "🏷️ [效率指数 EI=0.29] 敏捷试错者，习惯通过实践反馈获取空间认知",
+            "🏷️ [空间修正率 SCR=0.9] 具备优秀的抗挫折与自我纠错能力，能从空间布局错误中快速学习",
+            "🏷️ [自然图式掌握度 CM=0.7] 具备基础的自然图式认知，能理解大部分共生关系",
+            "🏷️ [认知坚持度 CPS=0.86] 具有出色的学习坚毅力，面对挑战不轻言放弃，属于高投入型学习者",
+            "🏷️ [策略灵活性 SFI=0.01] 策略倾向于固守初始方案，可能需要外部提示来拓宽思路",
+            "🏷️ [行为观察] 成功完成了 4/4 组配对，生态理解能力良好"
+          ],
+          "comments": {
+            "efficiency": "敏捷试错者，习惯通过实践反馈获取空间认知",
+            "spatial": "具备优秀的抗挫折与自我纠错能力，能从空间布局错误中快速学习",
+            "naturalist": "具备基础的自然图式认知，能理解大部分共生关系",
+            "persistence": "具有出色的学习坚毅力，面对挑战不轻言放弃，属于高投入型学习者",
+            "flexibility": "策略倾向于固守初始方案，可能需要外部提示来拓宽思路"
+          }
+        },
+        "submitted_at": "2026-07-17T09:17:43.119Z"
+      }
+    },
+    "total_duration": 127,
+    "is_complete": false
+  },
+  {
+    "id": 2,
+    "student_id": "stu_9527",
+    "created_at": "2026-07-17T09:20:05.964Z",
+    "levels": {
+      "level1": {
+        "duration_seconds": 44,
+        "raw_metrics": {
+          "block_drag_count": 7,
+          "species_placement_attempts": 7,
+          "block_gravity_fall_failures": 0,
+          "check_attempts": 1,
+          "removal_count": 0,
+          "total_errors": 0,
+          "successful_pairs": 4,
+          "pair_details": [
+            {
+              "id": "clownfish_anemone",
+              "label": "🐠双锯鱼 🤝 🌸海葵",
+              "done": true
+            },
+            {
+              "id": "garden_eel",
+              "label": "🪱花园鳗 → 🏖️沙地",
+              "done": true
+            },
+            {
+              "id": "shrimp_goby",
+              "label": "🦐共生枪虾 🤝 🐟鰕虎鱼",
+              "done": true
+            },
+            {
+              "id": "remora_turtle",
+              "label": "🧲鮣鱼(吸盘) 🤝 🐢绿海龟",
+              "done": true
+            }
+          ],
+          "check_history": [
+            {
+              "time": 1784682870569,
+              "all_done": true,
+              "pairs": [
+                {
+                  "id": "clownfish_anemone",
+                  "done": true
+                },
+                {
+                  "id": "garden_eel",
+                  "done": true
+                },
+                {
+                  "id": "shrimp_goby",
+                  "done": true
+                },
+                {
+                  "id": "remora_turtle",
+                  "done": true
+                }
+              ]
+            }
+          ]
+        },
+        "assessment": {
+          "efficiency_index": 0.5,
+          "spatial_correction_rate": 1,
+          "natural_schema_mastery": 0.98,
+          "cognitive_persistence_score": 0.76,
+          "strategic_flexibility_index": 0,
+          "assessment_evidence": [
+            "🏷️ [效率指数 EI=0.5] 平衡型探索者，在计划与尝试之间取得良好平衡",
+            "🏷️ [空间修正率 SCR=1] 空间受力感知极佳，未受重力规则干扰，具备优秀的空间智力",
+            "🏷️ [自然图式掌握度 CM=0.98] 自然观察智能突出，对物种习性与栖息地匹配具有直觉般的敏锐度",
+            "🏷️ [认知坚持度 CPS=0.76] 具有出色的学习坚毅力，面对挑战不轻言放弃，属于高投入型学习者",
+            "🏷️ [策略灵活性 SFI=0] 策略倾向于固守初始方案，可能需要外部提示来拓宽思路",
+            "🏷️ [行为观察] 操作次数略多于理论值但无重力修正，空间感知准确",
+            "🏷️ [行为观察] 成功完成了 4/4 组配对，生态理解能力良好"
+          ],
+          "comments": {
+            "efficiency": "平衡型探索者，在计划与尝试之间取得良好平衡",
+            "spatial": "空间受力感知极佳，未受重力规则干扰，具备优秀的空间智力",
+            "naturalist": "自然观察智能突出，对物种习性与栖息地匹配具有直觉般的敏锐度",
+            "persistence": "具有出色的学习坚毅力，面对挑战不轻言放弃，属于高投入型学习者",
+            "flexibility": "策略倾向于固守初始方案，可能需要外部提示来拓宽思路"
+          }
+        },
+        "submitted_at": "2026-07-22T01:14:38.699Z"
+      }
+    },
+    "total_duration": 745,
+    "is_complete": false
+  },
+  {
+    "id": 3,
+    "student_id": "test_stu",
+    "created_at": "2026-07-25T01:46:57.763Z",
+    "levels": {
+      "level1": {
+        "duration_seconds": 90,
+        "raw_metrics": {
+          "block_drag_count": 8,
+          "species_placement_attempts": 8,
+          "block_gravity_fall_failures": 0,
+          "check_attempts": 1,
+          "removal_count": 0,
+          "total_errors": 0,
+          "successful_pairs": 4,
+          "pair_details": [
+            {
+              "id": "pair_1",
+              "label": "小丑鱼-海葵",
+              "done": true
+            },
+            {
+              "id": "pair_2",
+              "label": "海马-海草",
+              "done": true
+            },
+            {
+              "id": "pair_3",
+              "label": "寄居蟹-螺壳",
+              "done": true
+            },
+            {
+              "id": "pair_4",
+              "label": "章鱼-岩洞",
+              "done": true
+            }
+          ],
+          "check_history": [
+            {
+              "all_done": true,
+              "pairs": [
+                {
+                  "id": "pair_1",
+                  "done": true
+                },
+                {
+                  "id": "pair_2",
+                  "done": true
+                },
+                {
+                  "id": "pair_3",
+                  "done": true
+                },
+                {
+                  "id": "pair_4",
+                  "done": true
+                }
+              ]
+            }
+          ],
+          "meaningless_clicks": 0,
+          "blank_clicks": 0,
+          "random_drags": 0,
+          "invalid_drops": 0,
+          "total_operations": 8
+        },
+        "assessment": {
+          "efficiency_index": 0.44,
+          "spatial_correction_rate": 1,
+          "natural_schema_mastery": 0.98,
+          "cognitive_persistence_score": 0.76,
+          "strategic_flexibility_index": 0,
+          "assessment_evidence": [
+            "🏷️ [效率指数 EI=0.44] 敏捷试错者，习惯通过实践反馈获取空间认知",
+            "🏷️ [空间修正率 SCR=1] 空间受力感知极佳，未受重力规则干扰，具备优秀的空间智力",
+            "🏷️ [自然图式掌握度 CM=0.98] 自然观察智能突出，对物种习性与栖息地匹配具有直觉般的敏锐度",
+            "🏷️ [认知坚持度 CPS=0.76] 具有出色的学习坚毅力，面对挑战不轻言放弃，属于高投入型学习者",
+            "🏷️ [策略灵活性 SFI=0] 策略倾向于固守初始方案，可能需要外部提示来拓宽思路",
+            "🏷️ [行为观察] 操作次数略多于理论值但无重力修正，空间感知准确",
+            "🏷️ [行为观察] 成功完成了 4/4 组配对，生态理解能力良好"
+          ],
+          "comments": {
+            "efficiency": "敏捷试错者，习惯通过实践反馈获取空间认知",
+            "spatial": "空间受力感知极佳，未受重力规则干扰，具备优秀的空间智力",
+            "naturalist": "自然观察智能突出，对物种习性与栖息地匹配具有直觉般的敏锐度",
+            "persistence": "具有出色的学习坚毅力，面对挑战不轻言放弃，属于高投入型学习者",
+            "flexibility": "策略倾向于固守初始方案，可能需要外部提示来拓宽思路"
+          }
+        },
+        "submitted_at": "2026-07-25T02:03:39.256Z"
+      }
+    },
+    "total_duration": 28950,
+    "is_complete": false
+  }
+]
