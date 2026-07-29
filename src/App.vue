@@ -165,8 +165,9 @@ const debugButtons = [
 ]
 
 const gameState = reactive({
-  studentId: 'stu_9527',
-  age: '8',                         // 年龄段（用于常模对照）
+  studentId: 'stu_' + Date.now(),
+  playerName: '',                    // 🧑 玩家姓名（从封面页获取）
+  age: '8',                          // 年龄段（用于常模对照）
   level1_duration: 0, level1_errors: 0,
   level2_duration: 0, level2_pipes_used: 0,
   level3_duration: 0, level3_harmony_score: 0,
@@ -178,6 +179,7 @@ const gameState = reactive({
   level3_dialogue: [],              // 第三关对话完整记录
   // 📊 行为量化评分系统
   skipLevelCount: 0,                // 跳关次数统计
+  skipLevelDetails: [],             // 🆕 被跳过的关卡名称列表，如 ['LEVEL_2', 'LEVEL_3']
 })
 
 const elapsed = ref(0)
@@ -195,19 +197,43 @@ function formatTime(seconds) {
 // 📊 关卡顺序映射（用于跳关检测）
 const LEVEL_ORDER = ['START', 'LEVEL_1', 'LEVEL_2', 'LEVEL_3', 'END_CEREMONY', 'REPORT']
 
-function handleGoLevel(level) {
-  // 跳关检测：计算实际跳过的关卡数
+/** 判断一个状态是否为实际游戏关卡 */
+function isGameLevel(state) {
+  return state === 'LEVEL_1' || state === 'LEVEL_2' || state === 'LEVEL_3'
+}
+
+function handleGoLevel(level, playerInfo) {
+  // 从封面页接收玩家信息
+  if (playerInfo) {
+    gameState.playerName = playerInfo.name || '小队长'
+    gameState.age = playerInfo.age || '8'
+    gameState.studentId = 'stu_' + Date.now()
+  }
+
+  // 跳关检测：记录跳过的具体关卡名称
   const currentIdx = LEVEL_ORDER.indexOf(currentState.value)
   const targetIdx = LEVEL_ORDER.indexOf(level)
 
   if (currentIdx >= 0 && targetIdx >= 0) {
     // 向后跳（跳过关卡，非顺序前进）
     if (targetIdx > currentIdx + 1) {
-      gameState.skipLevelCount += (targetIdx - currentIdx - 1)
+      for (let i = currentIdx + 1; i < targetIdx; i++) {
+        const skipped = LEVEL_ORDER[i]
+        if (isGameLevel(skipped)) {
+          gameState.skipLevelDetails.push(skipped)
+          gameState.skipLevelCount++
+        }
+      }
     }
     // 从后面关卡往前跳（例如 LEVEL_3 → LEVEL_1，跳过了 LEVEL_2）
     if (targetIdx < currentIdx && targetIdx >= 1) {
-      gameState.skipLevelCount += (currentIdx - targetIdx - 1)
+      for (let i = targetIdx + 1; i < currentIdx; i++) {
+        const skipped = LEVEL_ORDER[i]
+        if (isGameLevel(skipped)) {
+          gameState.skipLevelDetails.push(skipped)
+          gameState.skipLevelCount++
+        }
+      }
     }
   }
 
@@ -221,19 +247,12 @@ function handleLevelComplete(data) {
     gameState.level1_raw = data.raw_metrics || null
     gameState.evidence.push(data.evidence || `第一关完成，用时${data.duration}秒`)
 
-    // 检查是否未完成就跳关（配对未全部完成）
-    const pairsDone = data.raw_metrics?.successful_pairs || 0
-    if (pairsDone < 4) gameState.skipLevelCount++
-
     currentState.value = 'LEVEL_2'
   } else if (data.level === 'LEVEL_2') {
     gameState.level2_duration = data.duration || 0
     gameState.level2_pipes_used = data.pipes_used || 0
     gameState.level2_raw = data.raw_metrics || null
     gameState.evidence.push(`第二关完成，用时${data.duration}秒，使用${data.pipes_used}根管道`)
-
-    // 检查是否未连通就跳关
-    if (!data.raw_metrics?.successful_pairs) gameState.skipLevelCount++
 
     currentState.value = 'LEVEL_3'
   } else if (data.level === 'LEVEL_3') {
@@ -243,17 +262,29 @@ function handleLevelComplete(data) {
     gameState.level3_dialogue = data.dialogue || []
     gameState.evidence.push(`第三关完成，用时${data.duration}秒，和解度${data.harmony_score}%`)
 
-    // 检查是否未完全和解就跳关
-    if ((data.harmony_score || 0) < 100) gameState.skipLevelCount++
-
     currentState.value = 'END_CEREMONY'
   }
 }
 
-function handleGoReport() { currentState.value = 'REPORT' }
+function handleGoReport() {
+  // 跳关检测：从当前状态到 REPORT 之间跳过的关卡数
+  const currentIdx = LEVEL_ORDER.indexOf(currentState.value)
+  const reportIdx = LEVEL_ORDER.indexOf('REPORT')
+  if (currentIdx >= 0 && reportIdx > currentIdx + 1) {
+    for (let i = currentIdx + 1; i < reportIdx; i++) {
+      const skipped = LEVEL_ORDER[i]
+      if (isGameLevel(skipped)) {
+        gameState.skipLevelDetails.push(skipped)
+        gameState.skipLevelCount++
+      }
+    }
+  }
+  currentState.value = 'REPORT'
+}
 
 function handleBackStart() {
   Object.assign(gameState, {
+    playerName: '',
     level1_duration: 0, level1_errors: 0,
     level2_duration: 0, level2_pipes_used: 0,
     level3_duration: 0, level3_harmony_score: 0,
@@ -261,6 +292,7 @@ function handleBackStart() {
     level1_raw: null, level2_raw: null, level3_raw: null,
     level3_dialogue: [],
     skipLevelCount: 0,
+    skipLevelDetails: [],
   })
   elapsed.value = 0
   currentState.value = 'START'

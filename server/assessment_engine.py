@@ -648,6 +648,59 @@ def generate_report(all_metrics: dict, level3_dialogue: list = None) -> dict:
     l2 = all_metrics.get("level2", {})
     l3 = all_metrics.get("level3", {})
 
+    # ══ [修复 v3] 全跳关检测：所有关卡无操作数据 → 返回特殊报告 ══
+    l1_has_data = l1.get("total_operations", 0) > 0 or l1.get("block_drag_count", 0) > 0
+    l2_has_data = l2.get("total_operations", 0) > 0 or l2.get("pipe_count", 0) > 0
+    l3_has_data = l3.get("rounds_used", 0) > 0 or l3.get("harmony_final", 0) > 0
+    if not l1_has_data and not l2_has_data and not l3_has_data:
+        return {
+            "dimension_scores": {
+                "空间视觉智能": 1.0,
+                "自然观察智能": 1.0,
+                "逻辑数理智能": 1.0,
+                "人际社交智能": 1.0,
+                "语言表达智能": 1.0,
+                "专注力与执行能力": 1.0,
+            },
+            "dimension_analysis": {
+                "空间视觉智能": "本次评估未产生游戏操作数据，无法对空间视觉能力进行有效评估。建议在实际参与游戏关卡后重新评估。",
+                "自然观察智能": "本次评估未产生游戏操作数据，无法对自然观察能力进行有效评估。建议在实际参与游戏关卡后重新评估。",
+                "逻辑数理智能": "本次评估未产生游戏操作数据，无法对逻辑数理能力进行有效评估。建议在实际参与游戏关卡后重新评估。",
+                "人际社交智能": "本次评估未产生游戏操作数据，无法对人际社交能力进行有效评估。建议在实际参与游戏关卡后重新评估。",
+                "语言表达智能": "本次评估未产生游戏操作数据，无法对语言表达能力进行有效评估。建议在实际参与游戏关卡后重新评估。",
+            },
+            "chexi": {
+                "task_persistence": 1.0,
+                "flexibility": 1.0,
+                "anti_distraction": 1.0,
+                "multi_step_planning": 1.0,
+                "experience_learning": 1.0,
+            },
+            "erikson": {
+                "diligence": 1.0,
+                "confidence": 1.0,
+            },
+            "temperament": {
+                "label": "未完成评估",
+                "desc": "本次游戏中所有关卡均被跳过，未产生足够的操作数据用于评估先天气质。建议在完成实际关卡后重新生成报告。",
+                "dimensions": {
+                    "活动水平": "—",
+                    "趋避性": "—",
+                    "适应性": "—",
+                    "反应强度": "—",
+                    "坚持性": "—",
+                    "心境质量": "—",
+                },
+            },
+            "top3_strengths": [],
+            "weaknesses": ["空间视觉智能", "自然观察智能", "逻辑数理智能", "人际社交智能", "语言表达智能", "专注力与执行能力"],
+            "strength_summary": "本次评估中所有关卡均被跳过，未能采集到足够的游戏行为数据用于识别天赋优势。",
+            "weakness_analysis": "由于未实际参与游戏关卡，各维度能力均缺乏评估数据，建议鼓励孩子完成游戏后重新评估。",
+            "cognitive_traits": "暂无认知与执行功能评估数据。请在完成实际关卡后重新生成报告。",
+            "dialogue_analysis": "",
+            "suggestions": "⚠️ 本次游戏所有关卡均被跳过，无法基于实际行为数据提供个性化建议。\n建议鼓励孩子从第一关开始完成游戏后重新生成报告，以获得基于实际游戏行为的准确评估。",
+        }
+
     # ── 计算核心维度分数 ──
     spatial = calc_spatial_visual(l1)
     naturalist = calc_natural_observation(l1)

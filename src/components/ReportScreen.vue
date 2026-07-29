@@ -9,7 +9,9 @@
       <p class="text-xs text-cyan-50/80 mt-0.5">本报告面向家长与教育工作者，解读儿童在游戏化情境中的发展表现</p>
       </div>
       <div class="text-right text-xs text-cyan-100/80">
+        <div v-if="gameState.playerName" class="text-sm font-bold text-cyan-700">{{ gameState.playerName }}</div>
         <div>ID: {{ gameState.studentId }}</div>
+        <div>年龄: {{ gameState.age || '—' }}岁</div>
         <div>评测日期: {{ today }}</div>
         <div>总耗时: {{ totalTime }}</div>
       </div>
@@ -546,7 +548,9 @@ function printReport() {
       <div style="font-size:14px;color:#475569;margin-top:2px">本报告面向家长及教育工作者，基于游戏化情境中的客观行为数据生成</div>
     </div>
     <div style="text-align:right;font-size:14px;color:#475569;line-height:1.7">
+      ${gs.value.playerName ? `<div style="font-size:16px;font-weight:700;color:#155e75">${gs.value.playerName}</div>` : ''}
       <div>ID: ${gs.value.studentId || 'stu_9527'}</div>
+      <div>年龄: ${gs.value.age || '—'}岁</div>
       <div>日期: ${today}</div>
       <div>总耗时: ${totalTime.value}</div>
     </div>
@@ -634,9 +638,28 @@ function printReport() {
 const gs = computed(() => props.gameState || {})
 const today = new Date().toLocaleDateString('zh-CN')
 
+/** 有效跳关次数：所有关卡无数据时强制至少3次 */
+/** 跳关详情文本 */
+function skipDetailsText() {
+  const details = gs.value.skipLevelDetails || []
+  if (!details.length) return ''
+  const nameMap = { 'LEVEL_1': '第一关', 'LEVEL_2': '第二关', 'LEVEL_3': '第三关' }
+  const names = details.map(d => nameMap[d] || d)
+  return '跳过: ' + names.join('、')
+}
+
+function effectiveSkipCount() {
+  const _l1 = l1()
+  const _l2 = l2()
+  const _l3 = l3()
+  const hasAnyData = (_l1.total_operations || 0) > 0 || (_l2.total_operations || 0) > 0 || (_l3.rounds_used || 0) > 0
+  const raw = gs.value.skipLevelCount || 0
+  return hasAnyData ? raw : Math.max(raw, 3)
+}
+
 /** 是否完全没有游戏操作数据（全跳关） */
 const noGameplayData = computed(() => {
-  const skip = gs.value.skipLevelCount || 0
+  const skip = effectiveSkipCount()
   const l1_ops = (l1().total_operations || 0) + (l2().total_operations || 0)
   return skip >= 3 && l1_ops <= 0
 })
@@ -690,6 +713,13 @@ async function fetchLegacyReport() {
 
 /** 📊 获取行为量化评分报告 */
 async function fetchQuantitativeReport() {
+  // ⚠️ 安全兜底：检测三关均无操作数据但 skipCount 未正确记录的情况
+  const _l1 = gs.value.level1_raw || {}
+  const _l2 = gs.value.level2_raw || {}
+  const _l3 = gs.value.level3_raw || {}
+  const hasAnyData = (_l1.total_operations || 0) > 0 || (_l2.total_operations || 0) > 0 || (_l3.rounds_used || 0) > 0
+  const effectiveSkip = hasAnyData ? (gs.value.skipLevelCount || 0) : Math.max(gs.value.skipLevelCount || 0, 3)
+
   try {
     const res = await fetch('http://localhost:8005/api/assessment/quantitative-report', {
       method: 'POST',
@@ -697,10 +727,10 @@ async function fetchQuantitativeReport() {
       body: JSON.stringify({
         student_id: gs.value.studentId || 'stu_9527',
         age: gs.value.age || '8',
-        level1_metrics: gs.value.level1_raw || {},
-        level2_metrics: gs.value.level2_raw || {},
-        level3_metrics: gs.value.level3_raw || {},
-        total_skip_count: gs.value.skipLevelCount || 0,
+        level1_metrics: _l1,
+        level2_metrics: _l2,
+        level3_metrics: _l3,
+        total_skip_count: effectiveSkip,
       }),
     })
     const result = await res.json()
@@ -721,7 +751,7 @@ function generateLocalReport() {
   const l1e = g.level1_errors || 0
   const l2p = g.level2_pipes_used || 0
   const l3h = g.level3_harmony_score || 0
-  const skip = g.skipLevelCount || 0
+  const skip = effectiveSkipCount()
   const hasData = (l1().total_operations || 0) + (l2().total_operations || 0) > 0 || (l3().rounds_used || 0) > 0
 
   // 全跳关无操作 → 所有维度假定为低分
@@ -818,7 +848,7 @@ function getLocalSuggestions() {
   const totalOps = (_l1.total_operations||0) + (_l2.total_operations||0)
   const invRatio = totalOps > 0 ? (totalInv / totalOps * 100).toFixed(0) : 0
   const unf = _l3.unfriendly_count ?? 0
-  const skill = g.skipLevelCount || 0
+  const skill = effectiveSkipCount()
 
   // ── 家长引导建议（含行为证据引用） ──
   const parentTips = []
@@ -1019,7 +1049,7 @@ function quantEvidence(scoreKey) {
       { text: 'L2无效', val: l2_inv+'次', norm: _l2.total_operations ? _l2.total_operations+'总' : '—' },
     ],
     S3: [
-      { text: '跳关', val: (g.skipLevelCount||0)+'次', norm: '0次=5分', cls: !g.skipLevelCount ? 'chip-strong' : 'chip-warn' },
+      { text: '跳关', val: effectiveSkipCount()+'次', norm: skipDetailsText() || '0次=5分', cls: !effectiveSkipCount() ? 'chip-strong' : 'chip-warn' },
       { text: 'L1完成', val: (_l1.successful_pairs||0)+'/4', norm: _l1.check_attempts ? _l1.check_attempts+'次检查' : '直接跳过', cls: _l1.successful_pairs >= 4 ? 'chip-strong' : '' },
       { text: 'L2连通', val: _l2.successful_pairs ? '✅ 是' : '❌ 否', norm: _l2.check_attempts ? _l2.check_attempts+'次尝试' : '未参与', cls: _l2.successful_pairs ? 'chip-strong' : 'chip-warn' },
     ],
@@ -1194,7 +1224,7 @@ function dimensionEvidence(key) {
       const totalOps = l1_ops + l2_ops
       const invRatio = totalOps > 0 ? (totalInv / totalOps * 100).toFixed(0) : null
       const checks = (_l1.check_attempts || 0) + (_l2.check_attempts || 0)
-      const skip = g.skipLevelCount || 0
+      const skip = effectiveSkipCount()
       if (totalOps <= 0) {
         return [
           `⚠️ 未产生操作数据，专注力无法基于本游戏评估。`,
@@ -1279,15 +1309,19 @@ const keyFindings = computed(() => {
   if (totalD > 0 && timeRatio > 0 && timeRatio < 1) {
     findings.push({ type: 'info', icon: '📊', title: `速度是同龄人的 ${(1 / timeRatio).toFixed(1)}倍`, desc: `完成速度${timeRatio <= 0.55 ? '显著' : ''}快于同龄平均水平` })
   }
-  const skip = g.skipLevelCount || 0
+  const skip = effectiveSkipCount()
   if (skip > 0) {
+    const details = g.skipLevelDetails || []
+    const nameMap = { 'LEVEL_1': '第一关', 'LEVEL_2': '第二关', 'LEVEL_3': '第三关' }
+    const skipNames = details.map(d => nameMap[d] || d).join('、')
+    const skipDetail = skipNames ? `（${skipNames}）` : ''
     findings.push({
       type: skip >= 3 ? 'warn' : 'info',
       icon: '⏭',
       title: `跳关 ${skip}次${skip >= 3 ? '（全部关卡）' : ''}`,
       desc: skip >= 3
-        ? '所有关卡均被跳过，未产生有效游戏操作数据。本次报告无法基于实际行为评估各维度能力，建议鼓励孩子完成关卡后重新评估。'
-        : '遇到困难时有跳过倾向，建议将大目标分解为小步骤。',
+        ? `所有关卡均被跳过${skipDetail}，未产生有效游戏操作数据。本次报告无法基于实际行为评估各维度能力，建议鼓励孩子完成关卡后重新评估。`
+        : `跳过了 ${skipNames}，遇到困难时有跳过倾向，建议将大目标分解为小步骤。`,
     })
   }
   if (_l3.needs_correct === 4) {

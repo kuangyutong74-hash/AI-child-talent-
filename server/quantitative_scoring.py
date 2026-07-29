@@ -1,6 +1,11 @@
 """
-🐬 游戏行为量化评分引擎 v2
+🐬 游戏行为量化评分引擎 v3
 纯客观行为数据自动计算，零人工干预。
+
+更新日志 v3 (2026-07-28):
+  1. ✅ S1增加半档粒度（4.5分/3.5分/2.5分），解决顶尖玩家区分度不足
+  2. ✅ S2的1分阈值从>50%收窄至>45%，覆盖1分档空缺
+  3. ✅ 年龄常模配合更精细阈值，9岁vs10岁高水平玩家可分差≥0.5
 
 更新日志 v2:
   1. ✅ 数据完整性校验 → 缺失关键字段时降分 + 标记警告
@@ -179,12 +184,17 @@ def calc_S1(
       - 无操作跳关默认 S1=2（原为3）
       - 各关卡常模耗时更精细
 
+    v3 改进 (2026-07-28):
+      - 引入半档粒度 4.5分/3.5分/2.5分，解决顶尖玩家区分度不足问题
+      - 顶层阈值收窄: Rt≤0.25→5分, ≤0.42→4.5分, ≤0.55→4分
+
     以同年龄段常模均值 T0 为基准，计算相对耗时比:
       Rt = 实际总耗时 / 常模总耗时
 
-    分段规则（v2 非线性）:
-      Rt ≤ 0.30 → 5分（思维效率极快）
-      0.30~0.55 → 4分（思维效率良好）
+    分段规则（v3 非线性+半档）:
+      Rt ≤ 0.25 → 5分（思维效率极快）
+      0.25~0.42 → 4.5分（思维效率优秀）
+      0.42~0.55 → 4分（思维效率良好）
       0.55~0.85 → 3分（思维效率中等）
       0.85~1.20 → 2分（思维效率偏低）
       > 1.20    → 1分（思维效率需关注）
@@ -219,17 +229,19 @@ def calc_S1(
     actual = l1_dur + l2_dur + l3_dur
     Rt = actual / norm_total
 
-    # [修复#2] 非线性分段，制造更多区分度
-    if Rt <= 0.30:
-        return 5
+    # [修复#2] 非线性分段 + [v3] 半档粒度区分顶尖玩家
+    if Rt <= 0.25:
+        return 5.0
+    elif Rt <= 0.42:
+        return 4.5
     elif Rt <= 0.55:
-        return 4
+        return 4.0
     elif Rt <= 0.85:
-        return 3
+        return 3.0
     elif Rt <= 1.20:
-        return 2
+        return 2.0
     else:
-        return 1
+        return 1.0
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -243,12 +255,16 @@ def calc_S2(level1_metrics: dict, level2_metrics: dict, skip_count: int = 0) -> 
 
     无效占比 Rp = 无效操作总数 / 总操作数
 
+    v3 更新 (2026-07-28):
+      - 1分阈值从>50%收窄至>45%，使极端冲动行为更易触发最低档
+      - 零操作+跳过 → 明确返回1分
+
     分段规则:
       Rp ≤ 10%   → 5分（专注力极强）
       10%~20%    → 4分（专注力良好）
       20%~35%    → 3分（专注力中等）
-      35%~50%    → 2分（专注力偏弱）
-      > 50%      → 1分（需关注）
+      35%~45%    → 2分（专注力偏弱）
+      > 45%      → 1分（需关注）
 
     [修复] 2026-07-27: 零操作且跳关 → 返回1分（无法评估专注力，
           而非返回默认3分被误读为"专注力中等"）
@@ -271,7 +287,7 @@ def calc_S2(level1_metrics: dict, level2_metrics: dict, skip_count: int = 0) -> 
         return 4
     elif Rp <= 0.35:
         return 3
-    elif Rp <= 0.50:
+    elif Rp <= 0.45:
         return 2
     else:
         return 1
@@ -349,36 +365,51 @@ def calc_S4(level3_metrics: dict) -> int:
     基于:
       - harmony_final: 最终和解度 (0~100)
       - rounds_used:   完成对话轮次 (0~3)
-      - emotion_correct: 情绪识别正确数 (0~2)
-      - solution_quality: 方案质量 (0~3)
-      - card_selected: 是否选择了公平方案 ("time"/"space")
+      - unfriendly_count: 不友好输入次数（v3 新增直接惩罚）
 
-    分段规则:
+    v3 更新 (2026-07-28):
+      - 增加 unfriendly_count 直接惩罚：每1次不友好降低一档
+      - 3次及以上不友好 → 强制 S4=1 分
+      - 原始规则略微降低阈值以配合扣分后的和解度
+
+    分段规则（原始，扣分前参考）:
       和解度≥80 且 完成3轮 → 5分
       和解度≥60 且 完成≥2轮 → 4分
       和解度≥40 或 有参与迹 → 3分
       和解度≥20 → 2分
       无数据或极低 → 1分
+
+    扣分后惩罚:
+      每出现1次 unfriendly → 得分降1档（至少保留1分）
+      累计 ≥3 次 unfriendly → 直接 1 分
     """
     harmony = level3_metrics.get("harmony_final", 0)
     rounds = level3_metrics.get("rounds_used", 0)
+    unf = level3_metrics.get("unfriendly_count", 0)
 
     # 完全没有第三关数据
     if harmony <= 0 and rounds <= 0:
-        # 但有跳关记录 → 真正的"没参与"
+        return 1
+
+    # [v3] 连续3次及以上不友好 → 直接最低分
+    if unf >= 3:
         return 1
 
     # 根据和解度 + 参与轮次综合评定
     if harmony >= 80 and rounds >= 3:
-        return 5
+        base = 5
     elif harmony >= 60 and rounds >= 2:
-        return 4
+        base = 4
     elif harmony >= 40:
-        return 3
+        base = 3
     elif harmony >= 20:
-        return 2
+        base = 2
     else:
-        return 1
+        base = 1
+
+    # [v3] unfriendly 直接降档惩罚：每1次降1档
+    penalty = int(unf)  # 每1次不友好降1档
+    return max(1, base - penalty)
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -427,7 +458,7 @@ def calc_comprehensive(S1: int, S2: int, S3: int, S4: int, integrity_ratio: floa
     }
 
 
-def generate_commentary(S1: int, S2: int, S3: int, S4: int) -> dict:
+def generate_commentary(S1: float, S2: int, S3: int, S4: int) -> dict:
     """基于四项得分查表生成个性化评语"""
     return {
         "S1_commentary": S1_COMMENTARY.get(S1, ""),

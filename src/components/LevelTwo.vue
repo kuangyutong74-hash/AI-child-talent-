@@ -720,7 +720,36 @@ function canConnect(fromRow, fromCol, fromPorts, toRow, toCol, toPorts, dir) {
 }
 
 /**
+ * 检查连通路径上是否有多余的管口（如T型管多出一个分支）
+ */
+function hasDanglingPorts(visited) {
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const key = `${r},${c}`
+      // 只检查被电流经过的管道格子
+      if (!visited.has(key)) continue
+      if (isStartCell(r, c) || isEndCell(r, c)) continue
+      if (!grid[r][c].pipe) continue
+
+      const ports = getPipePorts(grid[r][c].pipe.def, grid[r][c].pipe.rot)
+      for (const dir of ports) {
+        const [dr, dc] = DIR_DELTA[dir]
+        const nr = r + dr
+        const nc = c + dc
+        // 越界 → 多余管口
+        if (nr < 0 || nr >= ROWS || nc < 0 || nc >= COLS) return true
+        const nKey = `${nr},${nc}`
+        // 管口指向的格子不在电流路径上，又不是终点 → 多余管口
+        if (!visited.has(nKey) && !isEndCell(nr, nc)) return true
+      }
+    }
+  }
+  return false
+}
+
+/**
  * BFS 连通检测 — 严格按端口方向走
+ * 额外校验：路径上不能有多余管口（T型管伸出第三根不算真正连通）
  */
 function updateConnectivity() {
   const visited = new Set()
@@ -756,7 +785,11 @@ function updateConnectivity() {
     }
   }
 
-  isConnected.value = visited.has(`${end.row},${end.col}`)
+  // 必须连通终点，且路径上不能有多余管口
+  const reachable = visited.has(`${end.row},${end.col}`)
+  const clean = reachable && !hasDanglingPorts(visited)
+
+  isConnected.value = clean
   // 只有从发电机真实可达的管道显示电流，断开的管道保持暗色。
   for (let r = 0; r < ROWS; r++) {
     for (let c = 0; c < COLS; c++) {
@@ -777,7 +810,7 @@ function clearFeedback() {
 function submitCheck() {
   checkAttempts.value++
   updateConnectivity()
-  
+
   if (isConnected.value) {
     duration.value = Math.floor((Date.now() - gameStartTime.value) / 1000)
     feedbackMsg.value = '⚡⚡⚡ 电路连通啦！基地恢复电力了！小队长你太棒了！🌟'
@@ -785,7 +818,32 @@ function submitCheck() {
     setTimeout(() => { showComplete.value = true }, 1200)
     launchConfetti()
   } else {
-    feedbackMsg.value = '❌ 还没连通呢！从深海发电机到能源水晶接收站的路线还差一点，再试试吧！💪'
+    // 检测是"完全没连通"还是"有路径但管口多余"
+    const reachable = (() => {
+      const q = [{ row: start.row, col: start.col }]
+      const v = new Set([`${start.row},${start.col}`])
+      while (q.length) {
+        const { row, col } = q.shift()
+        for (const dir of ALL_DIRS) {
+          const [dr, dc] = DIR_DELTA[dir]
+          const nr = row + dr, nc = col + dc
+          if (nr < 0 || nr >= ROWS || nc < 0 || nc >= COLS) continue
+          const k = `${nr},${nc}`
+          if (v.has(k)) continue
+          const fP = getCellPorts(grid[row][col], row, col)
+          const tP = getCellPorts(grid[nr][nc], nr, nc)
+          if (fP.length === 0 || tP.length === 0) continue
+          if (!canConnect(row, col, fP, nr, nc, tP, dir)) continue
+          v.add(k)
+          if (isEndCell(nr, nc)) return true
+          q.push({ row: nr, col: nc })
+        }
+      }
+      return false
+    })()
+    feedbackMsg.value = reachable
+      ? '❌ 从发电机到水晶有通路，但有些管道有多余的管口伸到空地上！确保每根管道的每个口都有对应的连接。💪'
+      : '❌ 还没连通呢！从深海发电机到能源水晶接收站的路线还差一点，再试试吧！💪'
     feedbackOk.value = false
     // 高亮已放置的管道
     const hl = []

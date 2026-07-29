@@ -556,8 +556,8 @@ if __name__ == "__main__":
         f"  Engine: Multi-Agent Orchestrator\n"
         + "\n".join(agent_lines)
         + f"\n  Model: {keke_agent.model}\n"
-        f"  Server: http://localhost:3000\n"
+        f"  Server: http://localhost:8005\n"
     )
     sys.stdout.buffer.write(print_str.encode("utf-8"))
     sys.stdout.buffer.flush()
-    uvicorn.run(app, host="0.0.0.0", port=3000)
+    uvicorn.run(app, host="0.0.0.0", port=8005)
