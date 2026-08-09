@@ -1,0 +1,12 @@
+/* 阅读辅助：只在孩子主动开启后显示，不改变任务操作。 */
+.wd-pinyin-toggle{min-height:42px;border:1.5px solid #efc98c;border-radius:999px;background:#fff9ed;color:#845b3d;padding:6px 11px;display:inline-flex;align-items:center;gap:6px;font:700 .84rem/1 inherit;cursor:pointer;box-shadow:0 3px 0 rgba(176,119,70,.13);transition:.18s ease}
+.wd-pinyin-toggle>span{width:23px;height:23px;display:grid;place-items:center;border-radius:50%;background:#fff0c9;color:#c46d3f;font-size:.78rem}
+.wd-pinyin-toggle:hover,.wd-pinyin-toggle[aria-pressed="true"]{border-color:#f08a57;background:#fff0d7;color:#b95635;transform:translateY(-1px)}
+.wd-pinyin-toggle[aria-pressed="true"]>span{background:#f08a57;color:#fff}
+[data-pinyin].pinyin-on{display:inline-flex!important;flex-direction:column;align-items:inherit;gap:2px;vertical-align:middle}
+[data-pinyin].pinyin-on>.hanzi{line-height:1.16}
+[data-pinyin].pinyin-on>.pinyin-line{font-size:.53em;line-height:1.05;letter-spacing:.02em;color:#b27652;font-weight:600;white-space:nowrap;text-transform:lowercase}
+.section-title.pinyin-on,.prep-label.pinyin-on{align-items:center}
+.prep-group-title [data-pinyin].pinyin-on,.task-mission b[data-pinyin].pinyin-on{align-items:flex-start}
+.exam-tool-btn [data-pinyin].pinyin-on{align-items:center}
+@media(max-width:620px){.wd-pinyin-toggle{min-width:42px;justify-content:center;padding:7px 9px}.wd-pinyin-toggle b{display:none}.wd-pinyin-toggle>span{width:25px;height:25px}.wd-bar{gap:7px}}

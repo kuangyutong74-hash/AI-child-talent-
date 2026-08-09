@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}职业体验模拟器{% endblock %}</title>
+<link rel="stylesheet" href="/static/css/style.css?v=exploration-map-v15"><link rel="stylesheet" href="/static/css/responsive.css?v=responsive-v2">
+{% block extra_head %}{% endblock %}</head>
+<body class="{% block body_class %}{% endblock %}">
+<div id="app-container">{% block content %}{% endblock %}</div><button id="replay-guide-btn" class="replay-guide-btn" type="button" title="重新查看新手引导">？<span>新手引导</span></button>
+<div id="font-size-control" class="font-size-control" role="group" aria-label="调节字体大小">
+  <button id="font-smaller" class="font-size-btn" type="button" title="缩小字体" aria-label="缩小字体">A<sup>-</sup></button>
+  <button id="font-default" class="font-size-btn font-size-active" type="button" title="默认字体" aria-label="默认字体">A</button>
+  <button id="font-larger" class="font-size-btn" type="button" title="放大字体" aria-label="放大字体">A<sup>+</sup></button>
+</div>
+<script>
+// 轻量学生身份标识：同一浏览器自动生成，跨会话关联。
+// 已知限制：更换浏览器或清除缓存后 token 丢失，历史记录无法关联。
+// 后续如需正式的账号系统，可将此机制替换为 user_id。
+(function(){var K='career-student-token-v1';if(!localStorage.getItem(K)){localStorage.setItem(K,'st_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,10));}})();
+(function(){
+  var SCALES = {smaller: 14, default: 16, larger: 18};
+  var saved = localStorage.getItem('font-size-scale');
+  if (saved && SCALES[saved]) { document.documentElement.style.fontSize = SCALES[saved] + 'px'; }
+  function setScale(name) {
+    document.documentElement.style.fontSize = SCALES[name] + 'px';
+    localStorage.setItem('font-size-scale', name);
+    document.querySelectorAll('.font-size-btn').forEach(function(b){ b.classList.remove('font-size-active'); });
+    document.getElementById('font-' + name).classList.add('font-size-active');
+  }
+  document.getElementById('font-smaller').addEventListener('click', function(){ setScale('smaller'); });
+  document.getElementById('font-default').addEventListener('click', function(){ setScale('default'); });
+  document.getElementById('font-larger').addEventListener('click', function(){ setScale('larger'); });
+
+  var ctrl = document.getElementById('font-size-control');
+  var savedPos = localStorage.getItem('font-size-pos');
+  if (savedPos) { var p = JSON.parse(savedPos); ctrl.style.left = p.l + 'px'; ctrl.style.top = p.t + 'px'; ctrl.style.bottom = 'auto'; }
+
+  var dragging = false, startX, startY, startLeft, startTop;
+  function onStart(e) {
+    if (e.target.tagName === 'BUTTON') return;
+    e.preventDefault();
+    dragging = true; ctrl.style.cursor = 'grabbing'; ctrl.style.transition = 'none';
+    var pt = e.touches ? e.touches[0] : e;
+    startX = pt.clientX; startY = pt.clientY;
+    var rect = ctrl.getBoundingClientRect();
+    startLeft = rect.left; startTop = rect.top;
+    ctrl.style.left = startLeft + 'px'; ctrl.style.top = startTop + 'px'; ctrl.style.bottom = 'auto';
+  }
+  function onMove(e) {
+    if (!dragging) return;
+    e.preventDefault();
+    var pt = e.touches ? e.touches[0] : e;
+    var dx = pt.clientX - startX, dy = pt.clientY - startY;
+    var nl = Math.max(0, Math.min(window.innerWidth - ctrl.offsetWidth, startLeft + dx));
+    var nt = Math.max(0, Math.min(window.innerHeight - ctrl.offsetHeight, startTop + dy));
+    ctrl.style.left = nl + 'px'; ctrl.style.top = nt + 'px';
+  }
+  function onEnd() {
+    if (!dragging) return;
+    dragging = false; ctrl.style.cursor = 'grab'; ctrl.style.transition = '';
+    localStorage.setItem('font-size-pos', JSON.stringify({l: parseInt(ctrl.style.left), t: parseInt(ctrl.style.top)}));
+  }
+  ctrl.addEventListener('mousedown', onStart);
+  ctrl.addEventListener('touchstart', onStart, {passive: false});
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('touchmove', onMove, {passive: false});
+  document.addEventListener('mouseup', onEnd);
+  document.addEventListener('touchend', onEnd);
+})();
+</script>
+<script src="/static/js/auth.js?v=2"></script>
+<script src="/static/js/app.js?v=career-session-map-v3"></script>
+{% block extra_js %}{% endblock %}</body>
+</html>

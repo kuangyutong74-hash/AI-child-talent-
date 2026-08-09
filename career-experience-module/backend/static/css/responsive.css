@@ -1,0 +1,50 @@
+/* 统一响应式适配：一套 HTML 同时支持 PC、平板和手机。 */
+img,svg,canvas,video{max-width:100%;height:auto}
+button,a.action-btn,.start-session-btn,.start-button,.mode-card,.choice-btn{min-height:44px;touch-action:manipulation}
+.hero-title,.ceremony-title,.careers-title,.my-center-head h1{font-size:clamp(1.8rem,4.2vw,3.4rem)}
+.section-title,.map-section-heading h2{font-size:clamp(1.35rem,3vw,2rem)}
+.landing-container,.careers-container,.report-container,.my-center-shell{width:min(100% - 32px,1120px)}
+
+@media(max-width:1024px){
+  .hero-section{grid-template-columns:1fr .88fr;padding-left:2%;padding-right:2%}
+  .careers-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .report-container{max-width:900px}.radar-charts{gap:18px}
+  .teacher-evidence-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .exploration-map-section{padding:24px}.exploration-map{height:390px}
+  .career-map-island{width:126px;min-height:118px}.island-doctor{left:4%}.island-firefighter{left:31%}.island-teacher{right:4%}.island-chef{left:12%}.island-journalist{left:42%}.island-animal{right:10%}
+}
+
+@media(max-width:768px){
+  html{font-size:15px}.page-careers{min-height:100dvh;overflow-x:clip;overflow-y:visible}.page-scenario{min-height:100dvh}
+  .scene-container{min-height:44dvh;align-items:flex-start;padding-top:56px;background:linear-gradient(135deg,#dff5f1,#fff0d2)}.scene-bg{background-color:#dff5f1;background-position:center center}
+  .scene-atmosphere{position:relative;left:auto;bottom:auto;transform:none;width:min(92%,620px);max-width:none;margin:0 auto;font-size:.96rem}
+  .dialogue-box,.choice-panel,.mentor-panel{padding:16px max(16px,env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
+  .choice-buttons{display:grid;grid-template-columns:1fr;gap:10px}.choice-btn{min-width:0;width:100%;max-width:none;padding:12px 14px}
+  .mentor-actions{gap:10px}.mentor-actions button{min-height:44px}
+  .careers-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.career-card{min-height:184px}
+  .modal-card{width:min(94vw,520px);padding:24px}.mode-buttons{gap:10px}
+  .report-container{width:min(100% - 24px,900px);padding:12px}.report-hero{margin:0 -12px 28px;padding:36px 16px 30px}
+  .radar-charts{display:grid;grid-template-columns:1fr}.radar-chart-wrapper{width:100%}.radar-svg{width:min(280px,100%);height:auto}
+  .strengths-grid,.growth-cards,.teacher-evidence-list{grid-template-columns:1fr}.journey-item{padding:14px}
+  .report-actions{display:grid;grid-template-columns:1fr;gap:10px}.report-actions .action-btn{width:100%;justify-content:center}
+  .my-center-shell{width:min(100% - 24px,1080px)}.my-center-head{padding:22px}.my-progress-card{padding:14px}
+  .exploration-map-section{padding:20px 14px}.map-section-heading{align-items:flex-start}.map-progress-badge{flex-shrink:0}.map-tip{font-size:.74rem}
+  .wd-main{padding:20px 14px 16px}.wd-bar{padding-left:12px;padding-right:12px}.wd-crumbs{font-size:.74rem}
+  .exam-layout,.diag-layout{gap:16px}.exam-body{max-width:min(100%,330px)}.exam-panel,.diag-left,.diag-right{min-width:min(100%,280px);max-width:560px;width:100%}
+  .exam-tool-btn{min-height:44px;padding:10px 13px}.action-plan-grid{gap:12px}.wd-stage-art{max-width:640px;margin-left:auto;margin-right:auto}
+}
+
+@media(max-width:560px){
+  html{font-size:14px}.landing-container,.careers-container,.report-container,.my-center-shell{width:min(100% - 24px,1120px)}
+  .hero-section{grid-template-columns:1fr;min-height:0;padding:48px 0 10px;text-align:center}.hero-copy{align-items:center}.hero-illustration{height:280px;max-width:390px;margin:0 auto}
+  .careers-grid{grid-template-columns:1fr;gap:16px}.career-card{min-height:178px}.card-content{padding:20px 16px}
+  .modal-card{padding:20px 16px}.mode-buttons{flex-direction:column}.mode-card{min-height:100px}
+  .vn-hud{gap:7px;padding:7px 10px}.hud-scene-title{max-width:128px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .scene-container{min-height:38dvh;padding-top:48px}.dialogue-box{max-height:44dvh;overflow-y:auto}.dialogue-text{font-size:.95rem}.choice-panel,.mentor-panel{max-height:56dvh;overflow-y:auto}.choice-btn{font-size:.9rem}.voice-read-btn,.mentor-voice{min-height:40px}
+  .exploration-map{height:auto;min-height:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;padding:16px;background:linear-gradient(160deg,#b8ebef,#e7f7dd 60%,#fff0cc)}
+  .map-path,.map-compass{display:none}.career-map-island{position:relative!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;width:100%;min-height:134px;padding:8px 6px;border-radius:24px}.career-map-island img{width:66px;height:66px}.career-map-island b{font-size:.86rem}.career-map-island small{font-size:.67rem}.career-map-island i{right:4px;top:4px}
+  .map-section-heading{gap:10px}.map-section-heading h2{font-size:1.35rem}.map-section-heading span{font-size:.73rem}.map-progress-badge{padding:7px 8px}.map-progress-badge b{font-size:1.25rem}
+  .my-center-head{padding:19px}.my-center-head span{font-size:.8rem}.my-progress-card{display:grid;grid-template-columns:48px 1fr;gap:10px}.my-progress-card a{grid-column:1/-1;margin-left:0;text-align:center;justify-content:center;display:flex;align-items:center;min-height:44px}.my-center-note{font-size:.78rem}
+  .wd-app button,.wd-app a,.prep-card,.exam-tool-btn,.diag-option,.action-plan{min-height:44px}.wd-bar{min-height:54px}.wd-back{font-size:0}.wd-back::before{content:'←';font-size:22px}.wd-clock{font-size:.72rem;padding:4px 7px}.wd-main{padding:16px 10px}.prep-grid{gap:9px}.prep-card{min-height:112px;padding:12px 9px}.triage-card{padding:12px;gap:9px}.triage-card .tri-detail{font-size:.72rem}.exam-body{width:min(100%,290px)}.exam-panel,.diag-left,.diag-right{min-width:0}.exam-tool-btn{flex:1;justify-content:center}.action-plan-grid{grid-template-columns:1fr}.action-plan{min-height:116px}.workday-bridge{padding:14px}.complete-card,.final-card{padding-left:4px;padding-right:4px}
+  .replay-guide-btn{min-height:44px;min-width:44px}
+}

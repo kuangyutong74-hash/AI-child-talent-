@@ -1,0 +1,22 @@
+# Local secrets and environment
+.env
+.env.*
+!.env.example
+
+# Python runtime files
+__pycache__/
+*.py[cod]
+*.log
+.pytest_cache/
+
+# Local data and generated media
+*.db
+career_sim.db
+**/static/tts/
+tts_smoke.mp3
+
+# Editor and operating-system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

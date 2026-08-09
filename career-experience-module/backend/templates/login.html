@@ -1,0 +1,95 @@
+{% extends "base.html" %}{% block title %}登录 — 职业体验模拟器{% endblock %}{% block body_class %}page-login{% endblock %}
+{% block content %}
+<main class="login-page-shell">
+  <a href="/" class="login-back">← 回到首页</a>
+  <div class="login-card-wrap">
+    <div class="login-mascot"><img src="/static/images/mascots/explorer-guide.png" alt="探索向导"></div>
+    <h1>欢迎回来 ✨</h1>
+    <p class="login-sub">登录你的账号，继续你的职业探索之旅。</p>
+    <div class="login-tabs">
+      <button type="button" class="login-tab active" id="login-tab-login">登录</button>
+      <button type="button" class="login-tab" id="login-tab-register">注册</button>
+    </div>
+    <!-- Login form -->
+    <form id="login-form" class="login-form">
+      <div class="login-field"><label>用户名</label><input type="text" id="login-username" placeholder="输入你的用户名" autocomplete="username" required></div>
+      <div class="login-field"><label>密码</label><input type="password" id="login-password" placeholder="输入密码" autocomplete="current-password" required></div>
+      <div id="login-error" class="login-error" style="display:none"></div>
+      <button type="submit" class="login-submit-btn">登 录</button>
+    </form>
+    <!-- Register form -->
+    <form id="register-form" class="login-form" style="display:none">
+      <div class="login-field"><label>用户名</label><input type="text" id="reg-username" placeholder="取一个用户名（3-20字）" autocomplete="username" required></div>
+      <div class="login-field"><label>密码</label><input type="password" id="reg-password" placeholder="至少4个字符" autocomplete="new-password" required></div>
+      <div class="login-field"><label>你的名字（或昵称）</label><input type="text" id="reg-name" placeholder="让大家怎么称呼你？" required></div>
+      <div class="login-field"><label>年龄</label><select id="reg-age" required>
+        <option value="">选择年龄</option>
+        {% for a in range(6, 15) %}<option value="{{ a }}">{{ a }}岁</option>{% endfor %}
+      </select></div>
+      <div id="register-error" class="login-error" style="display:none"></div>
+      <button type="submit" class="login-submit-btn">注 册</button>
+    </form>
+    <p class="login-note">🔒 密码已加密存储。你的探索数据将安全地保存在你的账号下。</p>
+  </div>
+</main>
+{% endblock %}
+{% block extra_js %}<script>
+document.addEventListener('DOMContentLoaded', function(){
+  // Tab switching
+  document.getElementById('login-tab-login').onclick = function(){
+    this.classList.add('active');
+    document.getElementById('login-tab-register').classList.remove('active');
+    document.getElementById('login-form').style.display = '';
+    document.getElementById('register-form').style.display = 'none';
+  };
+  document.getElementById('login-tab-register').onclick = function(){
+    this.classList.add('active');
+    document.getElementById('login-tab-login').classList.remove('active');
+    document.getElementById('login-form').style.display = 'none';
+    document.getElementById('register-form').style.display = '';
+  };
+
+  // If already logged in, redirect to careers
+  Auth.checkAuth().then(function(user){
+    if (user) window.location.href = '/careers';
+  });
+
+  // Login
+  document.getElementById('login-form').onsubmit = function(e){
+    e.preventDefault();
+    var err = document.getElementById('login-error');
+    err.style.display = 'none';
+    var btn = this.querySelector('.login-submit-btn');
+    btn.disabled = true; btn.textContent = '登录中…';
+    Auth.login(
+      document.getElementById('login-username').value,
+      document.getElementById('login-password').value
+    ).then(function(d){
+      window.location.href = '/careers';
+    }).catch(function(e){
+      err.textContent = e.message || '登录失败';
+      err.style.display = 'block';
+    }).finally(function(){ btn.disabled = false; btn.textContent = '登 录'; });
+  };
+
+  // Register
+  document.getElementById('register-form').onsubmit = function(e){
+    e.preventDefault();
+    var err = document.getElementById('register-error');
+    err.style.display = 'none';
+    var btn = this.querySelector('.login-submit-btn');
+    btn.disabled = true; btn.textContent = '注册中…';
+    Auth.register(
+      document.getElementById('reg-username').value,
+      document.getElementById('reg-password').value,
+      document.getElementById('reg-name').value,
+      parseInt(document.getElementById('reg-age').value) || 10
+    ).then(function(d){
+      window.location.href = '/careers';
+    }).catch(function(e){
+      err.textContent = e.message || '注册失败';
+      err.style.display = 'block';
+    }).finally(function(){ btn.disabled = false; btn.textContent = '注 册'; });
+  };
+});
+</script>{% endblock %}
