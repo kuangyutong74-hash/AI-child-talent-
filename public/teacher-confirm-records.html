@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>确认记录 · 教师端</title>
+<style>
+:root{
+  --bg:#f6f7fb;--surface:#fff;--soft:#fafbff;--text:#17233f;--text2:#4e5a74;
+  --muted:#8a95aa;--line:#e5e9f2;--line2:#d8deea;--primary:#6658f5;
+  --primary2:#4f42da;--psoft:#efedff;--blue:#4f7cf2;--bsoft:#eef4ff;
+  --green:#22b66b;--gsoft:#edf9f3;--orange:#ff9829;--osoft:#fff5e8;
+  --red:#ef5c68;--rsoft:#fff0f2;--shadow:0 10px 32px rgba(30,47,91,.055);
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;min-width:320px;color:var(--text);background:radial-gradient(circle at 10% 0%,rgba(102,88,245,.06),transparent 31%),linear-gradient(180deg,#f8f9fd 0%,var(--bg) 100%);font-family:"Microsoft YaHei","PingFang SC",Arial,sans-serif;font-size:14px}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+.topbar{position:sticky;top:0;z-index:50;height:68px;padding:0 26px;display:flex;align-items:center;justify-content:space-between;gap:18px;background:rgba(255,255,255,.94);border-bottom:1px solid var(--line);backdrop-filter:blur(14px)}
+.left,.right,.title-wrap,.filters,.meta,.actions{display:flex;align-items:center}
+.left{gap:18px}.right{gap:10px}.title-wrap{gap:12px}
+h1{margin:0;font-size:23px;letter-spacing:-.4px}.student{color:var(--muted);font-size:15px}
+.btn,.back,.teacher,.filter,.icon{border:1px solid var(--line2);border-radius:10px;background:#fff;color:var(--text2);transition:.17s ease}
+.btn,.back{min-height:40px;padding:0 15px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:680}
+.btn:hover,.back:hover,.filter:hover,.icon:hover{transform:translateY(-1px);border-color:#bec7d9}
+.btn.primary{color:#fff;border-color:var(--primary);background:var(--primary);box-shadow:0 8px 18px rgba(102,88,245,.18)}
+.btn.primary:hover{background:var(--primary2)}.btn.soft{color:var(--primary);border-color:#d1ccff;background:var(--psoft)}.btn.small{min-height:34px;padding:0 12px;font-size:12px}
+.teacher{height:38px;padding:0 13px;display:inline-flex;align-items:center;gap:8px;border:0;background:#fff7f3;color:#6d5b55}
+.icon{width:36px;height:36px;display:grid;place-items:center;font-size:18px}
+.container{width:min(1500px,calc(100% - 40px));margin:0 auto;padding:20px 0 42px}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:16px}
+.metric{min-height:92px;padding:17px 20px;display:flex;align-items:center;gap:14px;border:1px solid var(--line);border-radius:17px;background:#fff;box-shadow:var(--shadow)}
+.micon{width:48px;height:48px;display:grid;place-items:center;border-radius:50%;font-size:21px;font-weight:800}
+.micon.p{color:var(--primary);background:var(--psoft)}.micon.g{color:var(--green);background:var(--gsoft)}.micon.b{color:var(--blue);background:var(--bsoft)}.micon.r{color:var(--red);background:var(--rsoft)}
+.mlabel{color:var(--text2);margin-bottom:4px}.mvalue{font-size:27px;font-weight:790;line-height:1}.unit{font-size:13px;color:var(--muted);margin-left:5px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:20px;align-items:start}
+.aside{display:grid;gap:16px;position:sticky;top:88px}
+.panel{border:1px solid var(--line);border-radius:17px;background:#fff;box-shadow:var(--shadow)}
+.panel-head{min-height:58px;padding:0 18px;display:flex;align-items:center;justify-content:space-between;gap:14px;border-bottom:1px solid var(--line)}
+.panel-title{margin:0;font-size:16px}.link{color:var(--primary);font-size:13px;font-weight:680;cursor:pointer}
+.toolbar{padding:16px;margin-bottom:16px}.search{height:45px;display:flex;align-items:center;gap:10px;padding:0 14px;border:1px solid var(--line2);border-radius:11px}
+.search:focus-within{border-color:#aaa2ff;box-shadow:0 0 0 3px rgba(102,88,245,.08)}
+.search input{width:100%;border:0;outline:0;background:transparent;color:var(--text)}.search input::placeholder{color:#a2aabc}
+.filter-row{margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}.filters{gap:9px;flex-wrap:wrap}
+.filter{height:34px;padding:0 14px;font-size:13px}.filter.active{color:var(--primary);border-color:#beb8ff;background:var(--psoft)}
+.sort{height:34px;min-width:150px;padding:0 12px;border:1px solid var(--line2);border-radius:9px;background:#fff;color:#59647d}
+.record-panel{padding:0 20px 22px}.record-list{position:relative;display:grid;gap:16px;padding-top:20px}
+.record-list:before{content:"";position:absolute;left:18px;top:20px;bottom:16px;width:2px;background:linear-gradient(180deg,#d5d0ff,#e7eaf2)}
+.record{position:relative;padding-left:52px}.dot{position:absolute;left:8px;top:20px;width:22px;height:22px;border:4px solid #fff;border-radius:50%;box-shadow:0 0 0 1px var(--line2);z-index:2}
+.dot.g{background:var(--green)}.dot.b{background:var(--blue)}.dot.r{background:var(--red)}.dot.p{background:var(--primary)}
+.card{border:1px solid var(--line);border-radius:15px;background:#fff;overflow:hidden;transition:.16s ease;cursor:pointer}.card:hover{transform:translateY(-1px);border-color:#c8cfdd}.card.selected{border-color:#bcb5ff;box-shadow:0 0 0 2px rgba(102,88,245,.05)}
+.card-head{min-height:56px;padding:0 17px;display:flex;align-items:center;justify-content:space-between;gap:14px;background:#fbfcff;border-bottom:1px solid var(--line)}
+.head-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.time{color:var(--muted);font-size:12px}
+.card-body{padding:17px}.rtitle{font-weight:770;margin-bottom:8px}.summary{margin:0;color:var(--text2);line-height:1.72}
+.meta{margin-top:13px;justify-content:space-between;gap:12px;flex-wrap:wrap}.meta-left{display:flex;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:12px}
+.badge{min-height:25px;padding:0 9px;display:inline-flex;align-items:center;justify-content:center;border:1px solid transparent;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap}
+.badge.g{color:#169254;background:var(--gsoft);border-color:#bce8cf}.badge.b{color:#4670ce;background:var(--bsoft);border-color:#cbdcff}.badge.r{color:#e74f5a;background:var(--rsoft);border-color:#ffbdc2}.badge.p{color:#5e4edc;background:var(--psoft);border-color:#cec9ff}.badge.gray{color:#727c92;background:#f5f7fa;border-color:#e2e6ee}
+.empty{display:none;padding:56px 20px;text-align:center;color:var(--muted)}.empty.show{display:block}
+.detail{padding:18px}.detail h3{margin:0 0 8px;font-size:18px}.dsub{color:var(--muted);font-size:12px;margin-bottom:16px}
+.drow{display:grid;grid-template-columns:86px minmax(0,1fr);gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}.drow:last-child{border-bottom:0}.dlabel{color:var(--muted)}.dvalue{color:var(--text2);line-height:1.6}
+.diff{margin-top:16px;display:grid;gap:10px}.diffbox{padding:12px 13px;border-radius:11px;border:1px solid var(--line);line-height:1.65;font-size:13px}.before{color:#7b5360;background:var(--rsoft);border-color:#ffd0d4}.after{color:#40654f;background:var(--gsoft);border-color:#ccebd9}.difflabel{margin-bottom:6px;font-size:12px;font-weight:760}
+.dactions{margin-top:16px;display:grid;gap:9px}.dactions .btn{width:100%}
+.timeline{padding:16px 18px}.titem{position:relative;min-height:48px;display:grid;grid-template-columns:22px minmax(0,1fr);gap:9px}.titem:not(:last-child):before{content:"";position:absolute;top:20px;left:7px;width:1px;height:calc(100% - 3px);background:#dce1eb}.tdot{width:15px;height:15px;margin-top:2px;border:3px solid currentColor;border-radius:50%;background:#fff;z-index:1}.tdot.p{color:var(--primary)}.tdot.g{color:var(--green)}.tdot.r{color:var(--red)}.tcontent{padding-bottom:15px;color:var(--text2);font-size:12px;line-height:1.6}.ttime{color:var(--muted)}
+.legend{padding:16px 18px;display:grid;gap:10px}.legend-row{display:flex;justify-content:space-between;color:var(--text2);font-size:13px}.legend-left{display:flex;align-items:center;gap:9px}.ldot{width:10px;height:10px;border-radius:50%}.ldot.g{background:var(--green)}.ldot.b{background:var(--blue)}.ldot.r{background:var(--red)}.ldot.p{background:var(--primary)}
+.modal-mask{position:fixed;inset:0;z-index:100;display:none;place-items:center;padding:20px;background:rgba(17,27,57,.36);backdrop-filter:blur(3px)}.modal-mask.show{display:grid}
+.modal{width:min(620px,100%);overflow:hidden;border:1px solid var(--line);border-radius:18px;background:#fff;box-shadow:0 24px 70px rgba(18,29,65,.22)}.modal-head{min-height:62px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}.modal-head h3{margin:0}.modal-body{padding:20px}.modal-foot{padding:15px 20px;display:flex;justify-content:flex-end;gap:10px;border-top:1px solid var(--line)}
+.field label{display:block;margin-bottom:7px;color:var(--text2);font-weight:700}.field textarea{width:100%;min-height:110px;padding:10px 12px;border:1px solid var(--line2);border-radius:10px;resize:vertical}
+.toast{position:fixed;right:24px;bottom:24px;z-index:150;min-width:260px;padding:13px 15px;border-radius:12px;color:#fff;background:#202d50;box-shadow:0 16px 36px rgba(20,31,65,.22);opacity:0;transform:translateY(10px);pointer-events:none;transition:.22s ease}.toast.show{opacity:1;transform:translateY(0)}
+@media(max-width:1180px){.layout{grid-template-columns:1fr}.aside{position:static;grid-template-columns:repeat(2,minmax(0,1fr))}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:780px){.topbar{height:auto;min-height:66px;padding:12px 14px;align-items:flex-start}.title-wrap{flex-direction:column;align-items:flex-start;gap:2px}h1{font-size:19px}.student{font-size:13px}.container{width:calc(100% - 24px);padding-top:12px}.metrics{grid-template-columns:1fr 1fr;gap:10px}.metric{min-height:80px;padding:13px}.micon{width:40px;height:40px}.mvalue{font-size:22px}.record-panel{padding:0 12px 16px}.record{padding-left:42px}.record-list:before{left:14px}.dot{left:4px}.aside{grid-template-columns:1fr}.teacher span:nth-child(2){display:none}}
+@media(max-width:500px){.metrics{grid-template-columns:1fr}.right .btn{display:none}.card-head{align-items:flex-start;padding:12px 14px}.drow{grid-template-columns:1fr;gap:4px}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="left">
+    <button class="back" id="backBtn">← 返回学生详情</button>
+    <div class="title-wrap"><h1>确认记录</h1><span class="student" id="studentNameLabel"></span></div>
+  </div>
+  <div class="right">
+    <button class="btn soft" id="btnProfile">返回画像概览</button>
+    <button class="teacher"><span>🧑‍🏫</span><span id="teacherNameDisplay">教师</span><span>⌄</span></button>
+  </div>
+</header>
+
+<main class="container">
+  <section class="metrics">
+    <article class="metric"><div class="micon p">📝</div><div><div class="mlabel">全部记录</div><div class="mvalue" id="metricAll">0<span class="unit">条</span></div></div></article>
+    <article class="metric"><div class="micon g">✓</div><div><div class="mlabel">确认准确</div><div class="mvalue" id="metricConfirm">0<span class="unit">条</span></div></div></article>
+    <article class="metric"><div class="micon b">✎</div><div><div class="mlabel">教师修改</div><div class="mvalue" id="metricModify">0<span class="unit">条</span></div></div></article>
+    <article class="metric"><div class="micon r">×</div><div><div class="mlabel">标记不准确</div><div class="mvalue" id="metricReject">0<span class="unit">条</span></div></div></article>
+  </section>
+
+  <div class="layout">
+    <div>
+      <section class="panel toolbar">
+        <div class="search"><span>⌕</span><input id="searchInput" placeholder="搜索模块、指标、教师说明或修改内容..."></div>
+        <div class="filter-row">
+          <div class="filters">
+            <button class="filter active" data-type="all">全部记录</button>
+            <button class="filter" data-type="confirm">确认准确</button>
+            <button class="filter" data-type="modify">教师修改</button>
+            <button class="filter" data-type="reject">不准确</button>
+          </div>
+          <select class="sort" id="sortSelect"><option value="new">最近操作</option><option value="old">最早操作</option><option value="module">按模块排序</option></select>
+        </div>
+      </section>
+
+      <section class="panel record-panel">
+        <div class="panel-head" style="margin:0 -20px"><h2 class="panel-title">全部复核记录</h2><span class="link" id="resultCount">共 0 条</span></div>
+        <div class="record-list" id="recordList"></div>
+        <div class="empty show" id="emptyState">正在加载复核记录…</div>
+      </section>
+    </div>
+
+    <aside class="aside">
+      <section class="panel">
+        <div class="panel-head"><h2 class="panel-title">记录详情</h2><span class="badge b" id="detailStatus">—</span></div>
+        <div class="detail">
+          <h3 id="detailTitle">点击左侧记录查看</h3>
+          <div class="dsub" id="detailTime">—</div>
+          <div class="drow"><span class="dlabel">所属模块</span><span class="dvalue" id="detailModule">—</span></div>
+          <div class="drow"><span class="dlabel">复核对象</span><span class="dvalue" id="detailTarget">—</span></div>
+          <div class="drow"><span class="dlabel">复核人</span><span class="dvalue" id="detailReviewer">—</span></div>
+          <div class="drow"><span class="dlabel">原因</span><span class="dvalue" id="detailReason">—</span></div>
+          <div class="diff">
+            <div class="diffbox before"><div class="difflabel">修改前 / AI 原始内容</div><div id="detailBefore">—</div></div>
+            <div class="diffbox after"><div class="difflabel">修改后 / 教师结论</div><div id="detailAfter">—</div></div>
+          </div>
+          <div class="dactions">
+            <button class="btn primary" id="btnViewContent">查看对应内容</button>
+          </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2 class="panel-title">版本轨迹</h2></div>
+        <div class="timeline" id="timelineBody">
+          <div class="titem"><span class="tdot p"></span><div class="tcontent">选择一条记录查看版本轨迹</div></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2 class="panel-title">记录类型</h2></div>
+        <div class="legend">
+          <div class="legend-row"><span class="legend-left"><span class="ldot g"></span>确认准确</span><span id="legendConfirm">0 条</span></div>
+          <div class="legend-row"><span class="legend-left"><span class="ldot b"></span>教师修改</span><span id="legendModify">0 条</span></div>
+          <div class="legend-row"><span class="legend-left"><span class="ldot r"></span>标记不准确</span><span id="legendReject">0 条</span></div>
+        </div>
+      </section>
+    </aside>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(()=>{
+// ============================================================
+//  Auth guard & URL params
+// ============================================================
+var params = new URLSearchParams(window.location.search);
+var studentId = params.get('studentId') || '';
+var studentName = '';
+
+document.getElementById('backBtn').addEventListener('click', function(){
+  window.location.href = '/teacher-student.html?studentId=' + encodeURIComponent(studentId);
+});
+document.getElementById('btnProfile').addEventListener('click', function(){
+  window.location.href = '/teacher-student.html?studentId=' + encodeURIComponent(studentId);
+});
+
+fetch('/api/auth/me').then(function(resp){
+  if(!resp.ok){ window.location.href='/login.html?role=teacher'; return null; }
+  return resp.json();
+}).then(function(data){
+  if(!data||!data.user||data.user.role!=='teacher'){ window.location.href='/home.html'; return; }
+  if(data.user.username){
+    document.getElementById('teacherNameDisplay').textContent = data.user.username;
+  }
+  initPage();
+}).catch(function(){ window.location.href='/login.html?role=teacher'; });
+
+// ============================================================
+//  Helpers
+// ============================================================
+function fmtDate(iso){
+  if(!iso) return '';
+  try{ var d=new Date(iso); if(isNaN(d.getTime())) return '';
+    var m=d.getMonth()+1; var dd=d.getDate(); return m+'月'+dd+'日 '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  }catch(_){return '';}
+}
+function fmtDateFull(iso){
+  if(!iso) return '';
+  try{ var d=new Date(iso); if(isNaN(d.getTime())) return '';
+    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  }catch(_){return '';}
+}
+function safeStr(v){ return typeof v==='string'?v:''; }
+function el(tag,cls){ var e=document.createElement(tag); if(cls)e.className=cls; return e; }
+
+// ============================================================
+//  Data
+// ============================================================
+var allRecords = [];
+var currentFilter = 'all';
+var currentSort = 'new';
+
+function initPage(){
+  if(!studentId){
+    document.getElementById('emptyState').classList.add('show');
+    document.getElementById('emptyState').textContent = '缺少学生标识，请从学生详情页进入。';
+    document.getElementById('resultCount').textContent = '共 0 条';
+    return;
+  }
+  // Show loading state while fetching
+  document.getElementById('emptyState').classList.add('show');
+  document.getElementById('emptyState').textContent = '正在加载复核记录…';
+  loadData();
+}
+
+function loadData(){
+  var encSid = encodeURIComponent(studentId);
+  var pStudent = fetch('/api/teacher/student/'+encSid).then(function(r){ if(!r.ok)return null; return r.json(); });
+  var pRecords = fetch('/api/teacher/student/'+encSid+'/confirm-records').then(function(r){
+    if(r.status===401){ window.location.href='/login.html?role=teacher'; return null; }
+    if(!r.ok) return {records:[]};
+    return r.json();
+  });
+
+  Promise.all([pStudent, pRecords]).then(function(results){
+    var studentData = results[0];
+    var recordsData = results[1];
+    if(recordsData===null) return;
+
+    if(studentData && studentData.student && studentData.student.username){
+      studentName = studentData.student.username;
+      document.getElementById('studentNameLabel').textContent = studentName;
+    }
+
+    var rawRecords = (recordsData && Array.isArray(recordsData.records)) ? recordsData.records : [];
+    allRecords = normalizeRecords(rawRecords);
+    updateMetrics();
+    updateLegend();
+    applyFilterAndSort();
+  }).catch(function(){
+    document.getElementById('emptyState').classList.add('show');
+    document.getElementById('emptyState').textContent = '加载失败，请稍后重试。';
+    document.getElementById('resultCount').textContent = '共 0 条';
+  });
+}
+
+// Map API records to the format the UI expects
+// API returns: { timestamp, type, reviewStatus, action, summary, contentPreview, note }
+// type: 'insight_review' | 'narrative_module'
+function normalizeRecords(raw){
+  return raw.map(function(rec, idx){
+    var type, dotClass, badgeClass, badgeText, statusText;
+
+    // Determine type from reviewStatus/action
+    if(rec.reviewStatus==='teacher_confirmed' || rec.action==='confirm'){
+      type='confirm'; dotClass='g'; badgeClass='g'; badgeText='确认准确'; statusText='教师已确认';
+    } else if(rec.reviewStatus==='rejected'){
+      type='reject'; dotClass='r'; badgeClass='r'; badgeText='标记不准确'; statusText='教师认为不准确';
+    } else {
+      type='modify'; dotClass='b'; badgeClass='b'; badgeText='教师修改'; statusText='教师已修改';
+    }
+
+    // Determine module from record type or summary
+    var moduleLabel = '—';
+    if(rec.type==='insight_review'){
+      moduleLabel = '证据复核';
+    } else if(rec.type==='narrative_module'){
+      // summary is like '报告模块 · 核心发现'
+      var summaryParts = (rec.summary||'').split('·');
+      moduleLabel = summaryParts[0] ? summaryParts[0].trim() : '报告模块';
+    }
+
+    // Target: for insight_review use note preview, for narrative use the module name
+    var target = '—';
+    if(rec.type==='narrative_module'){
+      var parts = (rec.summary||'').split('·');
+      target = parts[1] ? parts[1].trim() : (rec.summary||'—');
+    } else {
+      target = '线索项';
+    }
+
+    // Summary text for card body
+    var bodySummary = rec.contentPreview || rec.note || rec.summary || '—';
+
+    // Before/After: build meaningful content from what's available
+    var beforeText, afterText;
+    if(rec.type==='narrative_module'){
+      beforeText = 'AI 系统生成原始报告内容';
+      afterText = rec.contentPreview || '教师确认当前内容基本准确，无需修改。';
+    } else if(rec.type==='insight_review'){
+      beforeText = 'AI 系统原始判断结论';
+      if(type==='confirm'){
+        afterText = rec.note || '教师审核后确认该线索判断基本准确。';
+      } else if(type==='reject'){
+        afterText = rec.note || '教师审核后认为该线索判断不准确，已标记排除。';
+      } else {
+        afterText = rec.note || '教师已对该线索进行修改并添加备注。';
+      }
+    } else {
+      beforeText = '系统原始内容';
+      afterText = rec.contentPreview || rec.note || '—';
+    }
+
+    // Reviewer - from record or default
+    var reviewer = rec.reviewer || rec.teacherName || '教师';
+
+    // Reason
+    var reason = rec.reason || '';
+    if(!reason && rec.note){ reason = rec.note.length > 60 ? rec.note.substring(0,60)+'…' : rec.note; }
+    if(!reason && type==='confirm') reason = '结合观察与教学经验，确认结论基本一致';
+    if(!reason && type==='reject') reason = '当前证据不足以支撑该结论，或存在更合理解释';
+    if(!reason && type==='modify') reason = '根据教学观察补充修改，使结论更贴合实际情况';
+    if(!reason) reason = '—';
+
+    var time = rec.timestamp || rec.updatedAt || rec.createdAt || '';
+
+    var searchText = [moduleLabel, target, bodySummary, beforeText, afterText, reason, reviewer, rec.note||''].join(' ').toLowerCase();
+
+    return {
+      id: rec.id || ('rec-'+idx),
+      type: type,
+      dotClass: dotClass,
+      badgeClass: badgeClass,
+      badgeText: badgeText,
+      statusText: statusText,
+      module: moduleLabel,
+      moduleRaw: rec.type || '',
+      target: target,
+      summary: bodySummary,
+      before: beforeText,
+      after: afterText,
+      reviewer: reviewer,
+      reason: reason,
+      time: time,
+      timeDisplay: fmtDate(time),
+      timeFull: fmtDateFull(time),
+      searchText: searchText,
+      source: rec,
+      _raw: rec._raw || null
+    };
+  });
+}
+
+// ============================================================
+//  Metrics & Legend
+// ============================================================
+function updateMetrics(){
+  var total = allRecords.length;
+  var confirm = allRecords.filter(function(r){return r.type==='confirm';}).length;
+  var modify = allRecords.filter(function(r){return r.type==='modify';}).length;
+  var reject = allRecords.filter(function(r){return r.type==='reject';}).length;
+
+  document.getElementById('metricAll').innerHTML = total+'<span class="unit">条</span>';
+  document.getElementById('metricConfirm').innerHTML = confirm+'<span class="unit">条</span>';
+  document.getElementById('metricModify').innerHTML = modify+'<span class="unit">条</span>';
+  document.getElementById('metricReject').innerHTML = reject+'<span class="unit">条</span>';
+}
+
+function updateLegend(){
+  var confirm = allRecords.filter(function(r){return r.type==='confirm';}).length;
+  var modify = allRecords.filter(function(r){return r.type==='modify';}).length;
+  var reject = allRecords.filter(function(r){return r.type==='reject';}).length;
+
+  document.getElementById('legendConfirm').textContent = confirm+' 条';
+  document.getElementById('legendModify').textContent = modify+' 条';
+  document.getElementById('legendReject').textContent = reject+' 条';
+}
+
+// ============================================================
+//  Render record list
+// ============================================================
+var recordList = document.getElementById('recordList');
+var emptyState = document.getElementById('emptyState');
+var resultCount = document.getElementById('resultCount');
+var searchInput = document.getElementById('searchInput');
+var sortSelect = document.getElementById('sortSelect');
+
+function getFilteredRecords(){
+  var q = searchInput.value.trim().toLowerCase();
+  return allRecords.filter(function(r){
+    var typeMatch = currentFilter==='all' || r.type===currentFilter;
+    var searchMatch = !q || r.searchText.indexOf(q)!==-1;
+    return typeMatch && searchMatch;
+  });
+}
+
+function sortRecords(records){
+  if(currentSort==='old'){
+    return records.slice().sort(function(a,b){ return (a.time||'').localeCompare(b.time||''); });
+  } else if(currentSort==='module'){
+    return records.slice().sort(function(a,b){ return (a.module||'').localeCompare(b.module||'','zh-CN'); });
+  }
+  // new — default, reversed chronological
+  return records.slice().sort(function(a,b){ return (b.time||'').localeCompare(a.time||''); });
+}
+
+function applyFilterAndSort(){
+  var filtered = getFilteredRecords();
+  var sorted = sortRecords(filtered);
+
+  recordList.textContent = '';
+  if(sorted.length===0){
+    emptyState.classList.add('show');
+  } else {
+    emptyState.classList.remove('show');
+    for(var i=0; i<sorted.length; i++){
+      recordList.appendChild(buildRecordElement(sorted[i]));
+    }
+  }
+  resultCount.textContent = '共 '+sorted.length+' 条';
+}
+
+function buildRecordElement(rec){
+  var article = el('article','record');
+  article.setAttribute('data-type', rec.type);
+  article.setAttribute('data-search', rec.searchText);
+
+  var dot = el('span','dot '+rec.dotClass);
+  article.appendChild(dot);
+
+  var card = el('div','card');
+  card.setAttribute('data-id', rec.id);
+  card.setAttribute('data-title', rec.badgeText+' · '+rec.target);
+  card.setAttribute('data-time', rec.timeFull);
+  card.setAttribute('data-module', rec.module);
+  card.setAttribute('data-target', rec.target);
+  card.setAttribute('data-status', rec.statusText);
+  card.setAttribute('data-reviewer', rec.reviewer);
+  card.setAttribute('data-reason', rec.reason);
+  card.setAttribute('data-before', rec.before);
+  card.setAttribute('data-after', rec.after);
+
+  // Card head
+  var head = el('div','card-head');
+  var headLeft = el('div','head-left');
+  var timeSpan = el('span','time');
+  timeSpan.textContent = rec.timeDisplay;
+  headLeft.appendChild(timeSpan);
+  var badge = el('span','badge '+rec.badgeClass);
+  badge.textContent = rec.badgeText;
+  headLeft.appendChild(badge);
+  var moduleBadge = el('span','badge gray');
+  moduleBadge.textContent = rec.module;
+  headLeft.appendChild(moduleBadge);
+  head.appendChild(headLeft);
+  var link = el('span','link');
+  link.textContent = '查看详情 ›';
+  head.appendChild(link);
+  card.appendChild(head);
+
+  // Card body
+  var body = el('div','card-body');
+  var rtitle = el('div','rtitle');
+  rtitle.textContent = rec.module+' · '+rec.target;
+  body.appendChild(rtitle);
+  var summary = el('p','summary');
+  summary.textContent = rec.summary;
+  body.appendChild(summary);
+
+  var meta = el('div','meta');
+  var metaLeft = el('div','meta-left');
+  var reviewerSpan = el('span');
+  reviewerSpan.textContent = '复核人：'+rec.reviewer;
+  metaLeft.appendChild(reviewerSpan);
+  var reasonSpan = el('span');
+  reasonSpan.textContent = '原因：'+rec.reason;
+  metaLeft.appendChild(reasonSpan);
+  meta.appendChild(metaLeft);
+
+  var statusBadge = el('span','badge');
+  if(rec.type==='confirm'){ statusBadge.className += ' g'; statusBadge.textContent = '已确认'; }
+  else if(rec.type==='modify'){ statusBadge.className += ' g'; statusBadge.textContent = '已生效'; }
+  else if(rec.type==='reject'){ statusBadge.className += ' r'; statusBadge.textContent = '已排除'; }
+  else { statusBadge.className += ' p'; statusBadge.textContent = '原始版本'; }
+  meta.appendChild(statusBadge);
+  body.appendChild(meta);
+
+  card.appendChild(body);
+
+  // Click handler
+  card.addEventListener('click', function(){ setDetail(card); });
+
+  article.appendChild(card);
+  return article;
+}
+
+// ============================================================
+//  Detail panel
+// ============================================================
+var detailTitle = document.getElementById('detailTitle');
+var detailTime = document.getElementById('detailTime');
+var detailModule = document.getElementById('detailModule');
+var detailTarget = document.getElementById('detailTarget');
+var detailReviewer = document.getElementById('detailReviewer');
+var detailReason = document.getElementById('detailReason');
+var detailBefore = document.getElementById('detailBefore');
+var detailAfter = document.getElementById('detailAfter');
+var detailStatus = document.getElementById('detailStatus');
+var timelineBody = document.getElementById('timelineBody');
+
+var _currentDetailRecord = null;
+
+function setDetail(card){
+  // Deselect all
+  var allCards = document.querySelectorAll('.card');
+  for(var i=0; i<allCards.length; i++){ allCards[i].classList.remove('selected'); }
+  card.classList.add('selected');
+
+  detailTitle.textContent = card.dataset.title;
+  detailTime.textContent = card.dataset.time;
+  detailModule.textContent = card.dataset.module;
+  detailTarget.textContent = card.dataset.target;
+  detailReviewer.textContent = card.dataset.reviewer;
+  detailReason.textContent = card.dataset.reason;
+  detailBefore.textContent = card.dataset.before;
+  detailAfter.textContent = card.dataset.after;
+
+  detailStatus.textContent = card.dataset.status;
+  detailStatus.className = 'badge ';
+  if(card.dataset.status.indexOf('修改')!==-1) detailStatus.classList.add('b');
+  else if(card.dataset.status.indexOf('不准确')!==-1) detailStatus.classList.add('r');
+  else if(card.dataset.status.indexOf('系统')!==-1) detailStatus.classList.add('p');
+  else detailStatus.classList.add('g');
+
+  // Store current record for button handler
+  var recId = card.dataset.id;
+  _currentDetailRecord = null;
+  for(var j=0; j<allRecords.length; j++){
+    if(allRecords[j].id === recId){ _currentDetailRecord = allRecords[j]; break; }
+  }
+  renderTimeline(_currentDetailRecord);
+}
+
+function renderTimeline(rec){
+  timelineBody.textContent = '';
+  if(!rec){
+    var titem = el('div','titem');
+    var tdot = el('span','tdot p'); titem.appendChild(tdot);
+    var tc = el('div','tcontent'); tc.textContent = '选择一条记录查看版本轨迹'; titem.appendChild(tc);
+    timelineBody.appendChild(titem);
+    return;
+  }
+
+  // System-generation entry
+  var sysItem = el('div','titem');
+  var sysDot = el('span','tdot p'); sysItem.appendChild(sysDot);
+  var sysContent = el('div','tcontent');
+  sysContent.innerHTML = '<b>AI 生成原始版本</b><div>系统依据规则生成初始内容</div><div class="ttime">'+rec.timeDisplay+'</div>';
+  sysItem.appendChild(sysContent);
+  timelineBody.appendChild(sysItem);
+
+  if(rec.type==='confirm'){
+    var confItem = el('div','titem');
+    var confDot = el('span','tdot g'); confItem.appendChild(confDot);
+    var confContent = el('div','tcontent');
+    confContent.innerHTML = '<b>教师确认</b><div>确认当前内容基本准确，无需修改</div><div class="ttime">'+rec.timeDisplay+'</div>';
+    confItem.appendChild(confContent);
+    timelineBody.appendChild(confItem);
+  } else if(rec.type==='modify'){
+    var modItem = el('div','titem');
+    var modDot = el('span','tdot b'); modItem.appendChild(modDot);
+    var modContent = el('div','tcontent');
+    modContent.innerHTML = '<b>教师修改并生效</b><div>原因：'+rec.reason+'</div><div class="ttime">'+rec.timeDisplay+'</div>';
+    modItem.appendChild(modContent);
+    timelineBody.appendChild(modItem);
+  } else if(rec.type==='reject'){
+    var rejItem = el('div','titem');
+    var rejDot = el('span','tdot r'); rejItem.appendChild(rejDot);
+    var rejContent = el('div','tcontent');
+    rejContent.innerHTML = '<b>标记为不准确</b><div>原因：'+rec.reason+'</div><div class="ttime">'+rec.timeDisplay+'</div>';
+    rejItem.appendChild(rejContent);
+    timelineBody.appendChild(rejItem);
+  }
+}
+
+// ============================================================
+//  Filter & Search & Sort
+// ============================================================
+document.querySelectorAll('.filter').forEach(function(b){
+  b.addEventListener('click', function(){
+    document.querySelectorAll('.filter').forEach(function(x){ x.classList.remove('active'); });
+    b.classList.add('active');
+    currentFilter = b.dataset.type;
+    applyFilterAndSort();
+  });
+});
+
+searchInput.addEventListener('input', function(){ applyFilterAndSort(); });
+
+sortSelect.addEventListener('change', function(){
+  currentSort = sortSelect.value;
+  applyFilterAndSort();
+});
+
+// ============================================================
+//  "查看对应内容" 按钮
+// ============================================================
+document.getElementById('btnViewContent').addEventListener('click', function(){
+  if (!_currentDetailRecord){
+    showToast('请先在左侧选择一条记录');
+    return;
+  }
+  var rec = _currentDetailRecord;
+  var raw = rec._raw || {};
+
+  if (rec.moduleRaw === 'insight_review'){
+    var dim = raw.dimension || '';
+    if (!dim){
+      showToast('无法确定该线索所属维度，请从画像页面查看');
+      return;
+    }
+    var url = '/teacher-student-insight.html?studentId=' + encodeURIComponent(studentId)
+      + '&dimension=' + encodeURIComponent(dim)
+      + '&insightId=' + encodeURIComponent(raw.insightId || '');
+    window.open(url, '_blank');
+  } else if (rec.moduleRaw === 'narrative_module'){
+    var mod = raw.module || '';
+    if (mod.indexOf('dimReview:') === 0){
+      var dimName = mod.replace('dimReview:', '');
+      window.open('/teacher-student-insight.html?studentId=' + encodeURIComponent(studentId)
+        + '&dimension=' + encodeURIComponent(dimName), '_blank');
+    } else {
+      window.open('/teacher-student.html?studentId=' + encodeURIComponent(studentId), '_blank');
+    }
+  } else {
+    showToast('该记录类型暂不支持跳转');
+  }
+});
+
+// ============================================================
+//  Toast
+// ============================================================
+var toastEl = document.getElementById('toast');
+var toastTimer;
+
+function showToast(msg){
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 2200);
+}
+
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1784 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>我的小天地 · 小新</title>
+  <style>
+  :root {
+    --brown-950: #402119;
+    --brown-900: #542b21;
+    --brown-800: #6b4033;
+    --brown-700: #836052;
+    --brown-500: #a98d80;
+    --orange-700: #d9461f;
+    --orange-600: #f15b2a;
+    --orange-500: #ff7b44;
+    --orange-300: #ffbc95;
+    --cream-50: #fffefb;
+    --cream-100: #fffaf4;
+    --cream-200: #fff1e5;
+    --cream-300: #f7dfcb;
+    --sky-100: #edf9ff;
+    --sky-200: #d8f0ff;
+    --sky-400: #8bd3f7;
+    --mint-100: #effbea;
+    --mint-300: #bfe69f;
+    --pink-100: #fff0f3;
+    --pink-300: #ffc6d3;
+    --yellow-100: #fff8da;
+    --yellow-300: #ffe078;
+    --purple-100: #f6f0ff;
+    --purple-300: #d9c3ff;
+    --line: rgba(104, 61, 43, .11);
+    --line-strong: rgba(104, 61, 43, .19);
+    --shadow-soft: 0 8px 22px rgba(94, 62, 42, .09);
+    --shadow-card: 0 16px 38px rgba(94, 62, 42, .12);
+    --shadow-modal: 0 34px 90px rgba(41, 29, 24, .30);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body { min-height: 100%; }
+
+  body {
+    margin: 0;
+    min-width: 320px;
+    color: var(--brown-900);
+    font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    background: #dff3fa;
+  }
+
+  button, input { font: inherit; }
+  button { color: inherit; }
+
+  button:focus-visible,
+  input:focus-visible {
+    outline: 3px solid rgba(255, 123, 68, .30);
+    outline-offset: 2px;
+  }
+
+  a { color: inherit; text-decoration: none; }
+
+  .page-sky {
+    min-height: 100vh;
+    padding: 12px;
+    position: relative;
+    overflow: hidden;
+    background:
+      linear-gradient(rgba(232, 248, 255, .70), rgba(255, 248, 240, .90)),
+      url("assets/background.jpg") center / cover fixed;
+  }
+
+  .page-sky::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at 7% 14%, rgba(255,255,255,.78) 0 36px, transparent 38px),
+      radial-gradient(circle at 93% 10%, rgba(255,255,255,.72) 0 30px, transparent 32px),
+      radial-gradient(circle at 18% 8%, #fff 0 3px, transparent 4px),
+      radial-gradient(circle at 58% 7%, #ffe27c 0 4px, transparent 5px),
+      radial-gradient(circle at 84% 20%, #ffc5d1 0 4px, transparent 5px);
+  }
+
+  .app-frame {
+    min-height: calc(100vh - 24px);
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    border: 2px solid rgba(255,255,255,.88);
+    border-radius: 28px;
+    background: rgba(255, 251, 246, .91);
+    box-shadow: 0 22px 70px rgba(52, 82, 91, .18);
+    backdrop-filter: blur(11px);
+  }
+
+  .topbar {
+    min-height: 76px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--line);
+    background: rgba(255, 249, 243, .95);
+  }
+
+  .topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .brand-logo {
+    width: 48px;
+    height: 48px;
+    padding: 4px;
+    border-radius: 16px;
+    background: white;
+    box-shadow: var(--shadow-soft);
+    object-fit: contain;
+  }
+
+  .topbar-title {
+    margin: 0;
+    font-size: clamp(21px, 2vw, 30px);
+    font-weight: 950;
+  }
+
+  .topbar-subtitle {
+    margin-top: 3px;
+    color: var(--brown-700);
+    font-size: 12px;
+  }
+
+  .topbar-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 9px;
+    flex-wrap: wrap;
+  }
+
+  .kid-button {
+    min-height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 0 15px;
+    border: 1px solid var(--line-strong);
+    border-radius: 14px;
+    background: rgba(255, 253, 249, .97);
+    box-shadow: 0 6px 15px rgba(94, 62, 42, .07);
+    font-size: 14px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: transform .16s ease, box-shadow .16s ease;
+  }
+
+  .kid-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(94, 62, 42, .11);
+  }
+
+  .kid-button.on {
+    color: var(--orange-700);
+    border-color: rgba(241, 91, 42, .55);
+    background: #fff5ee;
+  }
+
+  .kid-button.primary {
+    color: white;
+    border: 3px solid rgba(255,255,255,.82);
+    background: linear-gradient(180deg, var(--orange-500), var(--orange-600));
+    box-shadow: 0 5px 0 var(--orange-700), 0 12px 22px rgba(222, 76, 28, .20);
+  }
+
+  .kid-button.outline {
+    color: var(--orange-700);
+    border-color: rgba(241, 91, 42, .55);
+  }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0 0 14px;
+    font-size: 19px;
+    font-weight: 950;
+  }
+
+  .section-icon {
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: var(--pink-100);
+    font-size: 19px;
+  }
+
+  .card {
+    border: 1px solid rgba(255,255,255,.90);
+    border-radius: 24px;
+    background: rgba(255, 253, 249, .94);
+    box-shadow: var(--shadow-card);
+  }
+
+  .profile-content {
+    width: min(1180px, calc(100% - 34px));
+    margin: 0 auto;
+    padding: 24px 0 34px;
+  }
+
+  .profile-hero {
+    position: relative;
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr) auto;
+    gap: 24px;
+    align-items: center;
+    padding: 25px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 100% 0%, rgba(170, 226, 255, .50), transparent 36%),
+      radial-gradient(circle at 0% 100%, rgba(255, 224, 160, .30), transparent 38%),
+      rgba(255, 253, 249, .95);
+  }
+
+  .profile-hero::after {
+    content: "⭐  ✦  🌈";
+    position: absolute;
+    right: 28px;
+    top: 20px;
+    color: #f5b22d;
+    letter-spacing: 10px;
+    font-size: 20px;
+    opacity: .78;
+  }
+
+  .avatar-stage {
+    position: relative;
+    min-height: 216px;
+    display: grid;
+    place-items: center;
+    border-radius: 28px;
+    background:
+      radial-gradient(circle at 50% 80%, #a9dd7b 0 37%, transparent 38%),
+      linear-gradient(180deg, #e9f8ff, #fffaf0);
+    overflow: hidden;
+  }
+
+  .avatar-stage::before,
+  .avatar-stage::after {
+    content: "";
+    position: absolute;
+    width: 66px;
+    height: 25px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.85);
+    box-shadow: 20px -8px 0 -6px rgba(255,255,255,.9);
+  }
+
+  .avatar-stage::before { left: 20px; top: 35px; }
+  .avatar-stage::after { right: 25px; top: 68px; transform: scale(.75); }
+
+  .profile-avatar {
+    width: 178px;
+    height: 178px;
+    position: relative;
+    z-index: 2;
+    object-fit: contain;
+    filter: drop-shadow(0 12px 14px rgba(79, 66, 55, .14));
+  }
+
+  .change-avatar {
+    position: absolute;
+    z-index: 3;
+    right: 14px;
+    bottom: 14px;
+    min-height: 38px;
+    padding: 0 13px;
+    border: 2px solid white;
+    border-radius: 999px;
+    color: white;
+    background: linear-gradient(180deg, var(--orange-500), var(--orange-600));
+    box-shadow: 0 7px 16px rgba(222, 76, 28, .20);
+    font-size: 12px;
+    font-weight: 900;
+    cursor: pointer;
+  }
+
+  .profile-info h2 {
+    margin: 0 0 7px;
+    font-size: clamp(26px, 3vw, 38px);
+  }
+
+  .profile-info p {
+    margin: 0;
+    color: var(--brown-700);
+    line-height: 1.8;
+  }
+
+  .profile-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 13px;
+  }
+
+  .profile-tag {
+    padding: 7px 11px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 900;
+  }
+
+  .profile-tag.orange { color: #b85125; background: #fff0e6; }
+  .profile-tag.blue { color: #527f9e; background: var(--sky-100); }
+  .profile-tag.green { color: #4c8843; background: var(--mint-100); }
+
+  .level-card {
+    min-width: 220px;
+    padding: 18px;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    background: rgba(255,255,255,.74);
+  }
+
+  .level-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 9px;
+    font-size: 13px;
+    font-weight: 900;
+  }
+
+  .progress-track {
+    height: 12px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #f1e3d8;
+  }
+
+  .progress-value {
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #ffbf65, var(--orange-500));
+    transition: width .5s ease;
+  }
+
+  .level-note {
+    margin-top: 8px;
+    color: var(--brown-500);
+    font-size: 11px;
+  }
+
+  .profile-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .profile-stat {
+    display: grid;
+    place-items: center;
+    gap: 5px;
+    padding: 18px 10px;
+    text-align: center;
+  }
+
+  .profile-stat .emoji {
+    font-size: 31px;
+  }
+
+  .profile-stat strong {
+    font-size: 23px;
+    color: var(--orange-700);
+  }
+
+  .profile-stat span {
+    color: var(--brown-700);
+    font-size: 12px;
+    font-weight: 850;
+  }
+
+  .profile-main-grid {
+    display: grid;
+    grid-template-columns: 1.15fr .85fr;
+    gap: 18px;
+  }
+
+  .profile-column {
+    display: grid;
+    gap: 18px;
+    align-content: start;
+  }
+
+  .profile-section {
+    padding: 20px;
+  }
+
+  /* Badge tray backdrop at bottom of badge section card */
+  .profile-section:has(.badge-grid) {
+    position: relative;
+    overflow: hidden;
+  }
+  .profile-section:has(.badge-grid)::after {
+    content: '';
+    position: absolute;
+    bottom: -10px; left: 5%; right: 5%;
+    height: 72px;
+    background: url(assets/find.png) no-repeat center bottom / 100% auto;
+    opacity: .22;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .profile-section:has(.badge-grid) > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .badge-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  @keyframes badge-glow {
+    0%, 100% {
+      filter: brightness(1) drop-shadow(0 0 6px rgba(255,180,50,.55));
+    }
+    50% {
+      filter: brightness(1.12) drop-shadow(0 0 16px rgba(255,160,30,.75));
+    }
+  }
+
+  .badge {
+    display: grid;
+    place-items: center;
+    gap: 6px;
+    text-align: center;
+  }
+
+  .badge.locked {
+    opacity: .45;
+  }
+
+  .badge-icon {
+    width: 90px; height: 90px;
+    border-radius: 50%;
+    object-fit: contain;
+    transition: filter .35s ease;
+    flex-shrink: 0;
+  }
+  .badge.locked .badge-icon {
+    filter: grayscale(.85) brightness(.6);
+  }
+  .badge.unlocked .badge-icon {
+    animation: badge-glow 2.2s ease-in-out infinite;
+  }
+  .badge strong { font-size: 12px; }
+  .badge span { color: var(--brown-500); font-size: 10px; }
+
+  .profile-stat.clickable {
+    cursor: pointer;
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+
+  .profile-stat.clickable:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(94, 62, 42, .14);
+  }
+
+  .teacher-item,
+  .invite-item,
+  .setting-item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 13px;
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: 17px;
+    background: rgba(255,255,255,.75);
+  }
+
+  .teacher-item + .teacher-item,
+  .invite-item + .invite-item,
+  .setting-item + .setting-item {
+    margin-top: 10px;
+  }
+
+  .item-avatar {
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border-radius: 16px;
+    background: var(--sky-100);
+    font-size: 25px;
+  }
+
+  .item-main strong {
+    display: block;
+    margin-bottom: 3px;
+    font-size: 14px;
+  }
+
+  .item-main span {
+    color: var(--brown-500);
+    font-size: 11px;
+  }
+
+  .mini-action {
+    min-height: 36px;
+    padding: 0 11px;
+    border: 1px solid rgba(241, 91, 42, .40);
+    border-radius: 11px;
+    color: var(--orange-700);
+    background: #fffaf6;
+    font-size: 11px;
+    font-weight: 900;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .mini-action.danger {
+    color: #b34c3e;
+    border-color: rgba(190, 90, 72, .40);
+    background: #fff6f4;
+  }
+
+  .invite-code {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 9px;
+    margin-top: 12px;
+  }
+
+  .invite-code input {
+    min-width: 0;
+    height: 42px;
+    padding: 0 13px;
+    border: 1px dashed rgba(212, 134, 91, .42);
+    border-radius: 13px;
+    color: var(--brown-800);
+    background: #fffaf3;
+    font-weight: 900;
+  }
+
+  .empty-box {
+    display: grid;
+    place-items: center;
+    min-height: 104px;
+    padding: 15px;
+    border: 1px dashed rgba(173, 136, 119, .30);
+    border-radius: 18px;
+    color: var(--brown-500);
+    text-align: center;
+    background: rgba(255,250,244,.65);
+    font-size: 12px;
+  }
+
+  .logout-button {
+    width: 100%;
+    min-height: 46px;
+    border: 1px solid rgba(190, 90, 72, .28);
+    border-radius: 14px;
+    color: #b34c3e;
+    background: #fff6f4;
+    font-weight: 900;
+    cursor: pointer;
+  }
+
+  .msg-text {
+    font-size: 12px;
+    min-height: 18px;
+    margin-top: 8px;
+    line-height: 1.6;
+  }
+  .msg-ok { color: #4c8843; }
+  .msg-err { color: #d9461f; }
+  .msg-info { color: #836052; }
+
+  /* ---------- Avatar modal ---------- */
+
+  .modal-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: none;
+    place-items: center;
+    padding: 20px;
+    background: rgba(62, 53, 48, .40);
+    backdrop-filter: blur(8px);
+  }
+
+  .modal-layer.open { display: grid; }
+
+  .avatar-modal {
+    width: min(760px, 100%);
+    position: relative;
+    padding: 30px;
+    border: 2px solid rgba(255,255,255,.90);
+    border-radius: 30px;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(216, 242, 255, .65), transparent 33%),
+      rgba(255, 252, 247, .98);
+    box-shadow: var(--shadow-modal);
+  }
+
+  .modal-close {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: white;
+    box-shadow: var(--shadow-soft);
+    font-size: 20px;
+    cursor: pointer;
+  }
+
+  .modal-title {
+    margin: 0;
+    text-align: center;
+    font-size: 26px;
+  }
+
+  .modal-subtitle {
+    margin: 8px 0 22px;
+    text-align: center;
+    color: var(--brown-700);
+    font-size: 13px;
+  }
+
+  /* ---- Carousel ---- */
+  .avatar-carousel {
+    position: relative;
+    display: flex; align-items: center;
+    margin: 0 0 12px;
+  }
+
+  .avatar-carousel-track {
+    flex: 1; overflow: hidden;
+    border-radius: 18px;
+  }
+
+  .avatar-carousel-slides {
+    display: flex;
+    transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+
+  /* Each page: 3\00d72 grid */
+  .avatar-slide {
+    flex: 0 0 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    padding: 2px 6px;
+  }
+
+  .avatar-cell {
+    aspect-ratio: 3/4;
+    border-radius: 14px; overflow: hidden;
+    border: 4px solid transparent;
+    cursor: pointer;
+    transition: all .18s ease;
+    box-shadow: 0 3px 10px rgba(115,76,44,.08);
+  }
+  .avatar-cell:hover { transform: scale(1.04); }
+  .avatar-cell.selected {
+    border-color: #ff7a3d;
+    box-shadow: 0 0 0 3px rgba(255,122,61,.22), 0 5px 16px rgba(218,77,27,.16);
+  }
+  .avatar-cell img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+  }
+
+  /* ---- Arrows ---- */
+  .avatar-arrow {
+    flex-shrink: 0;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 2px solid rgba(180,150,120,.3);
+    background: rgba(255,255,255,.85);
+    color: #b09070;
+    font-size: 17px; font-weight: 700;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .2s;
+    z-index: 2; padding: 0; line-height: 1;
+    font-family: inherit;
+  }
+  .avatar-arrow:hover {
+    border-color: #ff7a3d; color: #ff7a3d;
+    background: rgba(255,245,235,.95);
+  }
+
+  /* ---- Dots ---- */
+  .avatar-dots {
+    display: flex; justify-content: center; gap: 8px;
+    margin-bottom: 14px;
+  }
+  .avatar-dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: #e0d0c0; cursor: pointer;
+    transition: all .3s ease;
+  }
+  .avatar-dot.active {
+    background: #ff7a3d;
+    width: 26px; border-radius: 5px;
+  }
+
+  .avatar-collection-label {
+    font-size: 14px; font-weight: 800; color: #8f6250;
+    margin-bottom: 14px; text-align: center;
+  }
+  .modal-footer {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  /* ---------- Loading / Toast ---------- */
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .loading-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--line);
+    border-top-color: var(--orange-500);
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+    margin: 0 auto;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 200;
+    padding: 12px 24px;
+    border-radius: 14px;
+    background: var(--brown-900);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 900;
+    box-shadow: var(--shadow-modal);
+    opacity: 0;
+    transition: opacity .3s ease;
+    pointer-events: none;
+  }
+
+  .toast.show {
+    opacity: 1;
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 1120px) {
+    .profile-main-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 900px) {
+    .profile-hero { grid-template-columns: 210px minmax(0,1fr); }
+    .level-card { grid-column: 1 / -1; }
+    .profile-stat-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  @media (max-width: 720px) {
+    .page-sky { padding: 0; }
+    .app-frame { min-height: 100vh; border-radius: 0; border: 0; }
+    .profile-content { width: calc(100% - 24px); padding-top: 13px; }
+    .profile-hero { grid-template-columns: 1fr; text-align: center; }
+    .profile-tags { justify-content: center; }
+    .badge-grid { grid-template-columns: repeat(2, 1fr); }
+    .topbar { grid-template-columns: 1fr; }
+    .topbar-actions { justify-content: flex-start; }
+    .avatar-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  }
+  </style>
+</head>
+<body>
+
+<div class="page-sky">
+  <main class="app-frame">
+    <!-- ====== Top Bar ====== -->
+    <header class="topbar">
+      <div class="topbar-brand">
+        <img id="brandLogo" class="brand-logo" src="assets/avatars/xiaoxin/xiaoxin-logo-1.png" alt="小新">
+        <div>
+          <h1 class="topbar-title">我的小天地</h1>
+          <div class="topbar-subtitle">看看成长足迹，也可以管理老师和自己的形象～</div>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button class="kid-button" id="btnPinyin" type="button" title="拼音开关">拼</button>
+        <a class="kid-button" href="chat.html">💬 去聊天</a>
+        <a class="kid-button outline" href="home.html">← 返回首页</a>
+      </div>
+    </header>
+
+    <!-- ====== Profile Content ====== -->
+    <div class="profile-content">
+
+      <!-- ====== Hero Card ====== -->
+      <section class="profile-hero card">
+        <div class="avatar-stage">
+          <img id="studentAvatar" class="profile-avatar" src="assets/avatars/student/student-1.png" alt="学生形象">
+        </div>
+
+        <div class="profile-info">
+          <h2 id="profileGreeting">嗨，加载中…</h2>
+          <p>今天也是认真长大的一天！你可以在这里看看聊天记录、手账、成长徽章，还可以管理绑定老师。</p>
+          <div class="profile-tags" id="profileTags">
+            <span class="profile-tag orange">🌞 连续打卡 <strong id="streakCount">-</strong> 天</span>
+            <span class="profile-tag blue">💬 喜欢分享</span>
+            <span class="profile-tag green">🌱 成长小树苗</span>
+          </div>
+        </div>
+
+        <aside class="level-card">
+          <div class="level-label"><span>成长等级 Lv. <strong id="levelNum">1</strong></span><span id="levelPct">0%</span></div>
+          <div class="progress-track"><div class="progress-value" id="progressBar" style="width:0%"></div></div>
+          <div class="level-note" id="levelNote">开始聊天和记录手账，就能快速成长哦～</div>
+        </aside>
+      </section>
+
+      <!-- ====== Stats Grid ====== -->
+      <section class="profile-stat-grid">
+        <article class="profile-stat card clickable" onclick="location.href='/history.html'" title="查看聊天记录"><span class="emoji">💬</span><strong id="statChats">-</strong><span>完成聊天</span></article>
+        <article class="profile-stat card clickable" onclick="location.href='/journal.html'" title="查看手账本"><span class="emoji">📔</span><strong id="statJournals">-</strong><span>手账记录</span></article>
+        <article class="profile-stat card"><span class="emoji">⭐</span><strong id="statBadges">-</strong><span>成长徽章</span></article>
+        <article class="profile-stat card"><span class="emoji">🌈</span><strong id="statStreak">-</strong><span>连续打卡</span></article>
+        <article class="profile-stat card clickable" onclick="location.href='/favorites.html'" title="查看我的收藏"><span class="emoji">❤️</span><strong id="statFavs">-</strong><span>我的收藏</span></article>
+      </section>
+
+      <!-- ====== Main Two-Column Grid ====== -->
+      <div class="profile-main-grid">
+        <!-- Left Column -->
+        <div class="profile-column">
+          <!-- Growth Badges -->
+          <section class="profile-section card">
+            <h2 class="section-title"><span class="section-icon">🏅</span>我的成长徽章</h2>
+            <div class="badge-grid" id="badgeGrid">
+              <div class="badge locked" data-cat="sports"><img class="badge-icon" src="assets/badge-sports.png" alt="运动达人"><strong>运动达人</strong><span>发现运动话题</span></div>
+              <div class="badge locked" data-cat="study"><img class="badge-icon" src="assets/badge-study.png" alt="学习之星"><strong>学习之星</strong><span>探讨学习内容</span></div>
+              <div class="badge locked" data-cat="emotion"><img class="badge-icon" src="assets/badge-emotion.png" alt="情绪小专家"><strong>情绪小专家</strong><span>表达内心感受</span></div>
+              <div class="badge locked" data-cat="daily"><img class="badge-icon" src="assets/badge-daily.png" alt="生活观察家"><strong>生活观察家</strong><span>聊聊日常生活</span></div>
+              <div class="badge locked" data-cat="hobby"><img class="badge-icon" src="assets/badge-hobby.png" alt="创意玩家"><strong>创意玩家</strong><span>分享兴趣爱好</span></div>
+              <div class="badge locked" data-cat="social"><img class="badge-icon" src="assets/badge-social.png" alt="社交达人"><strong>社交达人</strong><span>聊聊朋友相处</span></div>
+            </div>
+          </section>
+
+          <!-- Bound Teachers -->
+          <section class="profile-section card">
+            <h2 class="section-title"><span class="section-icon">🧑‍🏫</span>已绑定的老师</h2>
+            <div id="boundTeachersList">
+              <div class="empty-box">加载中…</div>
+            </div>
+          </section>
+
+          <!-- Invite Teacher -->
+          <section class="profile-section card">
+            <h2 class="section-title"><span class="section-icon">🔗</span>邀请新老师</h2>
+            <p style="margin:0;color:var(--brown-700);font-size:12px;line-height:1.8">创建一次性邀请码，交给你信任的老师。邀请码过期后会自动失效。</p>
+            <div class="invite-code">
+              <input id="inviteCode" value="点击右侧按钮创建邀请码" readonly>
+              <button id="createInviteBtn" class="kid-button primary" type="button">创建邀请码</button>
+            </div>
+            <div class="msg-text" id="inviteCreateMsg"></div>
+            <div id="inviteTokenArea" style="display:none;"></div>
+          </section>
+        </div>
+
+        <!-- Right Column -->
+        <div class="profile-column">
+          <!-- My Invitations -->
+          <section class="profile-section card">
+            <h2 class="section-title"><span class="section-icon">💌</span>我的邀请</h2>
+            <div id="invitationsList">
+              <div class="empty-box">加载中…</div>
+            </div>
+          </section>
+
+          <!-- Preferences / Settings -->
+          <section class="profile-section card">
+            <h2 class="section-title"><span class="section-icon">🎨</span>我的偏好</h2>
+            <div class="setting-item">
+              <div class="item-avatar">🔔</div>
+              <div class="item-main"><strong>温柔提醒</strong><span>聊天和手账提醒保持开启</span></div>
+              <button class="mini-action" id="toggleReminderBtn" type="button">已开启</button>
+            </div>
+            <div class="setting-item">
+              <div class="item-avatar">🌙</div>
+              <div class="item-main"><strong>夜间保护</strong><span>晚上自动降低页面亮度</span></div>
+              <button class="mini-action" id="toggleNightBtn" type="button">设置</button>
+            </div>
+            <div class="setting-item">
+              <div class="item-avatar">🛡️</div>
+              <div class="item-main"><strong>隐私与安全</strong><span>查看绑定、邀请与数据说明</span></div>
+              <button class="mini-action" id="privacyBtn" type="button">查看</button>
+            </div>
+          </section>
+
+          <!-- Account Actions -->
+          <section class="profile-section card">
+            <h2 class="section-title"><span class="section-icon">🚪</span>账号操作</h2>
+            <button id="logoutBtn" class="logout-button" type="button">退出登录</button>
+          </section>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ====== Toast ====== -->
+<div class="toast" id="toast"></div>
+
+<!-- ====== Avatar Modal ====== -->
+<div id="avatarModal" class="modal-layer" role="dialog" aria-modal="true" aria-labelledby="avatarTitle">
+  <section class="avatar-modal">
+    <button id="closeAvatarModal" class="modal-close" type="button" aria-label="关闭">×</button>
+    <h2 id="avatarTitle" class="modal-title">✨ 选择你的形象</h2>
+    <p class="modal-subtitle">小新和同学们的可爱形象，选一个最喜欢的吧～</p>
+
+    <div class="avatar-carousel">
+      <button class="avatar-arrow" id="avArrowLeft" type="button" aria-label="上一个">‹</button>
+      <div class="avatar-carousel-track" id="avTrack">
+        <div class="avatar-carousel-slides" id="avSlides">
+          <!-- JS dynamically generated -->
+        </div>
+      </div>
+      <button class="avatar-arrow" id="avArrowRight" type="button" aria-label="下一个">›</button>
+    </div>
+
+    <div class="avatar-dots" id="avDots"></div>
+    <div class="avatar-collection-label" id="avCollLabel"></div>
+
+    <div class="modal-footer">
+      <button id="closeAvatarBtn2" class="kid-button primary" type="button">好 啦</button>
+    </div>
+  </section>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.27.0/dist/index.js"></script>
+<script src="/js/global-pinyin.js"></script>
+<script src="/assets/avatars/avatar-config.js"></script>
+<script>
+// ================================================================
+//  Avatar Manager
+//  - 两个合集：小新形象（6张）+ 学生形象（6张），每个合集一页3×2网格
+//  - brandLogo: 小新形象
+//  - studentAvatar: 学生形象
+// ================================================================
+var COLLECTIONS = [
+  { name: '小新', desc: '温暖活泼的小新', images: window.XIAOXIN_AVATARS, type: 'xiaoxin' },
+  { name: '男生女生', desc: '选一个最像你的吧', images: window.STUDENT_AVATARS, type: 'student' }
+];
+
+var currentSlide = 0;
+var selectedXiaoxin = window.getXiaoxinAvatar();
+var selectedStudent = window.getStudentAvatar();
+
+// Avatar elements
+var avatarModal = document.getElementById('avatarModal');
+var closeAvatarModal = document.getElementById('closeAvatarModal');
+var studentAvatar = document.getElementById('studentAvatar');
+var brandLogo = document.getElementById('brandLogo');
+
+// Init: hero = student, brandLogo 用选中小新的 logo
+brandLogo.src = window.getXiaoxinLogo();
+studentAvatar.src = selectedStudent;
+
+// Build carousel: two pages, xiaoxin (3×2) + student (3×2)
+function buildCarousel() {
+  var slidesEl = document.getElementById('avSlides');
+  var dotsEl = document.getElementById('avDots');
+  slidesEl.innerHTML = '';
+  dotsEl.innerHTML = '';
+
+  COLLECTIONS.forEach(function(coll, ci) {
+    var slide = document.createElement('div');
+    slide.className = 'avatar-slide';
+    slide.setAttribute('data-coll', ci);
+
+    coll.images.forEach(function(imgSrc) {
+      var cell = document.createElement('div');
+      cell.className = 'avatar-cell';
+
+      var isSelected = (coll.type === 'xiaoxin' && imgSrc === selectedXiaoxin) ||
+                       (coll.type === 'student' && imgSrc === selectedStudent);
+      if (isSelected) cell.classList.add('selected');
+
+      cell.setAttribute('data-src', imgSrc);
+      cell.setAttribute('data-type', coll.type);
+
+      var img = document.createElement('img');
+      img.src = imgSrc;
+      img.alt = coll.name;
+      img.loading = 'lazy';
+      img.onerror = function() {
+        this.style.display = 'none';
+        this.parentElement.style.background = 'linear-gradient(180deg, #ffe8d6, #ffc8a0)';
+      };
+      cell.appendChild(img);
+
+      cell.addEventListener('click', function() {
+        var src = this.getAttribute('data-src');
+        var type = this.getAttribute('data-type');
+        if (type === 'xiaoxin') {
+          selectedXiaoxin = src;
+          var idx = window.XIAOXIN_AVATARS.indexOf(src) + 1;
+          if (idx > 0) window.setXiaoxinAvatar(idx);
+          brandLogo.src = window.getXiaoxinLogo();
+        } else {
+          selectedStudent = src;
+          window.setStudentAvatar(src);
+          studentAvatar.src = src;
+        }
+        refreshCarouselSelection();
+        showToast('形象已更新！✨');
+      });
+      slide.appendChild(cell);
+    });
+    slidesEl.appendChild(slide);
+
+    var dot = document.createElement('span');
+    dot.className = 'avatar-dot';
+    if (ci === currentSlide) dot.classList.add('active');
+    dot.addEventListener('click', (function(idx) { return function() { goToSlide(idx); }; })(ci));
+    dotsEl.appendChild(dot);
+  });
+
+  updateCollectionLabel();
+  goToSlide(currentSlide);
+}
+
+function refreshCarouselSelection() {
+  document.querySelectorAll('.avatar-cell').forEach(function(cell) {
+    var src = cell.getAttribute('data-src');
+    var type = cell.getAttribute('data-type');
+    var isSelected = (type === 'xiaoxin' && src === selectedXiaoxin) ||
+                     (type === 'student' && src === selectedStudent);
+    cell.classList.toggle('selected', isSelected);
+  });
+}
+
+function goToSlide(n) {
+  if (n < 0 || n >= COLLECTIONS.length) return;
+  currentSlide = n;
+  document.getElementById('avSlides').style.transform = 'translateX(-' + (n * 100) + '%)';
+  document.querySelectorAll('.avatar-dot').forEach(function(d, i) {
+    d.classList.toggle('active', i === n);
+  });
+  updateCollectionLabel();
+}
+
+function updateCollectionLabel() {
+  var coll = COLLECTIONS[currentSlide];
+  document.getElementById('avCollLabel').textContent = coll.name + ' · ' + coll.desc;
+}
+
+function openAvatarModal() {
+  selectedXiaoxin = window.getXiaoxinAvatar();
+  selectedStudent = window.getStudentAvatar();
+  currentSlide = 0;
+  buildCarousel();
+  avatarModal.classList.add('open');
+}
+
+function closeAvatarPicker() {
+  avatarModal.classList.remove('open');
+}
+
+// Arrow navigation
+document.getElementById('avArrowLeft').addEventListener('click', function() {
+  goToSlide(currentSlide - 1);
+});
+document.getElementById('avArrowRight').addEventListener('click', function() {
+  goToSlide(currentSlide + 1);
+});
+
+// Keyboard navigation
+document.addEventListener('keydown', function(e) {
+  if (!avatarModal.classList.contains('open')) return;
+  if (e.key === 'ArrowLeft')  { e.preventDefault(); goToSlide(currentSlide - 1); }
+  if (e.key === 'ArrowRight') { e.preventDefault(); goToSlide(currentSlide + 1); }
+});
+
+closeAvatarModal.addEventListener('click', closeAvatarPicker);
+document.getElementById('closeAvatarBtn2').addEventListener('click', closeAvatarPicker);
+
+avatarModal.addEventListener('click', function (event) {
+  if (event.target === avatarModal) closeAvatarPicker();
+});
+
+buildCarousel();
+
+// ================================================================
+//  Toast
+// ================================================================
+var toastTimer = null;
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(function () {
+    t.classList.remove('show');
+  }, 2200);
+}
+
+// ================================================================
+//  Auth
+// ================================================================
+var currentUserId = null;
+
+(function checkAuth() {
+  fetch('/api/auth/me').then(function (resp) {
+    if (!resp.ok) { window.location.href = '/login.html'; return null; }
+    return resp.json();
+  }).then(function (data) {
+    if (!data || !data.user || data.user.role !== 'student') {
+      window.location.href = '/home.html';
+      return;
+    }
+    if (data.user.id === 'guest') {
+      showGuestError();
+      return;
+    }
+    currentUserId = data.user.id;
+    document.getElementById('profileGreeting').textContent = '嗨，' + data.user.username + '～';
+    loadBoundTeachers();
+    loadInvitations();
+    loadUserStats();
+  }).catch(function () {
+    window.location.href = '/login.html';
+  });
+})();
+
+function showGuestError() {
+  document.getElementById('profileGreeting').textContent = '访客账户';
+  document.getElementById('boundTeachersList').innerHTML = '<div class="empty-box">请先注册账号，才能管理教师绑定</div>';
+  document.getElementById('invitationsList').innerHTML = '<div class="empty-box">请先注册账号</div>';
+  document.getElementById('createInviteBtn').disabled = true;
+  document.getElementById('inviteCode').value = '请先注册账号';
+}
+
+function handleLogout() {
+  fetch('/api/auth/logout', { method: 'POST' }).then(function () {
+    window.location.href = '/login.html';
+  });
+}
+
+document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+
+// ================================================================
+//  Roadmap Category Detection (same logic as chat.html TOPIC_CATEGORY_MAP)
+// ================================================================
+var TOPIC_CATEGORY_MAP = [
+  { cat:'daily',  keywords:['家','回家','妈妈','爸爸','吃饭','睡觉','周末','零食','房间','电视','手机','宠物','狗','猫','蛋糕','水果','超市','逛街','公园','散步','弟弟','妹妹','哥哥','姐姐','奶奶','爷爷','零花钱','生日'] },
+  { cat:'sports', keywords:['体育','篮球','足球','跑步','游泳','跳绳','运动会','打球','比赛','操场','滑板','自行车','赢了','输了','跳舞','训练','锻炼','运动','单杠','跳远','体测'] },
+  { cat:'study',  keywords:['数学','语文','英语','科学','考试','作业','老师','学校','上课','成绩','课本','读书','图书馆','补课','自习','复习','测验','卷子','期中','期末','暑假','寒假','钢琴','画画','书法','编程'] },
+  { cat:'emotion',keywords:['开心','难过','生气','委屈','害怕','紧张','担心','无聊','郁闷','感动','兴奋','烦','累','困','哭','尴尬','幸福','快乐','伤心','焦虑','讨厌','羡慕','孤单','难受','烦死了','好累','好困'] },
+  { cat:'hobby',  keywords:['画画','唱歌','音乐','钢琴','吉他','跳舞','手工','折纸','积木','游戏','动画','动漫','漫画','小说','追剧','明星','收集','拍照','视频','模型','做菜','烘焙','魔方','围棋'] },
+  { cat:'social', keywords:['同学','朋友','同桌','闺蜜','兄弟','好朋友','吵架','和好','送礼物','全班','一起','帮忙','分享','秘密','安慰','鼓励','支持','道歉','原谅','不跟','玩了','绝交','新朋友','转学','出去玩','邀请'] },
+];
+
+// BADGE definitions: roadmap category → badge info + unlock threshold
+var BADGE_DEFS = {
+  sports:  { icon:'🏃', name:'运动达人', desc:'发现运动话题', threshold: 2 },
+  study:   { icon:'📚', name:'学习之星', desc:'探讨学习内容', threshold: 3 },
+  emotion: { icon:'💗', name:'情绪小专家', desc:'表达内心感受', threshold: 2 },
+  daily:   { icon:'🔍', name:'生活观察家', desc:'聊聊日常生活', threshold: 3 },
+  hobby:   { icon:'🎨', name:'创意玩家', desc:'分享兴趣爱好', threshold: 2 },
+  social:  { icon:'👥', name:'社交达人', desc:'聊聊朋友相处', threshold: 2 },
+};
+
+// Scan text against TOPIC_CATEGORY_MAP, return set of matched categories
+function detectCategoriesFromText(text) {
+  var result = {};
+  for (var i = 0; i < TOPIC_CATEGORY_MAP.length; i++) {
+    var entry = TOPIC_CATEGORY_MAP[i];
+    for (var j = 0; j < entry.keywords.length; j++) {
+      if (text.indexOf(entry.keywords[j]) !== -1) {
+        result[entry.cat] = (result[entry.cat] || 0) + 1;
+        break; // count once per category per text block
+      }
+    }
+  }
+  return result;
+}
+
+// ================================================================
+//  User Stats — real data from /api/history + /api/journal
+// ================================================================
+function loadUserStats() {
+  // Fetch both APIs in parallel
+  Promise.all([
+    fetch('/api/history').then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; }),
+    fetch('/api/journal').then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; })
+  ]).then(function (results) {
+    var historyList = results[0] || [];
+    var journalList = results[1] || [];
+
+    var chatCount = historyList.length;
+    var journalCount = journalList.length;
+    var totalScore = chatCount + journalCount;
+
+    // ---- Update stat numbers ----
+    document.getElementById('statChats').textContent = chatCount;
+    document.getElementById('statJournals').textContent = journalCount;
+
+    // ---- Calculate streak from journal dates ----
+    var streak = calculateStreak(journalList);
+    document.getElementById('statStreak').textContent = streak;
+    loadFavoritesCount();
+    document.getElementById('streakCount').textContent = streak;
+
+    // ---- Update level & progress ----
+    updateLevel(totalScore, chatCount, journalCount);
+
+    // ---- Detect roadmap categories from all data ----
+    var catHits = {};
+
+    // From journal topicKeywords
+    for (var i = 0; i < journalList.length; i++) {
+      var kw = (journalList[i].topicKeyword || '') + ' ' + (journalList[i].topicIcon || '');
+      var cats = detectCategoriesFromText(kw);
+      for (var c in cats) { catHits[c] = (catHits[c] || 0) + cats[c]; }
+    }
+
+    // From history previews (lightweight scan)
+    for (var j = 0; j < historyList.length; j++) {
+      var preview = historyList[j].preview || '';
+      var hCats = detectCategoriesFromText(preview);
+      for (var c2 in hCats) { catHits[c2] = (catHits[c2] || 0) + hCats[c2]; }
+    }
+
+    // Also scan weather field for emotion detection
+    for (var k = 0; k < historyList.length; k++) {
+      if (historyList[k].weather) {
+        catHits['emotion'] = (catHits['emotion'] || 0) + 1;
+      }
+    }
+
+    // ---- Update badges ----
+    updateBadges(catHits);
+  });
+}
+
+// Calculate consecutive-day streak from journal date strings
+function calculateStreak(journalList) {
+  if (!journalList.length) return 0;
+
+  var today = new Date();
+  today.setHours(0, 0, 0, 0);
+  var todayTs = today.getTime();
+
+  // Collect unique day timestamps
+  var daySet = {};
+  for (var i = 0; i < journalList.length; i++) {
+    var d = new Date(journalList[i].date);
+    if (isNaN(d.getTime())) continue;
+    d.setHours(0, 0, 0, 0);
+    daySet[d.getTime()] = true;
+  }
+
+  var days = Object.keys(daySet).map(Number).sort(function (a, b) { return b - a; });
+  if (!days.length) return 0;
+
+  // Check if today or yesterday has an entry (1-day grace)
+  var latest = days[0];
+  var msPerDay = 86400000;
+  if (todayTs - latest > msPerDay * 2) return 0; // more than 2 days gap → streak broken
+
+  var streak = 1;
+  for (var i = 1; i < days.length; i++) {
+    if (days[i - 1] - days[i] <= msPerDay) {
+      streak++;
+    } else {
+      break;
+    }
+  }
+  return streak;
+}
+
+// Load favorites count from API
+function loadFavoritesCount() {
+  fetch('/api/tips/favorites').then(function(r) {
+    if (!r.ok) return [];
+    return r.json();
+  }).then(function(favIds) {
+    document.getElementById('statFavs').textContent = (favIds && favIds.length) || 0;
+  }).catch(function() {
+    document.getElementById('statFavs').textContent = '0';
+  });
+}
+
+// Level system — quadratic difficulty curve
+// getRequiredCount(n): interactions needed to level up FROM Lv.n TO Lv.n+1
+// Formula: 2.5n² + 2.5n + 10  (always integer because 2.5n(n+1) has factor 5)
+function getRequiredCount(level) {
+  return 2.5 * level * level + 2.5 * level + 10;
+}
+
+function updateLevel(totalScore, chatCount, journalCount) {
+  // Walk up from Lv.1, deducting each level's required count from totalScore
+  var level = 1;
+  var cumulative = 0;       // total interactions needed to REACH current level
+  var required = getRequiredCount(level);
+
+  while (totalScore >= cumulative + required) {
+    cumulative += required;
+    level++;
+    required = getRequiredCount(level);
+  }
+
+  // Progress within current level
+  var progress = Math.min(100, Math.round((totalScore - cumulative) / Math.max(1, required) * 100));
+  var remaining = Math.max(0, cumulative + required - totalScore);
+
+  document.getElementById('levelNum').textContent = level;
+  document.getElementById('levelPct').textContent = progress + '%';
+  document.getElementById('progressBar').style.width = progress + '%';
+
+  var hint = '再完成 ' + remaining + ' 次聊天或手账';
+  if (chatCount === 0 && journalCount === 0) {
+    hint = '开始聊天或记录手账，就能快速成长哦～';
+  }
+  document.getElementById('levelNote').textContent = hint + '，就能升到 Lv.' + (level + 1) + ' 啦！';
+}
+
+// Update badge grid based on detected category hits
+function updateBadges(catHits) {
+  var badgeEls = document.querySelectorAll('#badgeGrid .badge');
+  var unlockedCount = 0;
+
+  badgeEls.forEach(function (el) {
+    var cat = el.dataset.cat;
+    var def = BADGE_DEFS[cat];
+    if (!def) return;
+
+    var hitCount = catHits[cat] || 0;
+    if (hitCount >= def.threshold) {
+      el.classList.remove('locked');
+      el.classList.add('unlocked');
+      unlockedCount++;
+      el.querySelector('span').textContent = def.desc + ' ✓';
+    } else {
+      el.classList.add('locked');
+      el.classList.remove('unlocked');
+      el.querySelector('span').textContent = def.desc + ' (' + hitCount + '/' + def.threshold + ')';
+    }
+  });
+
+  document.getElementById('statBadges').textContent = unlockedCount;
+}
+
+// ================================================================
+//  Helpers
+// ================================================================
+
+function el(tag, cls) {
+  var e = document.createElement(tag);
+  if (cls) e.className = cls;
+  return e;
+}
+
+function text(val) {
+  if (typeof val !== 'string') return '';
+  return val;
+}
+
+function fmtTime(iso) {
+  if (!iso) return '时间未知';
+  try {
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return '时间未知';
+    var m = d.getMonth() + 1;
+    var dd = d.getDate();
+    var hh = String(d.getHours()).padStart(2, '0');
+    var mm = String(d.getMinutes()).padStart(2, '0');
+    return m + '月' + dd + '日 ' + hh + ':' + mm;
+  } catch (_) { return '时间未知'; }
+}
+
+var STATUS_LABELS = {
+  pending: '等待老师确认',
+  claimed: '老师已接受，等待完成绑定',
+  completed: '已完成绑定',
+  revoked: '已撤销',
+  expired: '已过期',
+  abandoned: '已失效',
+  authorization_revoked: '已失效',
+};
+
+function statusLabel(s) { return STATUS_LABELS[s] || s || '未知状态'; }
+
+// ================================================================
+//  Section 1: Bound Teachers
+// ================================================================
+
+function loadBoundTeachers() {
+  var container = document.getElementById('boundTeachersList');
+  container.innerHTML = '<div class="empty-box"><div class="loading-spinner"></div></div>';
+
+  fetch('/api/student/bound-teachers').then(function (resp) {
+    if (resp.status === 401) { window.location.href = '/login.html'; return null; }
+    if (!resp.ok) {
+      container.innerHTML = '<div class="empty-box" style="color:#d9461f">加载失败，请刷新重试</div>';
+      return null;
+    }
+    return resp.json();
+  }).then(function (data) {
+    if (!data) return;
+    var teachers = data.teachers || [];
+    container.innerHTML = '';
+    if (teachers.length === 0) {
+      container.innerHTML = '<div class="empty-box">暂无已绑定的老师<br>邀请老师后，他们会出现在这里</div>';
+      return;
+    }
+    for (var i = 0; i < teachers.length; i++) {
+      container.appendChild(buildTeacherCard(teachers[i]));
+    }
+  }).catch(function () {
+    container.innerHTML = '<div class="empty-box" style="color:#d9461f">网络错误，请检查网络后刷新重试</div>';
+  });
+}
+
+function buildTeacherCard(t) {
+  var card = el('div', 'teacher-item');
+  var avatar = el('div', 'item-avatar');
+  avatar.textContent = '👩‍🏫';
+  card.appendChild(avatar);
+
+  var info = el('div', 'item-main');
+  var nameDiv = el('strong');
+  nameDiv.textContent = text(t.username);
+  info.appendChild(nameDiv);
+  var hint = el('span');
+  hint.textContent = '可查看你的对话分析和阶段报告';
+  info.appendChild(hint);
+  card.appendChild(info);
+
+  var btn = el('button', 'mini-action danger');
+  btn.textContent = '解除绑定';
+  btn.addEventListener('click', function () {
+    if (btn.disabled) return;
+    unbindTeacher(t.teacherId, btn);
+  });
+  card.appendChild(btn);
+  return card;
+}
+
+function unbindTeacher(teacherId, btn) {
+  var confirmed = confirm('解除后，这位老师将无法继续查看你的对话记录、分析和阶段报告。确定解除绑定吗？');
+  if (!confirmed) return;
+
+  btn.disabled = true;
+  btn.textContent = '解除中…';
+
+  fetch('/api/student/bound-teachers/' + encodeURIComponent(String(teacherId)), {
+    method: 'DELETE',
+  }).then(function (resp) {
+    if (resp.status === 401) { window.location.href = '/login.html'; return null; }
+    if (!resp.ok) {
+      btn.disabled = false;
+      btn.textContent = '解除绑定';
+      showToast('解除绑定失败，请稍后重试');
+      return null;
+    }
+    return resp.json();
+  }).then(function () {
+    loadBoundTeachers();
+    loadInvitations();
+    showToast('已解除绑定');
+  }).catch(function () {
+    btn.disabled = false;
+    btn.textContent = '解除绑定';
+    showToast('网络错误，请检查网络后重试');
+  });
+}
+
+// ================================================================
+//  Section 2: Create Invitation
+// ================================================================
+
+var lastCreatedTokenData = null;
+
+document.getElementById('createInviteBtn').addEventListener('click', createInvitation);
+
+function createInvitation() {
+  var btn = document.getElementById('createInviteBtn');
+  var msgEl = document.getElementById('inviteCreateMsg');
+  btn.disabled = true;
+  btn.textContent = '创建中…';
+  msgEl.textContent = '';
+  msgEl.className = 'msg-text';
+
+  fetch('/api/student/binding-invitations', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: '{}',
+  }).then(function (resp) {
+    if (resp.status === 401) { window.location.href = '/login.html'; return null; }
+    if (!resp.ok) {
+      return resp.json().catch(function () { return {}; }).then(function (data) {
+        var err = data.error || '';
+        if (resp.status === 429) {
+          msgEl.textContent = err === 'TOO_MANY_INVITATIONS'
+            ? '创建过于频繁或邀请数量已达上限，请稍后再试'
+            : '创建过于频繁，请稍后再试';
+        } else {
+          msgEl.textContent = '创建失败，请稍后重试';
+        }
+        msgEl.className = 'msg-text msg-err';
+        btn.disabled = false;
+        btn.textContent = '创建邀请码';
+        return null;
+      });
+    }
+    return resp.json();
+  }).then(function (data) {
+    if (!data) return;
+    btn.disabled = false;
+    btn.textContent = '创建邀请码';
+
+    var inv = data.invitation || {};
+    return fetch('/api/student/binding-invitations').then(function (r) {
+      if (!r.ok) return null;
+      return r.json();
+    }).then(function (listData) {
+      loadInvitations();
+
+      var expiresAt = null;
+      if (listData && listData.invitations) {
+        for (var i = 0; i < listData.invitations.length; i++) {
+          if (listData.invitations[i].id === inv.id) {
+            expiresAt = listData.invitations[i].expiresAt || null;
+            break;
+          }
+        }
+      }
+
+      lastCreatedTokenData = { id: inv.id, token: inv.token, expiresAt: expiresAt };
+      renderTokenCard(inv.id, inv.token, expiresAt);
+      document.getElementById('inviteCode').value = inv.token;
+      showToast('邀请码已创建！');
+    });
+  }).catch(function () {
+    btn.disabled = false;
+    btn.textContent = '创建邀请码';
+    msgEl.textContent = '网络错误，请检查网络后重试';
+    msgEl.className = 'msg-text msg-err';
+  });
+}
+
+function renderTokenCard(inviteId, rawToken, expiresAt) {
+  var area = document.getElementById('inviteTokenArea');
+  area.style.display = 'block';
+  area.innerHTML = '';
+
+  var box = el('div');
+  box.style.cssText = 'background:#fefcf8;border:2px dashed rgba(216,90,48,0.25);border-radius:14px;padding:16px 20px;margin-top:12px;text-align:center;';
+
+  var label = el('div');
+  label.style.cssText = 'font-size:13px;color:#8b6b50;margin-bottom:8px;';
+  label.textContent = '✅ 邀请码已创建';
+  box.appendChild(label);
+
+  var val = el('div');
+  val.style.cssText = 'font-size:15px;font-weight:700;color:#D85A30;font-family:"Courier New",monospace;word-break:break-all;line-height:1.5;margin-bottom:10px;background:rgba(255,255,255,0.6);padding:8px 12px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);user-select:all;';
+  val.textContent = rawToken;
+  box.appendChild(val);
+
+  var copyBtn = el('button', 'kid-button');
+  copyBtn.textContent = '📋 复制邀请码';
+  copyBtn.style.cssText = 'width:100%;margin-bottom:8px;';
+  copyBtn.addEventListener('click', function () {
+    if (copyBtn.disabled) return;
+    try {
+      navigator.clipboard.writeText(rawToken).then(function () {
+        copyBtn.textContent = '✅ 已复制';
+        showToast('邀请码已复制到剪贴板');
+        setTimeout(function () {
+          copyBtn.textContent = '📋 复制邀请码';
+        }, 2000);
+      }).catch(function () {
+        copyBtn.textContent = '请手动选中上方邀请码复制';
+      });
+    } catch (_e) {
+      copyBtn.textContent = '请手动选中上方邀请码复制';
+    }
+  });
+  box.appendChild(copyBtn);
+
+  var hint = el('div');
+  hint.style.cssText = 'font-size:12px;color:#c0a080;line-height:1.6;';
+  hint.innerHTML = '<strong>邀请码只会显示这一次</strong>，刷新或离开页面后无法再次查看。<br>请尽快交给你要邀请的老师。';
+  if (expiresAt) {
+    hint.innerHTML += '<br>有效期至：' + fmtTime(expiresAt);
+  } else {
+    hint.innerHTML += '<br>可在下方邀请列表查看有效期。';
+  }
+  box.appendChild(hint);
+
+  area.appendChild(box);
+}
+
+// ================================================================
+//  Section 3: Invitations List
+// ================================================================
+
+function loadInvitations() {
+  var container = document.getElementById('invitationsList');
+  container.innerHTML = '<div class="empty-box"><div class="loading-spinner"></div></div>';
+
+  fetch('/api/student/binding-invitations').then(function (resp) {
+    if (resp.status === 401) { window.location.href = '/login.html'; return null; }
+    if (!resp.ok) {
+      container.innerHTML = '<div class="empty-box" style="color:#d9461f">加载失败，请刷新重试</div>';
+      return null;
+    }
+    return resp.json();
+  }).then(function (data) {
+    if (!data) return;
+    var invitations = data.invitations || [];
+    container.innerHTML = '';
+    if (invitations.length === 0) {
+      container.innerHTML = '<div class="empty-box">目前还没有待处理的老师邀请。<br>新的邀请会出现在这里。</div>';
+      return;
+    }
+    for (var i = 0; i < invitations.length; i++) {
+      container.appendChild(buildInviteItem(invitations[i]));
+    }
+  }).catch(function () {
+    container.innerHTML = '<div class="empty-box" style="color:#d9461f">网络错误，请检查网络后刷新重试</div>';
+  });
+}
+
+function buildInviteItem(inv) {
+  var item = el('div', 'invite-item');
+  var avatar = el('div', 'item-avatar');
+  avatar.textContent = '💌';
+  item.appendChild(avatar);
+
+  var info = el('div', 'item-main');
+  var statusDiv = el('strong');
+  statusDiv.textContent = statusLabel(inv.status);
+  info.appendChild(statusDiv);
+  var timeDiv = el('span');
+  timeDiv.textContent = '创建于 ' + fmtTime(inv.createdAt);
+  if (inv.expiresAt) {
+    timeDiv.textContent += ' · ' + (inv.status === 'expired' ? '已于 ' : '有效期至 ') + fmtTime(inv.expiresAt);
+  }
+  info.appendChild(timeDiv);
+  item.appendChild(info);
+
+  if (inv.status === 'pending' || inv.status === 'claimed') {
+    var btn = el('button', 'mini-action danger');
+    btn.textContent = '撤销';
+    btn.addEventListener('click', function () {
+      if (btn.disabled) return;
+      revokeInvitation(inv.id, btn, item);
+    });
+    item.appendChild(btn);
+  }
+
+  return item;
+}
+
+function revokeInvitation(invitationId, btn, itemEl) {
+  btn.disabled = true;
+  btn.textContent = '撤销中…';
+
+  fetch('/api/student/binding-invitations/' + encodeURIComponent(String(invitationId)), {
+    method: 'DELETE',
+  }).then(function (resp) {
+    if (resp.status === 401) { window.location.href = '/login.html'; return null; }
+    if (!resp.ok) {
+      loadInvitations();
+      showToast('该邀请当前无法撤销，状态可能已经发生变化');
+      return null;
+    }
+    return resp.json();
+  }).then(function () {
+    loadInvitations();
+    showToast('邀请已撤销');
+  }).catch(function () {
+    btn.disabled = false;
+    btn.textContent = '撤销';
+    showToast('网络错误，请检查网络后重试');
+  });
+}
+
+// ================================================================
+//  Section 4: Preferences / Settings
+// ================================================================
+
+(function initPreferences() {
+  var reminderBtn = document.getElementById('toggleReminderBtn');
+  var nightBtn = document.getElementById('toggleNightBtn');
+  var privacyBtn = document.getElementById('privacyBtn');
+
+  // Load saved preferences
+  var reminderOn = true;
+  var nightOn = false;
+  try {
+    if (localStorage.getItem('xiaoxin_reminder') === 'off') reminderOn = false;
+    if (localStorage.getItem('xiaoxin_night') === 'on') nightOn = true;
+  } catch (_) {}
+
+  // Apply night mode on load if enabled
+  if (nightOn) applyNightMode(true);
+
+  updateReminderBtn();
+  updateNightBtn();
+
+  reminderBtn.addEventListener('click', function () {
+    reminderOn = !reminderOn;
+    try { localStorage.setItem('xiaoxin_reminder', reminderOn ? 'on' : 'off'); } catch (_) {}
+    updateReminderBtn();
+    showToast(reminderOn ? '温柔提醒已开启 🌸' : '温柔提醒已关闭');
+  });
+
+  nightBtn.addEventListener('click', function () {
+    nightOn = !nightOn;
+    try { localStorage.setItem('xiaoxin_night', nightOn ? 'on' : 'off'); } catch (_) {}
+    updateNightBtn();
+    applyNightMode(nightOn);
+    showToast(nightOn ? '夜间保护已开启 🌙' : '夜间保护已关闭');
+  });
+
+  privacyBtn.addEventListener('click', function () {
+    showToast('你的数据只有你和绑定的老师可以查看 🔒');
+  });
+
+  function applyNightMode(on) {
+    if (on) {
+      document.body.style.filter = 'brightness(0.78) saturate(0.7)';
+      document.body.style.transition = 'filter .4s ease';
+    } else {
+      document.body.style.filter = '';
+    }
+  }
+
+  function updateReminderBtn() {
+    reminderBtn.textContent = reminderOn ? '已开启' : '已关闭';
+    if (!reminderOn) {
+      reminderBtn.classList.add('danger');
+    } else {
+      reminderBtn.classList.remove('danger');
+    }
+  }
+
+  function updateNightBtn() {
+    nightBtn.textContent = nightOn ? '已开启' : '已关闭';
+    if (!nightOn) {
+      nightBtn.classList.remove('danger');
+    } else {
+      nightBtn.classList.add('danger');
+    }
+  }
+})();
+</script>
+
+</body>
+</html>

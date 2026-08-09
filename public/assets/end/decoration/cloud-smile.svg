@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="230" height="170" viewBox="0 0 230 170">
+
+<defs><filter id="s"><feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#a8bdc9" flood-opacity=".14"/></filter></defs>
+<g filter="url(#s)">
+  <ellipse cx="115" cy="100" rx="92" ry="48" fill="#fffdfb"/>
+  <circle cx="72" cy="82" r="45" fill="#fffdfb"/>
+  <circle cx="126" cy="62" r="58" fill="#fffdfb"/>
+  <circle cx="175" cy="90" r="44" fill="#fffdfb"/>
+  <circle cx="105" cy="100" r="5" fill="#8b7068"/>
+  <circle cx="143" cy="100" r="5" fill="#8b7068"/>
+  <path d="M115 115 Q124 124 134 115" fill="none" stroke="#8b7068" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="91" cy="113" r="7" fill="#f8c3c7" opacity=".75"/>
+  <circle cx="157" cy="113" r="7" fill="#f8c3c7" opacity=".75"/>
+</g>
+
+</svg>

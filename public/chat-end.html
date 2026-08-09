@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>小新 · 聊天结束</title>
+  <style>
+/* ============================================================
+   从 chat.html 摘出来的原始结束页样式
+   ============================================================ */
+:root{
+  --brown:#51291f;--brown2:#7d5749;--brown3:#a18477;
+  --orange:#ff7640;--orange2:#f15d2d;--cream:#fffaf4;
+  --line:rgba(100,58,41,.13);--line2:rgba(100,58,41,.20);
+  --soft:0 8px 20px rgba(95,63,44,.08);--card:0 15px 36px rgba(95,63,44,.11);
+}
+*{box-sizing:border-box}
+html,body{width:100%;height:100%}
+body{margin:0;min-width:320px;overflow:hidden;color:var(--brown);font-family:"Microsoft YaHei","PingFang SC",system-ui,sans-serif;background:#dceff7}
+button,textarea,input{font:inherit}button,a{-webkit-tap-highlight-color:transparent}a{color:inherit;text-decoration:none}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid rgba(255,118,64,.28);outline-offset:2px}
+
+/* ==== End Scene — 始终可见，不再用 overlay 遮罩 ==== */
+.end-scene{width:100%;height:100%;position:relative;overflow:hidden;background:#fffaf4}
+.end-scene-bg{position:absolute;inset:0;z-index:0;width:100%;height:100%;object-fit:cover}
+.end-cloud-smile{position:absolute;z-index:2;left:6.2%;top:7.5%;width:12.5%}
+.end-cloud-smile img,.end-rainbow-clouds img,.end-butterfly img,.end-heart-bubble img,.end-confetti img,.end-summary-ribbon img,.end-note-tape img,.end-act-bg{width:100%;display:block}
+.end-rainbow-clouds{position:absolute;z-index:2;right:3.8%;top:4.8%;width:24%}
+.end-butterfly{position:absolute;z-index:2;left:2.2%;top:27%;width:8.5%}
+.end-heart-bubble{position:absolute;z-index:3;left:48%;top:4.2%;width:7%}
+.end-confetti{position:absolute;z-index:3;left:32.3%;top:14%;width:36%}
+.end-hero{position:absolute;z-index:5;top:12.4%;left:50%;width:610px;max-width:44%;transform:translateX(-50%);text-align:center}
+.end-hero .end-weather-circle{width:50px;height:50px;display:grid;place-items:center;margin:0 auto 14px;border-radius:50%;background:#fff;box-shadow:0 8px 24px rgba(100,65,44,.09);font-size:24px}
+.end-hero h1{margin:0 0 20px;font-size:clamp(34px,3.5vw,54px);line-height:1.1;font-weight:950;color:#4f2a20}
+.end-hero p{margin:5px 0;color:#8d695b;font-size:clamp(14px,1.3vw,20px)}
+.end-mascot-area{position:absolute;z-index:5;left:2.9%;bottom:7.8%;width:23.5%;height:66%}
+.end-mascot-img{position:absolute;left:8%;bottom:0;width:86%;height:82%;object-fit:contain;filter:drop-shadow(0 14px 18px rgba(91,66,46,.15))}
+.end-student-badge{display:none}
+.end-speech-wrap{display:none}
+.end-summary-card{position:absolute;z-index:7;left:26.2%;top:43%;width:45.6%;height:40.2%}
+.end-summary-bg{position:absolute;inset:0;width:100%;height:100%}
+.end-summary-ribbon{position:absolute;z-index:2;top:-4%;left:50%;width:24%;transform:translateX(-50%)}
+.end-ribbon-text{position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:clamp(12px,1.25vw,20px);font-weight:950}
+.end-summary-stats{position:absolute;z-index:3;top:18%;left:7%;right:7%;display:grid;grid-template-columns:repeat(4,1fr)}
+.end-stat-item{display:grid;justify-items:center;gap:8px}
+.end-stat-icon{width:54px;height:54px;display:grid;place-items:center;font-size:32px}
+.end-stat-num{color:#f06132;font-size:30px;font-weight:950}
+.end-stat-num.small{font-size:16px;line-height:1.3}
+.end-stat-label{color:#705044;font-size:13px}
+.end-encourage{position:absolute;z-index:3;left:7%;right:7%;bottom:9%;min-height:54px;display:flex;align-items:center;gap:13px;padding:0 18px;border-radius:18px;background:#fff5e8}
+.end-enc-icon{font-size:24px;flex-shrink:0}
+.end-enc-text{color:#946d54;font-size:14px}
+.end-tomorrow-note{position:absolute;z-index:7;right:7.4%;top:37.6%;width:18.7%;height:31.8%}
+.end-note-bg{position:absolute;inset:0;width:100%;height:100%}
+.end-note-tape{position:absolute;z-index:2;top:-6%;left:50%;width:31%;transform:translateX(-50%) rotate(-3deg)}
+.end-note-content{position:absolute;z-index:3;inset:17% 9% 10%;text-align:center}
+.end-note-content h2{margin:0 0 23px;font-size:22px;font-weight:950}
+.end-note-content p{margin:14px 0;color:#755247;font-size:14px;font-weight:600;line-height:1.7}
+.end-bottom-actions{position:absolute;z-index:8;left:23.2%;right:23.4%;bottom:5.6%;display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px}
+.end-action-card{min-height:112px;position:relative;display:flex;align-items:center;gap:18px;padding:20px 28px;text-decoration:none;color:inherit;cursor:pointer;transition:transform .16s ease;font-family:inherit;font-size:inherit;border:none;background:none}
+.end-action-card:hover{transform:translateY(-2px)}
+.end-act-bg{position:absolute;inset:0;z-index:0;width:100%;height:100%}
+.end-act-icon{position:relative;z-index:2;width:58px;height:58px;display:grid;place-items:center;font-size:32px}
+.end-act-text{position:relative;z-index:2}
+.end-act-text strong{display:block;margin-bottom:7px;font-size:18px;font-weight:950}
+.end-act-text small{color:#a18073;font-size:12px}
+
+/* ==== Responsive ==== */
+@media(max-width:1100px){.end-bottom-actions{gap:14px}.end-action-card{min-height:90px;padding:16px 20px;gap:14px}.end-act-icon{width:48px;height:48px;font-size:26px}.end-act-text strong{font-size:16px}}
+@media(max-width:760px){.end-hero{top:8%;max-width:86%;width:86%}.end-mascot-area{left:0;top:28%;bottom:auto;width:32%;height:48%}.end-summary-card{left:28%;top:38%;width:68%;height:35%}.end-tomorrow-note{left:5%;right:auto;top:66%;width:34%;height:25%}.end-bottom-actions{left:40%;right:4%;bottom:4%;grid-template-columns:1fr;gap:14px}.end-action-card{min-height:72px}.end-rainbow-clouds{width:36%}.end-cloud-smile{width:19%}.end-butterfly{width:13%}}
+  </style>
+  <script src="assets/avatars/avatar-config.js"></script>
+</head>
+<body>
+
+  <section class="end-scene">
+    <img class="end-scene-bg" src="assets/end/backgrounds/background-clean.svg" alt="">
+    <div class="end-cloud-smile"><img src="assets/end/decoration/cloud-smile.svg" alt=""></div>
+    <div class="end-rainbow-clouds"><img src="assets/end/decoration/rainbow-clouds.svg" alt=""></div>
+    <div class="end-butterfly"><img src="assets/end/decoration/butterfly.svg" alt=""></div>
+    <div class="end-heart-bubble"><img src="assets/end/decoration/heart-bubble.svg" alt=""></div>
+    <div class="end-confetti"><img src="assets/end/decoration/confetti.svg" alt=""></div>
+    <div class="end-hero">
+      <div class="end-weather-circle" id="endWeatherDisplay">💗</div>
+      <h1>这次聊天结束啦！</h1>
+      <p>你又和小新一起聊了好多心里话～</p>
+      <p>下次再来聊聊新的有趣故事吧！</p>
+    </div>
+    <aside class="end-mascot-area">
+      <div class="end-speech-wrap"><img src="assets/end/decoration/speech-bubble.svg" alt=""><strong class="end-speech-text">下次见啦～</strong></div>
+      <img class="end-mascot-img" id="endMascotImg" src="assets/mascot.png" alt="小新挥手告别">
+      <img class="end-student-badge" id="endStudentBadge" src="assets/avatars/student/student-1.png" alt="你的形象">
+    </aside>
+    <article class="end-summary-card">
+      <img class="end-summary-bg" src="assets/end/ui/summary-card-bg.svg" alt="">
+      <div class="end-summary-ribbon"><img src="assets/end/ui/summary-ribbon.svg" alt=""><span class="end-ribbon-text">这次的小总结</span></div>
+      <div class="end-summary-stats">
+        <div class="end-stat-item"><span class="end-stat-icon">💬</span><span class="end-stat-num" id="endTurnCount">0</span><span class="end-stat-label">聊天轮数</span></div>
+        <div class="end-stat-item"><span class="end-stat-icon">😊</span><span class="end-stat-num" id="endMsgCount">0</span><span class="end-stat-label">消息总数</span></div>
+        <div class="end-stat-item"><span class="end-stat-icon" id="endMoodEmoji">💗</span><span class="end-stat-num small" id="endMoodLabel">选择心情</span><span class="end-stat-label">表达心情</span></div>
+        <div class="end-stat-item"><span class="end-stat-icon">⭐</span><span class="end-stat-num" id="endStars">0</span><span class="end-stat-label">获得小星星</span></div>
+      </div>
+      <div class="end-encourage" id="endEncourage"><span class="end-enc-icon">⭐</span><span class="end-enc-text">你今天很棒，愿意分享自己的想法和感受！</span></div>
+    </article>
+    <aside class="end-tomorrow-note">
+      <img class="end-note-bg" src="assets/end/ui/note-paper.svg" alt="">
+      <div class="end-note-tape"><img src="assets/end/ui/green-tape.svg" alt=""></div>
+      <div class="end-note-content"><h2>致每天的你 ☀️</h2><p>每一天都是新的开始，</p><p>你一定会越来越勇敢、</p><p>越来越懂自己！</p></div>
+    </aside>
+    <nav class="end-bottom-actions">
+      <a class="end-action-card" href="/home.html"><img class="end-act-bg" src="assets/end/ui/action-card-bg.svg" alt=""><span class="end-act-icon">🏠</span><span class="end-act-text"><strong>返回首页</strong><small>回到小新家</small></span></a>
+      <a class="end-action-card" href="/journal.html"><img class="end-act-bg" src="assets/end/ui/action-card-bg.svg" alt=""><span class="end-act-icon">📔</span><span class="end-act-text"><strong>写手账</strong><small>记录今天的心情</small></span></a>
+      <button class="end-action-card" id="btnRestart" type="button"><img class="end-act-bg" src="assets/end/ui/action-card-bg.svg" alt=""><span class="end-act-icon">💬</span><span class="end-act-text"><strong>继续和小新聊天</strong><small>再聊一会儿吧</small></span></button>
+    </nav>
+  </section>
+
+  <script>
+(function() {
+  var params = new URLSearchParams(location.search);
+  var turnCount = parseInt(params.get('turns')) || 0;
+  var msgCount  = parseInt(params.get('msgs')) || 0;
+  var weather   = params.get('weather') || '';
+  var weatherLabel = params.get('weatherLabel') || '';
+
+  // 天气 emoji 映射（和 chat.html 的 populateEndOverlay 一致）
+  var wm = {sunny:'☀️',cloudy:'☁️',storm:'⛈️',rainbow:'🌈',breeze:'🍃',lightrain:'🌧️',snow:'❄️',fog:'🌫️',moon:'🌙',sparkle:'🌀',custom:'🌀'};
+  var wl = {sunny:'晴空万里',cloudy:'有点沉闷',storm:'十分烦躁',rainbow:'开心到发光',breeze:'轻松自在',lightrain:'有点小难过'};
+  var wi = weather ? (wm[weather] || '💗') : '💗';
+  var wt = weather ? (wl[weather] || weatherLabel || '自定义') : (weatherLabel || '未选择');
+
+  // 小新头像
+  var mi = document.getElementById('endMascotImg');
+  if (mi && window.getXiaoxinAvatar) mi.src = getXiaoxinAvatar();
+  var sb = document.getElementById('endStudentBadge');
+  if (sb && window.getStudentAvatar) sb.src = getStudentAvatar();
+
+  // 填充数据
+  var wd = document.getElementById('endWeatherDisplay'); if (wd) wd.textContent = wi;
+  var tc = document.getElementById('endTurnCount');       if (tc) tc.textContent = turnCount;
+  var mc = document.getElementById('endMsgCount');        if (mc) mc.textContent = msgCount;
+  var me = document.getElementById('endMoodEmoji');       if (me) me.textContent = wi;
+  var ml = document.getElementById('endMoodLabel');       if (ml) ml.textContent = wt;
+
+  // 星星数量
+  var s = 0; if (turnCount >= 3) s = 1; if (turnCount >= 6) s = 2; if (turnCount >= 10) s = 3;
+  var es = document.getElementById('endStars'); if (es) es.textContent = s;
+
+  // 鼓励语
+  var ee = document.getElementById('endEncourage');
+  if (ee) {
+    var gm = ['每一次聊天都是一次成长！','你今天很棒，愿意分享自己的想法和感受！','能和你说说话，小新也觉得很开心！','你是个特别有想法的人，记得要相信自己！'];
+    var p = turnCount <= 2 ? 0 : (turnCount <= 6 ? 1 : (turnCount <= 10 ? 2 : 3));
+    var et = ee.querySelector('.end-enc-text');
+    if (et) et.textContent = gm[p];
+  }
+
+  // "继续和小新聊天" 按钮：写 sessionStorage 标记再跳转
+  var btn = document.getElementById('btnRestart');
+  if (btn) btn.addEventListener('click', function() {
+    sessionStorage.setItem('xiaoxin_is_continue', '1');
+    if (weather) sessionStorage.setItem('xiaoxin_weather_selected', weather);
+    if (weatherLabel) sessionStorage.setItem('xiaoxin_weather_label', weatherLabel);
+    location.href = '/chat.html';
+  });
+})();
+  </script>
+</body>
+</html>

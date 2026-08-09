@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="300" viewBox="0 0 520 300">
+
+<defs>
+  <filter id="s"><feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#9eb6c4" flood-opacity=".12"/></filter>
+</defs>
+<g filter="url(#s)">
+  <path d="M64 220 A190 190 0 0 1 444 220" fill="none" stroke="#f6b3bd" stroke-width="28" stroke-linecap="round"/>
+  <path d="M93 220 A161 161 0 0 1 415 220" fill="none" stroke="#f8d17a" stroke-width="26" stroke-linecap="round"/>
+  <path d="M121 220 A133 133 0 0 1 387 220" fill="none" stroke="#b7df9c" stroke-width="25" stroke-linecap="round"/>
+  <path d="M149 220 A105 105 0 0 1 359 220" fill="none" stroke="#a5dce8" stroke-width="24" stroke-linecap="round"/>
+  <path d="M176 220 A78 78 0 0 1 332 220" fill="none" stroke="#c8b7e9" stroke-width="23" stroke-linecap="round"/>
+  <g fill="#fffdfb">
+    <ellipse cx="75" cy="225" rx="68" ry="40"/>
+    <circle cx="44" cy="205" r="35"/>
+    <circle cx="88" cy="189" r="48"/>
+    <circle cx="124" cy="216" r="40"/>
+    <ellipse cx="434" cy="227" rx="72" ry="42"/>
+    <circle cx="393" cy="205" r="38"/>
+    <circle cx="445" cy="184" r="48"/>
+    <circle cx="486" cy="218" r="39"/>
+  </g>
+</g>
+
+</svg>

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>登录 · AI 伯乐</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: -apple-system, "Microsoft YaHei", "PingFang SC", sans-serif;
+  background-image:
+    radial-gradient(ellipse 50% 50% at 20% 15%, rgba(255,180,140,0.35) 0%, transparent 55%),
+    radial-gradient(ellipse 45% 55% at 82% 80%, rgba(165,185,230,0.32) 0%, transparent 55%),
+    radial-gradient(ellipse 30% 35% at 55% 25%, rgba(240,200,210,0.28) 0%, transparent 60%),
+    radial-gradient(ellipse 28% 32% at 25% 85%, rgba(175,210,200,0.22) 0%, transparent 58%),
+    radial-gradient(ellipse 80% 80% at 50% 50%, #FDF7F0 0%, #f5efe8 100%);
+  background-size: cover; background-position: center; background-attachment: fixed;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.card-auth {
+  width: 380px; max-width: 92vw;
+  background: rgba(255,255,255,0.5);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.6);
+  border-radius: 24px;
+  padding: 40px 32px 36px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+  display: flex; flex-direction: column; align-items: center; gap: 24px;
+}
+
+.card-auth .logo {
+  font-size: 40px; line-height: 1;
+  animation: float 3.5s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.card-auth h1 { font-size: 20px; font-weight: 700; color: #3e2a20; }
+.card-auth .sub { font-size: 13px; color: #8b7a70; margin-top: -16px; }
+
+/* 表单标题 */
+.form-title { font-size: 16px; font-weight: 700; color: #D85A30; margin-top: -8px; }
+
+/* Form */
+.form { width: 100%; display: flex; flex-direction: column; gap: 14px; }
+.form label { font-size: 13px; font-weight: 600; color: #4A1B0C; }
+.form input {
+  width: 100%; padding: 13px 16px;
+  border: 2px solid rgba(216,90,48,0.12);
+  border-radius: 14px; font-size: 14px;
+  outline: none; background: rgba(255,255,255,0.65);
+  color: #4A1B0C; transition: all 0.3s;
+}
+.form input:focus { border-color: rgba(216,90,48,0.45); box-shadow: 0 0 0 4px rgba(216,90,48,0.06); }
+.form input::placeholder { color: #c0b0a0; }
+
+.btn-submit {
+  width: 100%; padding: 13px 0; border: none;
+  border-radius: 14px; font-size: 16px; font-weight: 600; cursor: pointer;
+  background: linear-gradient(180deg, #F08868 0%, #D85A30 35%, #C44A20 100%);
+  color: #fff; letter-spacing: 0.5px;
+  box-shadow: 0 4px 0 #A83818, 0 6px 20px rgba(216,90,48,0.25);
+  transition: all 0.18s ease; position: relative; top: 0;
+  margin-top: 4px;
+}
+.btn-submit:hover { background: #D85A30; top: -1px; box-shadow: 0 5px 0 #A83818, 0 8px 24px rgba(216,90,48,0.32); }
+.btn-submit:active { top: 3px; box-shadow: 0 1px 0 #A83818, 0 3px 8px rgba(216,90,48,0.15); }
+.btn-submit:disabled { cursor: not-allowed; }
+.btn-submit.loading { opacity: 0.85; }
+.loading-dot {
+  display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+  background: rgba(255,255,255,0.8);
+  animation: loadBounce 0.6s ease-in-out infinite alternate;
+  vertical-align: middle; margin-right: 4px;
+}
+@keyframes loadBounce {
+  0% { transform: translateY(0); opacity: 0.5; }
+  100% { transform: translateY(-4px); opacity: 1; }
+}
+
+.err-msg {
+  font-size: 13px; color: #e04040; text-align: center;
+  min-height: 18px; line-height: 1.4;
+}
+
+/* 底部切换链接 */
+.switch-line {
+  font-size: 13px; color: #8b7a70; text-align: center;
+  width: 100%; margin-top: -8px;
+}
+.switch-line a {
+  color: #D85A30; cursor: pointer; text-decoration: none; font-weight: 600;
+  transition: opacity 0.2s;
+}
+.switch-line a:hover { opacity: 0.75; }
+
+/* 输入框辅助文字 */
+.field-note { font-weight:400; color:#a09080; font-size:11px; }
+
+/* ==========================================
+   Responsive Breakpoints
+   ========================================== */
+
+/* Tablet: 768px – 1024px */
+@media (max-width: 1024px) {
+  .card-auth { width: 400px; padding: 36px 28px 32px; }
+  .card-auth h1 { font-size: 19px; }
+  .card-auth .sub { font-size: 13px; }
+  .form input { padding: 12px 14px; font-size: 14px; }
+  .btn-submit { padding: 12px 0; font-size: 15px; }
+}
+
+/* Mobile: ≤ 768px */
+@media (max-width: 768px) {
+  .card-auth {
+    width: 92vw; max-width: 400px;
+    padding: 28px 18px 24px; gap: 16px; border-radius: 20px;
+  }
+  .card-auth .logo { font-size: 36px; }
+  .card-auth h1 { font-size: 18px; }
+  .card-auth .sub { font-size: 12px; }
+  .form-title { font-size: 14px; }
+  .form label { font-size: 12px; }
+  .form input {
+    padding: 12px 14px; font-size: 14px;
+    border-radius: 12px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn-submit {
+    padding: 13px 0; font-size: 15px;
+    border-radius: 12px;
+    min-height: 44px;
+  }
+  .switch-line { font-size: 12px; }
+}
+
+/* Small phone: ≤ 400px */
+@media (max-width: 400px) {
+  .card-auth {
+    width: 96vw; padding: 24px 14px 20px; gap: 14px;
+    border-radius: 18px;
+  }
+  .card-auth .logo { font-size: 32px; }
+  .card-auth h1 { font-size: 16px; }
+  .card-auth .sub { font-size: 11px; margin-top: -12px; }
+  .form input { padding: 11px 12px; font-size: 13px; border-radius: 10px; }
+  .btn-submit {
+    padding: 12px 0; font-size: 14px;
+    border-radius: 10px; min-height: 44px;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="card-auth" id="app">
+  <div class="logo">
+  <svg viewBox="0 0 140 140" width="64" height="64" aria-hidden="true">
+    <defs>
+      <radialGradient id="loginGrad" cx="38%" cy="32%">
+        <stop offset="0%" stop-color="#FFD0B0"/><stop offset="50%" stop-color="#F8A080"/><stop offset="100%" stop-color="#E88060"/>
+      </radialGradient>
+    </defs>
+    <ellipse cx="70" cy="78" rx="44" ry="46" fill="url(#loginGrad)"/>
+    <circle cx="35" cy="38" r="14" fill="url(#loginGrad)"/>
+    <circle cx="105" cy="38" r="14" fill="url(#loginGrad)"/>
+    <circle cx="48" cy="68" r="11.5" fill="white"/><circle cx="92" cy="68" r="11.5" fill="white"/>
+    <circle cx="52" cy="66" r="6" fill="#3E2010"/><circle cx="96" cy="66" r="6" fill="#3E2010"/>
+    <circle cx="54.5" cy="62.5" r="2.5" fill="white"/><circle cx="98.5" cy="62.5" r="2.5" fill="white"/>
+    <ellipse cx="34" cy="80" rx="8" ry="5.5" fill="rgba(255,140,120,0.32)"/>
+    <ellipse cx="106" cy="80" rx="8" ry="5.5" fill="rgba(255,140,120,0.32)"/>
+    <path d="M54 90 Q70 104 86 90" stroke="#C05840" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  </svg>
+</div>
+  <h1>AI 伯乐 · 探索空间</h1>
+  <div class="sub">嗨～我是小新！先告诉我你是谁吧～</div>
+
+  <!-- 动态标题 -->
+  <h2 class="form-title" id="formTitle">学生登录</h2>
+
+  <div class="form" id="form">
+    <div>
+      <label for="username">用户名</label>
+      <input type="text" id="username" placeholder="请输入用户名" autocomplete="username" maxlength="30">
+    </div>
+    <div>
+      <label for="password">密码 <span id="pwHint"></span></label>
+      <input type="password" id="password" placeholder="请输入密码" autocomplete="current-password" maxlength="128">
+    </div>
+    <div id="confirmPwdField" style="display:none">
+      <label for="confirmPassword">确认密码</label>
+      <input type="password" id="confirmPassword" placeholder="请再次输入密码" autocomplete="new-password" maxlength="128">
+    </div>
+    <div id="inviteField" style="display:none">
+      <label for="inviteCode">教师邀请码 <span class="field-note">（联系管理员获取）</span></label>
+      <input type="text" id="inviteCode" placeholder="请输入邀请码" autocomplete="off" maxlength="20">
+    </div>
+    <div class="err-msg" id="errMsg"></div>
+    <button class="btn-submit" id="btnSubmit">登 录</button>
+  </div>
+
+  <!-- 底部切换链接 -->
+  <div class="switch-line" id="switchLine">
+    还没有账号？<a id="switchLink" href="javascript:void(0)">去注册</a>
+  </div>
+</div>
+
+<script>
+// ── 读取 URL 参数 ──
+const urlParams = new URLSearchParams(window.location.search);
+const pageRole = urlParams.get('role') || 'student';           // student | teacher
+const urlMode = urlParams.get('mode') || 'login';              // login | register
+
+// ── DOM refs ──
+const formTitle       = document.getElementById('formTitle');
+const confirmPwdField = document.getElementById('confirmPwdField');
+const confirmPwdInput = document.getElementById('confirmPassword');
+const inviteField     = document.getElementById('inviteField');
+const inviteCodeInput = document.getElementById('inviteCode');
+const usernameInput   = document.getElementById('username');
+const passwordInput   = document.getElementById('password');
+const btnSubmit       = document.getElementById('btnSubmit');
+const errMsg          = document.getElementById('errMsg');
+const pwHint          = document.getElementById('pwHint');
+const switchLine      = document.getElementById('switchLine');
+const switchLink      = document.getElementById('switchLink');
+
+let mode = urlMode === 'register' ? 'register' : 'login';
+
+// ── 更新 UI 到当前 mode ──
+function renderMode() {
+  const isTeacher = pageRole === 'teacher';
+  const isRegister = mode === 'register';
+
+  // 标题
+  const roleLabel = isTeacher ? '老师' : '学生';
+  formTitle.textContent = isRegister ? (roleLabel + '注册') : (roleLabel + '登录');
+
+  // 按钮
+  if (isRegister) {
+    btnSubmit.textContent = isTeacher ? '老师注册' : '注 册';
+    pwHint.textContent = '（至少6位）';
+  } else {
+    btnSubmit.textContent = '登 录';
+    pwHint.textContent = '';
+  }
+
+  // 注册专属字段
+  confirmPwdField.style.display = isRegister ? 'block' : 'none';
+  inviteField.style.display = (isRegister && isTeacher) ? 'block' : 'none';
+
+  // 底部切换链接
+  if (isRegister) {
+    switchLine.innerHTML = '已有账号？<a id="switchLink" href="javascript:void(0)">去登录</a>';
+    document.getElementById('switchLink').addEventListener('click', () => switchTo('login'));
+  } else {
+    switchLine.innerHTML = '还没有账号？<a id="switchLink" href="javascript:void(0)">去注册</a>';
+    document.getElementById('switchLink').addEventListener('click', () => switchTo('register'));
+  }
+
+  errMsg.textContent = '';
+}
+
+function switchTo(m) {
+  mode = m;
+  // 更新 URL 但不刷新页面
+  const url = new URL(window.location);
+  url.searchParams.set('mode', m);
+  window.history.replaceState({}, '', url);
+  renderMode();
+}
+
+renderMode();
+
+// ── 提交 ──
+btnSubmit.addEventListener('click', submit);
+passwordInput.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
+confirmPwdInput.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
+
+async function submit() {
+  const username = usernameInput.value.trim();
+  const password = passwordInput.value;
+
+  if (!username) { errMsg.textContent = '请输入用户名'; return; }
+  if (username.length < 2) { errMsg.textContent = '用户名至少需要2个字符'; return; }
+  if (!password) { errMsg.textContent = '请输入密码'; return; }
+  if (password.length < 6) { errMsg.textContent = '密码至少需要6位'; return; }
+
+  // 注册时校验确认密码
+  if (mode === 'register') {
+    const confirmPwd = confirmPwdInput.value;
+    if (!confirmPwd) { errMsg.textContent = '请再次输入密码确认'; return; }
+    if (password !== confirmPwd) { errMsg.textContent = '两次输入的密码不一致'; return; }
+  }
+
+  errMsg.textContent = '';
+  btnSubmit.disabled = true;
+  let loadingText = '小新正在找你…';
+  if (mode === 'register') loadingText = pageRole === 'teacher' ? '验证邀请码中…' : '小新在给你开门…';
+  btnSubmit.innerHTML = '<span class="loading-dot"></span> ' + loadingText;
+  btnSubmit.classList.add('loading');
+
+  try {
+    let endpoint, body;
+    if (mode === 'login') {
+      endpoint = '/api/auth/login'; body = { username, password };
+    } else if (pageRole === 'teacher') {
+      endpoint = '/api/auth/teacher-register';
+      const inviteCode = inviteCodeInput.value.trim();
+      if (!inviteCode) { errMsg.textContent = '请输入教师邀请码'; resetBtn(); return; }
+      body = { username, password, inviteCode };
+    } else {
+      endpoint = '/api/auth/register'; body = { username, password };
+    }
+
+    const resp = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const data = await resp.json();
+    if (!resp.ok) {
+      errMsg.textContent = data.error || '操作失败，请重试';
+      resetBtn();
+      return;
+    }
+    // 成功 → 按角色跳转
+    if (data.user.role === 'teacher') {
+      window.location.href = '/teacher-home.html';
+    } else {
+      window.location.href = '/home.html';
+    }
+  } catch (e) {
+    errMsg.textContent = '网络错误，请检查连接';
+    resetBtn();
+  }
+
+  function resetBtn() {
+    btnSubmit.disabled = false;
+    btnSubmit.classList.remove('loading');
+  }
+}
+</script>
+</body>
+</html>

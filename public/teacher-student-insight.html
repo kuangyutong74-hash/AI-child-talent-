@@ -1,0 +1,1630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>潜能线索详情 · AI 伯乐</title>
+  <style>
+    :root {
+      --page: #f5f7fc;
+      --surface: #ffffff;
+      --surface-2: #fafbff;
+      --text: #17233f;
+      --text-2: #4f5b76;
+      --muted: #8a95ac;
+      --line: #e5e9f2;
+      --line-2: #d8deea;
+      --primary: #6556f5;
+      --primary-2: #4f42db;
+      --primary-soft: #efedff;
+      --blue: #4d7ef3;
+      --blue-soft: #eef4ff;
+      --green: #22b66b;
+      --green-soft: #edf9f3;
+      --orange: #ff9829;
+      --orange-soft: #fff5e8;
+      --red: #f05e68;
+      --red-soft: #fff0f2;
+      --purple: #8d5be9;
+      --purple-soft: #f5f0ff;
+      --shadow: 0 10px 34px rgba(30, 46, 92, .055);
+      --radius-xl: 22px;
+      --radius-lg: 17px;
+      --radius-md: 13px;
+      --radius-sm: 10px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    html, body { height: 100%; overflow: hidden; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 12% 0%, rgba(101, 86, 245, .065), transparent 30%),
+        linear-gradient(180deg, #f8f9fd 0%, var(--page) 100%);
+      font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans SC", Arial, sans-serif;
+      font-size: 14px;
+      display: flex;
+      flex-direction: column;
+    }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    .hidden { display: none !important; }
+
+    /* Topbar */
+    .topbar {
+      flex-shrink: 0;
+      z-index: 50;
+      height: 68px;
+      padding: 0 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      background: rgba(255, 255, 255, .93);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(14px);
+    }
+    .topbar-left, .topbar-right, .page-title-wrap { display: flex; align-items: center; }
+    .topbar-left { gap: 18px; min-width: 0; }
+    .topbar-right { gap: 10px; }
+    .page-title-wrap { gap: 13px; min-width: 0; }
+    .page-title {
+      margin: 0;
+      font-size: 23px;
+      font-weight: 780;
+      letter-spacing: -.45px;
+      white-space: nowrap;
+    }
+    .page-subtitle {
+      color: var(--muted);
+      font-size: 15px;
+      white-space: nowrap;
+    }
+
+    .btn, .icon-btn, .status-btn {
+      border: 1px solid var(--line-2);
+      border-radius: 10px;
+      background: #fff;
+      color: var(--text-2);
+      transition: .17s ease;
+    }
+    .btn {
+      min-height: 40px;
+      padding: 0 15px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: 680;
+    }
+    .btn:hover, .status-btn:hover, .icon-btn:hover { transform: translateY(-1px); border-color: #bcc5d8; }
+    .btn.primary { color: #fff; background: var(--primary); border-color: var(--primary); box-shadow: 0 8px 18px rgba(101, 86, 245, .18); }
+    .btn.primary:hover { background: var(--primary-2); }
+    .btn.soft { color: var(--primary); background: var(--primary-soft); border-color: #d3ceff; }
+    .btn.danger { color: #e84f59; background: #fff; border-color: #ffb5bb; }
+    .btn.success { color: #169757; background: #fff; border-color: #9fdfbd; }
+    .btn.small { min-height: 34px; padding: 0 12px; font-size: 12px; }
+    .back-btn {
+      min-height: 40px;
+      padding: 0 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      border: 1px solid var(--line-2);
+      border-radius: 10px;
+      background: #fff;
+      color: #58647e;
+      white-space: nowrap;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .teacher-chip {
+      height: 38px;
+      padding: 0 13px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 0;
+      border-radius: 10px;
+      color: #6c5b55;
+      background: #fff7f3;
+      font-size: 13px;
+    }
+    .icon-btn { width: 36px; height: 36px; display: grid; place-items: center; font-size: 18px; }
+
+    .container {
+      flex: 1;
+      overflow: hidden;
+      min-height: 0;
+      width: min(1560px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 20px 0 0;
+    }
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .panel-head {
+      min-height: 58px;
+      padding: 0 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+    .panel-title {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 16px;
+      font-weight: 770;
+    }
+    .text-link { color: var(--primary); font-size: 13px; font-weight: 680; cursor: pointer; }
+    .badge {
+      min-height: 25px;
+      padding: 0 9px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .badge.green { color: #169254; background: var(--green-soft); border-color: #bce8cf; }
+    .badge.orange { color: #ec7b12; background: var(--orange-soft); border-color: #ffd6aa; }
+    .badge.blue { color: #4670ce; background: var(--blue-soft); border-color: #cbdcff; }
+    .badge.red { color: #e84f59; background: var(--red-soft); border-color: #ffbdc2; }
+    .badge.purple { color: #5d4ddc; background: var(--primary-soft); border-color: #cec8ff; }
+    .badge.gray { color: #707b93; background: #f4f6fa; border-color: #e1e5ee; }
+
+    /* Evidence layout */
+    .evidence-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 350px;
+      gap: 20px;
+      height: 100%;
+    }
+    .evidence-main {
+      display: grid;
+      gap: 16px;
+      min-width: 0;
+      overflow-y: auto;
+      height: 100%;
+      padding-bottom: 42px;
+      align-content: start;
+    }
+    .evidence-main::-webkit-scrollbar { width: 5px; }
+    .evidence-main::-webkit-scrollbar-thumb { background: #d0d5e0; border-radius: 4px; }
+    .evidence-aside {
+      display: grid;
+      gap: 16px;
+      overflow-y: auto;
+      height: 100%;
+      padding-bottom: 42px;
+      align-content: start;
+    }
+    .evidence-aside::-webkit-scrollbar { width: 5px; }
+    .evidence-aside::-webkit-scrollbar-thumb { background: #d0d5e0; border-radius: 4px; }
+
+    /* Summary card */
+    .summary-card { padding: 22px 24px; }
+    .breadcrumb { color: var(--muted); font-size: 13px; margin-bottom: 13px; }
+    .summary-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+    .summary-title-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 9px;
+    }
+    .summary-title { margin: 0; font-size: 23px; font-weight: 790; letter-spacing: -.35px; }
+    .summary-desc {
+      max-width: 850px;
+      margin: 0;
+      color: var(--text-2);
+      line-height: 1.78;
+    }
+    .summary-metrics {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(110px, 1fr));
+      gap: 11px;
+    }
+    .small-metric {
+      min-height: 78px;
+      padding: 13px 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fbfcff;
+    }
+    .small-label { color: var(--muted); font-size: 12px; margin-bottom: 7px; }
+    .small-value { font-size: 18px; font-weight: 770; }
+    .notice {
+      margin-top: 16px;
+      padding: 12px 14px;
+      border-left: 3px solid var(--primary);
+      border-radius: 10px;
+      color: #53607a;
+      background: var(--primary-soft);
+      line-height: 1.65;
+      font-size: 13px;
+    }
+
+    /* Indicator panel */
+    .indicator-panel { padding: 0 22px 20px; }
+    .section-head {
+      min-height: 62px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 17px;
+    }
+    .section-head h2 { margin: 0; font-size: 17px; }
+    .section-sub { margin-top: 4px; color: var(--muted); font-size: 12px; }
+    .indicator-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 13px;
+    }
+    .indicator-card {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: #fbfcff;
+      cursor: pointer;
+      transition: .16s ease;
+    }
+    .indicator-card.active { border-color: #bcb5ff; background: #f6f4ff; box-shadow: 0 0 0 2px rgba(101, 86, 245, .05); }
+    .indicator-card:hover { transform: translateY(-1px); }
+    .indicator-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .indicator-name { font-weight: 770; }
+    .indicator-desc { color: #59657e; line-height: 1.65; font-size: 13px; }
+    .indicator-meta {
+      margin-top: 11px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* Evidence panel */
+    .evidence-panel { padding: 0 22px 22px; }
+    .evidence-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 15px;
+    }
+    .evidence-toolbar-left { display: flex; gap: 8px; flex-wrap: wrap; }
+    .status-btn {
+      height: 34px;
+      padding: 0 14px;
+      font-size: 13px;
+    }
+    .status-btn.active { color: var(--primary); background: var(--primary-soft); border-color: #bbb4ff; }
+    .evidence-list { display: grid; gap: 15px; }
+    .evidence-card {
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .evidence-card-head {
+      min-height: 55px;
+      padding: 0 17px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 13px;
+      background: #fbfcff;
+      border-bottom: 1px solid var(--line);
+    }
+    .evidence-card-title { font-weight: 760; }
+    .ai-status-tag {
+      display: inline-block; vertical-align: middle;
+      font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 99px;
+      margin-left: 6px;
+    }
+    .ai-status-tag.needs_attention { background: #fff5e8; color: #ec7b12; border: 1px solid #ffd6aa; }
+    .ai-status-tag.ai_determined { background: #f4f6fa; color: #8a95ac; border: 1px solid #e1e5ee; }
+    .attention-reasons {
+      font-size: 11px; color: #b08040; margin-top: 2px; padding-left: 20px;
+    }
+    .evidence-index {
+      width: 28px; height: 28px;
+      display: inline-grid; place-items: center;
+      margin-right: 8px;
+      border-radius: 50%;
+      color: #fff; background: var(--primary);
+      font-weight: 760;
+    }
+    .source-meta { color: var(--muted); font-size: 12px; white-space: nowrap; }
+    .evidence-card-body {
+      padding: 17px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(250px, .65fr);
+      gap: 17px;
+    }
+    .context {
+      padding: 14px;
+      border: 1px solid #e1e6f1;
+      border-radius: 13px;
+      background: #fbfcff;
+    }
+    .context-title { margin-bottom: 10px; color: #68738b; font-size: 12px; font-weight: 720; }
+    .dialogue {
+      display: grid;
+      grid-template-columns: 48px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+      margin-bottom: 9px;
+    }
+    .dialogue:last-child { margin-bottom: 0; }
+    .dialogue-role {
+      min-height: 25px;
+      padding: 3px 6px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .dialogue-role.student { color: #3970d8; background: #eaf2ff; }
+    .dialogue-role.ai { color: #6548dc; background: #f0ecff; }
+    .dialogue-text { color: #46516b; line-height: 1.72; }
+    .highlight { padding: 1px 3px; border-radius: 4px; color: #3f34ba; background: #ece9ff; font-weight: 680; }
+    .match { display: grid; align-content: start; gap: 12px; padding: 2px 0; }
+    .match-title { font-weight: 760; }
+    .match-item { display: flex; gap: 8px; color: #59647e; line-height: 1.62; font-size: 13px; }
+    .check { color: var(--green); font-weight: 800; }
+    .evidence-actions {
+      grid-column: 1/-1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .tags { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tag {
+      min-height: 25px;
+      padding: 0 9px;
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid #e1e5ee;
+      border-radius: 999px;
+      color: #6a748b;
+      background: #f5f7fa;
+      font-size: 11px;
+      font-weight: 650;
+    }
+    .evidence-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+    .full-chat {
+      display: none;
+      grid-column: 1/-1;
+      padding: 13px;
+      border: 1px dashed #cbd2e0;
+      border-radius: 11px;
+      color: #56617a;
+      background: #fff;
+      line-height: 1.7;
+    }
+    .full-chat.show { display: block; }
+
+    /* Suggestions */
+    .suggestion-panel { padding: 0 22px 22px; }
+    .suggestion-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .suggestion {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: #fbfcff;
+    }
+    .suggestion-title { color: var(--primary); font-weight: 760; margin-bottom: 9px; }
+    .suggestion p { margin: 0; color: #53607a; line-height: 1.72; }
+
+    /* Review panel */
+    .review-body { padding: 16px; }
+    .review-status {
+      margin-bottom: 13px;
+      padding: 13px;
+      border: 1px solid #ffe0b8;
+      border-radius: 12px;
+      background: var(--orange-soft);
+    }
+    .review-status-title { color: #dc7712; font-weight: 760; margin-bottom: 5px; }
+    .review-status-desc { color: #79664d; font-size: 12px; line-height: 1.62; }
+    .review-actions { display: grid; gap: 9px; }
+    .review-actions .btn { width: 100%; }
+
+    /* Rubric */
+    .rubric { padding: 15px 17px 17px; }
+    .rubric-row {
+      display: grid;
+      grid-template-columns: 30px minmax(0, 1fr);
+      gap: 9px;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .rubric-row:last-child { border-bottom: 0; }
+    .level {
+      width: 27px; height: 27px;
+      display: grid; place-items: center;
+      border-radius: 8px;
+      color: #fff; background: #a4aec2;
+      font-weight: 760;
+    }
+    .rubric-row.active .level { background: var(--orange); }
+    .rubric-name { font-weight: 720; margin-bottom: 2px; }
+    .rubric-desc { color: var(--muted); font-size: 12px; line-height: 1.55; }
+
+    /* Review log */
+    .review-log { padding: 14px 17px 17px; display: grid; gap: 12px; }
+    .log-item {
+      display: grid;
+      grid-template-columns: 9px minmax(0, 1fr);
+      gap: 9px;
+      color: #58637c;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+    .log-dot { width: 8px; height: 8px; margin-top: 5px; border-radius: 50%; background: var(--primary); }
+    .log-time { color: var(--muted); margin-top: 2px; }
+
+    /* Modal */
+    .modal-mask {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: none;
+      place-items: center;
+      padding: 20px;
+      background: rgba(17, 27, 57, .36);
+      backdrop-filter: blur(3px);
+    }
+    .modal-mask.show { display: grid; }
+    .modal {
+      width: min(590px, 100%);
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 24px 70px rgba(18, 29, 65, .22);
+    }
+    .modal-head {
+      min-height: 62px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--line);
+    }
+    .modal-head h3 { margin: 0; font-size: 18px; }
+    .modal-body { padding: 20px; }
+    .field { margin-bottom: 16px; }
+    .field:last-child { margin-bottom: 0; }
+    .field label { display: block; margin-bottom: 7px; color: var(--text-2); font-weight: 700; }
+    .field input, .field select, .field textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--line-2);
+      border-radius: 10px;
+      color: var(--text);
+      background: #fff;
+      outline: 0;
+    }
+    .field textarea { min-height: 106px; resize: vertical; }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color: #aaa1ff; box-shadow: 0 0 0 3px rgba(101, 86, 245, .08); }
+    .modal-foot { padding: 15px 20px; display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid var(--line); }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 150;
+      min-width: 260px;
+      max-width: 390px;
+      padding: 13px 15px;
+      border-radius: 12px;
+      color: #fff;
+      background: #202d50;
+      box-shadow: 0 16px 36px rgba(20, 31, 65, .22);
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: .22s ease;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    /* Loading */
+    .loading-state { text-align: center; color: var(--muted); padding: 60px 20px; font-size: 16px; }
+    .empty-state { text-align: center; color: var(--muted); padding: 60px 20px; font-size: 14px; }
+
+    /* Responsive */
+    @media (max-width: 1180px) {
+      html, body { overflow: auto; height: auto; }
+      body { display: block; }
+      .container { overflow: visible; flex: none; padding: 20px 0 42px; }
+      .evidence-layout { grid-template-columns: 1fr; height: auto; }
+      .evidence-aside {
+        overflow-y: visible;
+        height: auto;
+        padding-bottom: 0;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .evidence-main { overflow-y: visible; height: auto; padding-bottom: 0; }
+      .summary-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 800px) {
+      .topbar { height: auto; min-height: 66px; padding: 12px 14px; align-items: flex-start; }
+      .page-title-wrap { flex-direction: column; align-items: flex-start; gap: 2px; }
+      .page-title { font-size: 19px; }
+      .page-subtitle { font-size: 13px; }
+      .container { width: calc(100% - 24px); padding-top: 12px; }
+      .evidence-aside { grid-template-columns: 1fr; }
+      .summary-metrics { grid-template-columns: 1fr 1fr; }
+      .indicator-grid { grid-template-columns: 1fr; }
+      .evidence-card-body { grid-template-columns: 1fr; }
+      .suggestion-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 500px) {
+      .back-btn { padding: 0 10px; }
+      .summary-metrics { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <a class="back-btn" id="backLink" href="">
+      <span>←</span><span>返回学生详情</span>
+    </a>
+    <div class="page-title-wrap">
+      <h1 class="page-title" id="pageTitle">观察证据</h1>
+      <span class="page-subtitle" id="studentNameSub"></span>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <button class="btn soft" id="backToHistory" type="button">查看历史对话</button>
+    <span class="teacher-chip" id="teacherNameDisplay"><span></span><span>教师</span></span>
+  </div>
+</header>
+
+<main class="container" id="mainBody">
+  <div class="loading-state">加载中…</div>
+</main>
+
+<!-- Modals -->
+<div class="modal-mask" id="modifyModal">
+  <div class="modal">
+    <div class="modal-head"><h3>修改维度结论</h3><button class="icon-btn modal-close" type="button">×</button></div>
+    <div class="modal-body">
+      <div class="field"><label for="modifyReason">修改原因</label><select id="modifyReason"><option>表述过于绝对</option><option>证据不足</option><option>与实际情况不符</option><option>需要补充背景</option><option>其他</option></select></div>
+      <div class="field"><label for="revisedText">教师修订后的结论</label><textarea id="revisedText"></textarea></div>
+      <div class="field"><label for="modifyNote">修改依据</label><textarea id="modifyNote" placeholder="请说明结合了哪些学生实际情况或上下文……"></textarea></div>
+    </div>
+    <div class="modal-foot"><button class="btn modal-close" type="button">取消</button><button class="btn primary" id="saveModify" type="button">保存修改</button></div>
+  </div>
+</div>
+
+<div class="modal-mask" id="rejectModal">
+  <div class="modal">
+    <div class="modal-head"><h3>标记维度结论不准确</h3><button class="icon-btn modal-close" type="button">×</button></div>
+    <div class="modal-body">
+      <div class="field"><label for="rejectReason">不准确原因</label><select id="rejectReason"><option>证据被脱离上下文理解</option><option>AI 问题具有明显引导性</option><option>同一事件被重复计算</option><option>与教师长期观察不一致</option><option>其他</option></select></div>
+      <div class="field"><label for="correctText">正确情况或补充说明</label><textarea id="correctText" placeholder="此字段必填，用于审计和后续规则改进……"></textarea></div>
+    </div>
+    <div class="modal-foot"><button class="btn modal-close" type="button">取消</button><button class="btn primary" id="saveReject" type="button">提交复核</button></div>
+  </div>
+</div>
+
+<div class="modal-mask" id="singleRejectModal">
+  <div class="modal">
+    <div class="modal-head"><h3>标记单条证据不准确</h3><button class="icon-btn modal-close" type="button">×</button></div>
+    <div class="modal-body">
+      <div class="field"><label for="singleReason">不准确原因</label><select id="singleReason"><option>AI 追问包含明显提示</option><option>学生只是重复前文</option><option>原文上下文不足</option><option>该证据与指标不匹配</option><option>其他</option></select></div>
+      <div class="field"><label for="singleNote">教师说明</label><textarea id="singleNote" placeholder="请说明为什么这条原文不应计入有效证据……"></textarea></div>
+    </div>
+    <div class="modal-foot"><button class="btn modal-close" type="button">取消</button><button class="btn primary" id="saveSingleReject" type="button">保存并重新计算</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" aria-live="polite"></div>
+
+<script>
+(function () {
+  fetch('/api/auth/me').then(function (resp) {
+    if (!resp.ok) { window.location.href = '/login.html?role=teacher'; return null; }
+    return resp.json();
+  }).then(function (data) {
+    if (!data || !data.user || data.user.role !== 'teacher') {
+      window.location.href = '/home.html';
+      return;
+    }
+    if (data.user.username) {
+      document.getElementById('teacherNameDisplay').innerHTML = '<span></span><span>' + data.user.username + '</span>';
+    }
+    initPage();
+  }).catch(function () {
+    window.location.href = '/login.html?role=teacher';
+  });
+})();
+
+// ============================================================
+//  URL params & Config
+// ============================================================
+var params = new URLSearchParams(window.location.search);
+var studentId = params.get('studentId') || '';
+var dimension = params.get('dimension') || '';
+var highlightInsightId = params.get('insightId') || '';
+
+document.getElementById('backLink').href = '/teacher-student.html?studentId=' + encodeURIComponent(studentId);
+document.getElementById('backToHistory').addEventListener('click', function () {
+  window.location.href = '/teacher-conversations.html?studentId=' + encodeURIComponent(studentId);
+});
+
+var DIM_CONFIG = [
+  { key: '语言表达', label: '语言表达', icon: '🗣', cls: 'blue', brief: '能够较完整地描述事件过程，并主动补充细节。' },
+  { key: '兴趣方向', label: '兴趣方向', icon: '🍀', cls: 'green', brief: '对感兴趣的话题表现出持续关注和探索。' },
+  { key: '内省倾向', label: '内省倾向', icon: '◉', cls: 'orange', brief: '能够表达自己的感受和想法。' },
+  { key: '思维方式', label: '思维方式', icon: '✦', cls: 'purple', brief: '面对追问时能够补充新信息或调整角度。' },
+];
+
+var INDICATOR_MAP = {
+  '叙事组织能力': { dim: '语言表达', label: '叙事组织能力', desc: '观察学生能否完整描述事件的起因、经过和结果。' },
+  '词汇丰富度与用词选择': { dim: '语言表达', label: '词汇丰富度与用词选择', desc: '观察学生能否使用更具体、生动、有个人风格的词汇。' },
+  '主动话题倾向': { dim: '兴趣方向', label: '主动话题倾向', desc: '观察学生是否会在不被追问的情况下主动聊起自己感兴趣的话题。' },
+  '兴趣深度vs广度': { dim: '兴趣方向', label: '兴趣深度vs广度', desc: '观察学生对感兴趣的话题能否持续深入地展开讨论。' },
+  '自我反思频率': { dim: '内省倾向', label: '自我反思频率', desc: '观察学生能否描述自己的情绪并说明原因。' },
+  '价值判断表达': { dim: '内省倾向', label: '价值判断表达', desc: '观察学生能否在表达喜好的同时说明理由和标准。' },
+  '追问下的应变': { dim: '思维方式', label: '追问下的应变', desc: '观察学生面对追问时，是简单重复或回避，还是能够补充新信息、切换角度或调整表达方式。' },
+};
+
+// ============================================================
+//  Helpers
+// ============================================================
+function el(tag, cls, html) {
+  var e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (html) e.innerHTML = html;
+  return e;
+}
+function safeStr(v) { return (typeof v === 'string') ? v : ''; }
+function safeNum(n) { return (typeof n === 'number' && isFinite(n) && n >= 0) ? Math.floor(n) : 0; }
+function fmtDate(iso) {
+  if (!iso) return '';
+  try { var d = new Date(iso); if (isNaN(d.getTime())) return '';
+    return (d.getMonth()+1) + '月' + d.getDate() + '日 ' + String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  } catch (_) { return ''; }
+}
+function fmtDateShort(iso) {
+  if (!iso) return '';
+  try { var d = new Date(iso); if (isNaN(d.getTime())) return '';
+    return (d.getMonth()+1) + '/' + d.getDate();
+  } catch (_) { return ''; }
+}
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(function () { t.classList.remove('show'); }, 2200);
+}
+
+// ============================================================
+//  Init
+// ============================================================
+var mainBody = document.getElementById('mainBody');
+var _allInsights = [];
+var _rubricData = null;
+var _currentEvidenceFilter = 'all';
+var _reviewLogEntries = [];
+var _narrativeData = null;         // 维度复核快照（来自 /narrative 接口）
+var _dimReviewData = null;         // 当前维度的复核记录
+var _effectiveReviewState = 'unreviewed';  // confirm | reject | needs_re_review | unreviewed
+var _effectiveConclusionText = '';         // 教师手写的结论文本
+
+function initPage() {
+  if (!studentId) {
+    mainBody.innerHTML = '<div class="empty-state">缺少学生标识。<br><br><a href="/teacher-home.html">← 返回学生名单</a></div>';
+    return;
+  }
+  if (!dimension) {
+    mainBody.innerHTML = '<div class="empty-state">缺少维度参数。<br><br><a href="/teacher-student.html?studentId=' + encodeURIComponent(studentId) + '">← 返回学生详情</a></div>';
+    return;
+  }
+
+  // Set page title
+  var dimCfg = null;
+  for (var di = 0; di < DIM_CONFIG.length; di++) {
+    if (DIM_CONFIG[di].key === dimension) { dimCfg = DIM_CONFIG[di]; break; }
+  }
+  if (dimCfg) {
+    document.getElementById('pageTitle').textContent = dimCfg.icon + ' ' + dimCfg.label + ' · 观察证据';
+  }
+
+  loadData();
+}
+
+function loadData() {
+  mainBody.innerHTML = '<div class="loading-state">加载中…</div>';
+
+  var encSid = encodeURIComponent(studentId);
+
+  // Load insights + student info
+  var pStudent = fetch('/api/teacher/student/' + encSid).then(function (r) { return r.ok ? r.json() : null; });
+  var pInsights = fetch('/api/teacher/student/' + encSid + '/insights').then(function (r) {
+    if (r.status === 401) { window.location.href = '/login.html?role=teacher'; return null; }
+    if (!r.ok) return { insights: [] };
+    return r.json();
+  });
+
+  var pNarrative = fetch('/api/teacher/student/' + encSid + '/narrative').then(function (r) {
+    if (!r.ok) return { dimensionReviews: {} };
+    return r.json();
+  });
+
+  Promise.all([pStudent, pInsights, pNarrative]).then(function (results) {
+    var studentData = results[0];
+    var insightsData = results[1];
+    var narrativeData = results[2];
+    if (insightsData === 401 || insightsData === null) return;
+
+    var studentName = '';
+    if (studentData && studentData.student && studentData.student.username) {
+      studentName = studentData.student.username;
+    }
+    document.getElementById('studentNameSub').textContent = studentName;
+
+    _rubricData = (insightsData && insightsData.rubric) ? insightsData.rubric : null;
+    var allInsights = (insightsData && Array.isArray(insightsData.insights)) ? insightsData.insights : [];
+    _allInsights = [];
+    for (var i = 0; i < allInsights.length; i++) {
+      if (allInsights[i].dimension === dimension) {
+        _allInsights.push(allInsights[i]);
+      }
+    }
+
+    // 维度复核快照
+    _narrativeData = narrativeData;
+    _dimReviewData = (narrativeData && narrativeData.dimensionReviews && narrativeData.dimensionReviews[dimension])
+      ? narrativeData.dimensionReviews[dimension] : null;
+    computeEffectiveReviewState();
+
+    _reviewLogEntries = [{
+      title: 'AI 生成当前维度结论',
+      detail: '基于观察证据自动生成 · rubric v2.0',
+      time: new Date().toISOString(),
+      color: 'var(--green)'
+    }];
+
+    renderPage();
+
+    // 如果有 insightId 参数，延迟滚动到对应卡片并高亮
+    if (highlightInsightId) {
+      setTimeout(function () {
+        var targetCard = document.querySelector('.evidence-card[data-insight-id="' + highlightInsightId + '"]');
+        if (targetCard) {
+          targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          targetCard.style.transition = 'box-shadow .3s ease';
+          targetCard.style.boxShadow = '0 0 0 3px var(--primary)';
+          targetCard.style.borderRadius = '13px';
+          setTimeout(function () {
+            targetCard.style.boxShadow = '';
+          }, 3000);
+        }
+      }, 600);
+    }
+  }).catch(function () {
+    mainBody.innerHTML = '<div class="empty-state">加载失败，请稍后重试。<br><br><a href="/teacher-student.html?studentId=' + encodeURIComponent(studentId) + '">← 返回学生详情</a></div>';
+  });
+}
+
+// ============================================================
+//  Render
+// ============================================================
+function renderPage() {
+  mainBody.textContent = '';
+
+  if (_allInsights.length === 0) {
+    mainBody.innerHTML = '<div class="empty-state" style="padding:80px 20px">该维度暂无观察线索。<br><br><a href="/teacher-student.html?studentId=' + encodeURIComponent(studentId) + '">← 返回学生详情</a></div>';
+    return;
+  }
+
+  var dimCfg = null;
+  for (var di = 0; di < DIM_CONFIG.length; di++) {
+    if (DIM_CONFIG[di].key === dimension) { dimCfg = DIM_CONFIG[di]; break; }
+  }
+
+  // Group by indicator
+  var grouped = {};
+  var indicatorNames = [];
+  for (var indName in INDICATOR_MAP) {
+    if (INDICATOR_MAP[indName].dim === dimension) {
+      grouped[indName] = [];
+      indicatorNames.push(indName);
+    }
+  }
+  for (var i = 0; i < _allInsights.length; i++) {
+    var ins = _allInsights[i];
+    var ind = safeStr(ins.indicator);
+    if (ind && grouped[ind]) {
+      grouped[ind].push(ins);
+    }
+  }
+
+  // Compute stats
+  var totalEvidence = _allInsights.length;
+  var confirmedCount = 0, rejectedCount = 0;
+  var convSet = {}, topicSet = {};
+  for (var si = 0; si < _allInsights.length; si++) {
+    var s = _allInsights[si];
+    if (s.reviewStatus === 'teacher_confirmed') confirmedCount++;
+    if (s.reviewStatus === 'rejected') rejectedCount++;
+    if (s.conversationId) convSet[s.conversationId] = true;
+    if (s.topic && String(s.topic).trim()) topicSet[String(s.topic).trim()] = true;
+  }
+  var distinctConvs = Object.keys(convSet).length;
+  var distinctTopics = Object.keys(topicSet).length;
+
+  // Determine active indicator and level — use v2.0 rubric data
+  var activeIndicator = indicatorNames[0];
+  var maxCappedLevel = 0;
+  for (var ai = 0; ai < indicatorNames.length; ai++) {
+    var indName = indicatorNames[ai];
+    var ri = _rubricData && _rubricData.indicators ? _rubricData.indicators[indName] : null;
+    var lvl = ri ? ri.cappedLevel : 0;
+    if (lvl >= maxCappedLevel) { maxCappedLevel = lvl; activeIndicator = indName; }
+  }
+
+  // 直接使用维度级别的 tier（三阶段计算结果）
+  var dimTier = (_rubricData && _rubricData.dimensions && _rubricData.dimensions[dimension])
+    ? _rubricData.dimensions[dimension].tier : '暂无法判断';
+  var levelLabel = dimTier;
+  var levelBadgeCls = dimTier === '需要引导' ? 'red' : dimTier === '微弱信号' ? 'gray' : maxCappedLevel >= 3 ? 'blue' : maxCappedLevel >= 2 ? 'orange' : 'gray';
+
+  // Build layout
+  var wrapper = el('div', 'evidence-layout');
+
+  var mainCol = el('div', 'evidence-main');
+
+  // Summary card
+  mainCol.appendChild(buildSummaryCard(dimCfg, activeIndicator, levelLabel, levelBadgeCls, totalEvidence, distinctConvs, distinctTopics, confirmedCount, rejectedCount));
+
+  // Indicator cards
+  mainCol.appendChild(buildIndicatorPanel(indicatorNames, grouped, activeIndicator, levelLabel));
+
+  // Evidence panel
+  mainCol.appendChild(buildEvidencePanel(grouped));
+
+  // Suggestions
+  mainCol.appendChild(buildSuggestionsPanel(indicatorNames, levelLabel));
+
+  wrapper.appendChild(mainCol);
+
+  // Aside
+  var aside = el('aside', 'evidence-aside');
+  aside.appendChild(buildReviewPanel(confirmedCount, rejectedCount));
+  aside.appendChild(buildRubricPanel(levelLabel));
+  aside.appendChild(buildReviewLogPanel());
+  wrapper.appendChild(aside);
+
+  mainBody.appendChild(wrapper);
+
+  // Bind modal events
+  bindModalEvents();
+}
+
+// ============================================================
+//  维度复核状态计算
+// ============================================================
+
+/**
+ * 对比复核快照与当前证据，决定 effective review state。
+ * _dimReviewData 和 _allInsights 已就绪后调用。
+ */
+function computeEffectiveReviewState() {
+  _effectiveReviewState = 'unreviewed';
+  _effectiveConclusionText = '';
+
+  var dr = _dimReviewData;
+  if (!dr) return;
+
+  // 提取教师手写结论文本
+  if (dr.conclusionText && dr.conclusionText.trim().length > 0) {
+    _effectiveConclusionText = dr.conclusionText.trim();
+  }
+
+  // 如果有新证据，退回 unreviewed
+  if (hasNewEvidenceSinceReview(dr, _allInsights)) {
+    _effectiveReviewState = 'needs_re_review';
+    return;
+  }
+
+  // 无新证据，沿用上次的复核状态
+  if (dr.reviewAction === 'confirm') {
+    _effectiveReviewState = 'confirmed';
+  } else if (dr.reviewAction === 'reject') {
+    _effectiveReviewState = 'rejected';
+  }
+}
+
+function buildEvidenceDigest() {
+  var ids = [];
+  var maxObserved = '';
+  for (var i = 0; i < _allInsights.length; i++) {
+    var ins = _allInsights[i];
+    if (ins.id) ids.push(ins.id);
+    if (ins.observedAt && ins.observedAt > maxObserved) maxObserved = ins.observedAt;
+  }
+  return {
+    insightCount: _allInsights.length,
+    insightIds: ids,
+    latestObservedAt: maxObserved,
+  };
+}
+
+function hasNewEvidenceSinceReview(dr, currentInsights) {
+  if (!dr || !dr.inputDigest) return true;
+  var snap = dr.inputDigest;
+
+  // 1) 数量变了
+  if (currentInsights.length !== snap.insightCount) return true;
+
+  // 2) ID 集合变了
+  var snapIds = Array.isArray(snap.insightIds) ? snap.insightIds : [];
+  var currentIds = [];
+  var currentMaxObserved = '';
+  for (var i = 0; i < currentInsights.length; i++) {
+    if (currentInsights[i].id) currentIds.push(currentInsights[i].id);
+    if (currentInsights[i].observedAt && currentInsights[i].observedAt > currentMaxObserved) {
+      currentMaxObserved = currentInsights[i].observedAt;
+    }
+  }
+  if (snapIds.length !== currentIds.length) return true;
+  var snapIdSet = Object.create(null);
+  for (var j = 0; j < snapIds.length; j++) snapIdSet[snapIds[j]] = true;
+  for (var k = 0; k < currentIds.length; k++) {
+    if (!snapIdSet[currentIds[k]]) return true;
+  }
+
+  // 3) 最新证据时间晚于确认时间
+  if (currentMaxObserved && snap.latestObservedAt && currentMaxObserved > snap.latestObservedAt) return true;
+
+  return false;
+}
+function buildSummaryCard(dimCfg, activeIndicator, levelLabel, levelBadgeCls, totalEvidence, distinctConvs, distinctTopics, confirmedCount, rejectedCount) {
+  var section = el('section', 'panel summary-card');
+  var reviewState = _effectiveReviewState === 'confirmed' ? '教师已确认'
+    : _effectiveReviewState === 'rejected' ? '教师认为不准确'
+    : _effectiveReviewState === 'needs_re_review' ? '待复核（证据已更新）'
+    : '未复核';
+
+  section.innerHTML =
+    '<div class="breadcrumb">画像概览 / ' + (dimCfg ? dimCfg.label : dimension) + ' / 观察证据</div>' +
+    '<div class="summary-top">' +
+      '<div>' +
+        '<div class="summary-title-row">' +
+          '<h2 class="summary-title">' + (dimCfg ? dimCfg.label : dimension) + '</h2>' +
+          '<span class="badge purple">' + activeIndicator + '</span>' +
+          '<span class="badge ' + levelBadgeCls + '">等级 ' + (maxLevelFromLabel(levelLabel)) + ' · ' + levelLabel + '</span>' +
+        '</div>' +
+        '<p class="summary-desc">' + (INDICATOR_MAP[activeIndicator] ? INDICATOR_MAP[activeIndicator].desc : (dimCfg ? dimCfg.brief : '')) + '</p>' +
+      '</div>' +
+      '<button class="btn" type="button" onclick="navigator.clipboard.writeText(location.href);showToast(\'证据页面链接已复制\')">复制证据链接</button>' +
+    '</div>' +
+    '<div class="summary-metrics">' +
+      '<div class="small-metric"><div class="small-label">有效证据</div><div class="small-value">' + totalEvidence + ' 条</div></div>' +
+      '<div class="small-metric"><div class="small-label">独立会话</div><div class="small-value">' + distinctConvs + ' 次</div></div>' +
+      '<div class="small-metric"><div class="small-label">涉及话题</div><div class="small-value">' + distinctTopics + ' 类</div></div>' +
+      '<div class="small-metric"><div class="small-label">教师状态</div><div class="small-value">' + reviewState + '</div></div>' +
+    '</div>' +
+    '<div class="notice">"重复出现"表示该行为在至少两次不同对话中出现且方向一致，不是学生能力分数，也不用于学生之间比较。教师确认、修改或标记不准确会单独留痕。</div>';
+  return section;
+}
+
+function maxLevelFromLabel(label) {
+  if (label === '稳定趋势') return 3;
+  if (label === '重复出现') return 2;
+  if (label === '初步线索') return 1;
+  if (label === '微弱信号' || label === '需要引导') return 0;
+  return 0;
+}
+
+// ============================================================
+//  Indicator Panel
+// ============================================================
+function buildIndicatorPanel(indicatorNames, grouped, activeIndicator, levelLabel) {
+  var section = el('section', 'panel indicator-panel');
+  var head = el('div', 'section-head');
+  head.innerHTML = '<div><h2>观察指标</h2><div class="section-sub">当前维度共 ' + indicatorNames.length + ' 项指标</div></div>';
+  section.appendChild(head);
+
+  var grid = el('div', 'indicator-grid');
+
+  for (var i = 0; i < indicatorNames.length; i++) {
+    var indName = indicatorNames[i];
+    var items = grouped[indName];
+    var ri = _rubricData && _rubricData.indicators ? _rubricData.indicators[indName] : null;
+    var lvl = ri ? ri.cappedLevel : 0;
+    var lvlLabel = lvl >= 3 ? '稳定趋势' : lvl >= 2 ? '重复出现' : lvl >= 1 ? '初步线索' : '暂未启用';
+    var lvlCls = lvl >= 3 ? 'blue' : lvl >= 2 ? 'orange' : 'gray';
+    var isActive = indName === activeIndicator;
+
+    var latestDate = '';
+    for (var k = 0; k < items.length; k++) {
+      if (items[k].observedAt) { var d = fmtDateShort(items[k].observedAt); if (d && d > latestDate) latestDate = d; }
+    }
+
+    var card = el('article', 'indicator-card' + (isActive ? ' active' : ''));
+    card.innerHTML =
+      '<div class="indicator-top"><span class="indicator-name">' + indName + '</span><span class="badge ' + lvlCls + '">' + lvlLabel + '</span></div>' +
+      '<div class="indicator-desc">' + (INDICATOR_MAP[indName] ? INDICATOR_MAP[indName].desc : '') + '</div>' +
+      '<div class="indicator-meta"><span>有效证据 ' + items.length + ' 条</span><span>独立会话 ' + (ri ? ri.distinctConversationCount : 0) + ' 次</span>' + (latestDate ? '<span>最近出现 ' + latestDate + '</span>' : '') + '</div>';
+
+    grid.appendChild(card);
+  }
+
+  section.appendChild(grid);
+  return section;
+}
+
+// ============================================================
+//  Evidence Panel
+// ============================================================
+function buildEvidencePanel(grouped) {
+  var section = el('section', 'panel evidence-panel');
+  var head = el('div', 'section-head');
+  head.innerHTML = '<div><h2>证据链</h2><div class="section-sub">每条证据保留上下文，老师可逐条判断是否有效。</div></div>';
+  section.appendChild(head);
+
+  // Toolbar
+  var toolbar = el('div', 'evidence-toolbar');
+  toolbar.innerHTML =
+    '<div class="evidence-toolbar-left">' +
+      '<button class="status-btn active" data-evfilter="all" type="button">全部证据</button>' +
+      '<button class="status-btn" data-evfilter="teacher_confirmed" type="button">教师已确认</button>' +
+      '<button class="status-btn" data-evfilter="unreviewed" type="button">待复核</button>' +
+      '<button class="status-btn" data-evfilter="rejected" type="button">不准确</button>' +
+    '</div>' +
+    '<select class="status-btn" id="evidenceSort" style="height:34px;padding:0 12px;min-width:120px"><option>最近出现</option><option>最早出现</option></select>';
+  section.appendChild(toolbar);
+
+  // Evidence list
+  var list = el('div', 'evidence-list');
+  var allEvidence = [];
+  for (var indName in grouped) {
+    for (var i = 0; i < grouped[indName].length; i++) {
+      allEvidence.push({ indicator: indName, insight: grouped[indName][i] });
+    }
+  }
+  // Sort: needs_attention first, then by date desc
+  allEvidence.sort(function (a, b) {
+    var aNeed = a.insight.needsTeacherAttention ? 0 : 1;
+    var bNeed = b.insight.needsTeacherAttention ? 0 : 1;
+    if (aNeed !== bNeed) return aNeed - bNeed;
+    var da = a.insight.observedAt ? new Date(a.insight.observedAt).getTime() : 0;
+    var db = b.insight.observedAt ? new Date(b.insight.observedAt).getTime() : 0;
+    return db - da;
+  });
+
+  for (var ei = 0; ei < allEvidence.length; ei++) {
+    list.appendChild(buildEvidenceCard(allEvidence[ei], ei + 1));
+  }
+  section.appendChild(list);
+
+  // Toolbar events
+  section.querySelectorAll('[data-evfilter]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      _currentEvidenceFilter = btn.dataset.evfilter;
+      section.querySelectorAll('[data-evfilter]').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      filterEvidenceCards();
+    });
+  });
+
+  return section;
+}
+
+function buildEvidenceCard(item, index) {
+  var ins = item.insight;
+  var card = el('article', 'evidence-card');
+  card.dataset.reviewStatus = ins.reviewStatus || 'unreviewed';
+  card.dataset.aiStatus = ins.aiStatus || 'ai_determined';
+  card.dataset.needsAttention = ins.needsTeacherAttention ? '1' : '0';
+  card.dataset.insightId = ins.id || '';
+
+  var signalText = safeStr(ins.signal) || safeStr(ins.evidenceSnippet).slice(0, 80);
+  var turnLabel = safeStr(ins.turnLabel) || '';
+  var topicText = safeStr(ins.topic) || '对话片段';
+
+  var aiStatusText = ins.aiStatus === 'needs_attention' ? '⚠ 建议复核' : 'AI已判定';
+  var aiStatusCls = ins.aiStatus === 'needs_attention' ? 'needs_attention' : 'ai_determined';
+  var attentionReasonsHtml = '';
+  if (ins.needsTeacherAttention && ins.attentionReasons && ins.attentionReasons.length > 0) {
+    attentionReasonsHtml = '<div class="attention-reasons">' +
+      ins.attentionReasons.map(function(r) { return '· ' + r; }).join('<br>') +
+    '</div>';
+  }
+
+  card.innerHTML =
+    '<div class="evidence-card-head">' +
+      '<div><span class="evidence-index">' + index + '</span><span class="evidence-card-title">' + topicText +
+      '<span class="ai-status-tag ' + aiStatusCls + '">' + aiStatusText + '</span></div>' +
+      '<span class="source-meta">' + fmtDate(ins.observedAt) + (turnLabel ? ' · ' + turnLabel : '') + '</span>' +
+    '</div>' +
+    (attentionReasonsHtml || '') +
+    '<div class="evidence-card-body">' +
+      '<div class="context">' +
+        '<div class="context-title">完整判断上下文</div>' +
+        '<div class="dialogue"><span class="dialogue-role student">学生</span><div class="dialogue-text">' + signalText.slice(0, 200) + '</div></div>' +
+        (ins.evidenceSnippet ? '<div class="dialogue"><span class="dialogue-role ai">AI追问</span><div class="dialogue-text">（基于上下文追问）</div></div>' +
+        '<div class="dialogue"><span class="dialogue-role student">学生</span><div class="dialogue-text"><span class="highlight">' + safeStr(ins.evidenceSnippet).slice(0, 200) + '</span></div></div>' : '') +
+      '</div>' +
+      '<div class="match">' +
+        '<div class="match-title">为什么识别为证据</div>' +
+        '<div class="match-item"><span class="check">✓</span><span>' + (ins.pattern || '观察到的行为模式') + '</span></div>' +
+        '<div class="match-item"><span class="check">✓</span><span>来自独立对话，证据方向一致。</span></div>' +
+        (ins.strengthNote ? '<div class="match-item"><span class="check">✓</span><span>' + safeStr(ins.strengthNote) + '</span></div>' : '') +
+      '</div>' +
+      '<div class="evidence-actions">' +
+        '<div class="tags">' +
+          '<span class="tag">' + safeStr(ins.pattern || '观察') + '</span>' +
+          '<span class="tag">' + safeStr(ins.indicator || item.indicator) + '</span>' +
+          (ins.conversationId ? '<span class="tag">会话#' + String(ins.conversationId).slice(-6) + '</span>' : '') +
+        '</div>' +
+        '<div class="evidence-btns">' +
+          (ins.conversationId ? '<button class="btn small soft jump-chat" type="button" data-conv-id="' + safeStr(ins.conversationId) + '">跳转原始聊天 ↗</button>' : '') +
+          '<button class="btn small success single-confirm" type="button" data-insight-id="' + safeStr(ins.id) + '">证据有效</button>' +
+          '<button class="btn small danger single-reject-btn" type="button" data-insight-id="' + safeStr(ins.id) + '">证据不准确</button>' +
+        '</div>' +
+        (ins.reviewedAt
+          ? '<div style="font-size:11px;color:var(--muted);margin-top:6px;">' +
+            (ins.reviewStatus === 'teacher_confirmed' ? '确认 · ' : '标记不准确 · ') +
+            fmtDate(ins.reviewedAt) + '</div>'
+          : '') +
+
+      '</div>' +
+    '</div>';
+
+
+  var jumpBtn = card.querySelector('.jump-chat');
+  if (jumpBtn) {
+    jumpBtn.addEventListener('click', function () {
+      var convId = jumpBtn.dataset.convId;
+      window.open('/teacher-conversation-detail.html?studentId=' + encodeURIComponent(studentId) + '&conversationId=' + encodeURIComponent(convId), '_blank');
+    });
+  }
+
+  var confirmBtn = card.querySelector('.single-confirm');
+  if (confirmBtn) {
+    confirmBtn.addEventListener('click', function () {
+      submitSingleReview(ins.id, { reviewStatus: 'teacher_confirmed' }, card, confirmBtn);
+    });
+  }
+
+  var rejectBtn = card.querySelector('.single-reject-btn');
+  if (rejectBtn) {
+    rejectBtn.addEventListener('click', function () {
+      document.getElementById('singleRejectModal').classList.add('show');
+      document.getElementById('singleRejectModal').dataset.insightId = ins.id;
+      document.getElementById('singleRejectModal').dataset.cardRef = '';
+      // Store reference to update the card later
+      document.getElementById('singleRejectModal')._card = card;
+    });
+  }
+
+  // Initial state
+  if (ins.reviewStatus === 'teacher_confirmed') {
+    confirmBtn.textContent = '已确认有效';
+    confirmBtn.disabled = true;
+    confirmBtn.style.opacity = '.72';
+  } else if (ins.reviewStatus === 'rejected') {
+    rejectBtn.textContent = '已标记不准确';
+    rejectBtn.disabled = true;
+    rejectBtn.style.opacity = '.72';
+  }
+
+  return card;
+}
+
+function filterEvidenceCards() {
+  var cards = document.querySelectorAll('.evidence-card');
+  cards.forEach(function (card) {
+    if (_currentEvidenceFilter === 'all') {
+      card.style.display = '';
+    } else {
+      card.style.display = card.dataset.reviewStatus === _currentEvidenceFilter ? '' : 'none';
+    }
+  });
+}
+
+// ============================================================
+//  Suggestions
+// ============================================================
+function buildSuggestionsPanel(indicatorNames, levelLabel) {
+  var section = el('section', 'panel suggestion-panel');
+  section.innerHTML =
+    '<div class="section-head"><div><h2>后续观察建议</h2><div class="section-sub">建议用于下一次自然交流，不作为测试题或能力诊断。</div></div></div>' +
+    '<div class="suggestion-grid">' +
+      '<article class="suggestion"><div class="suggestion-title">建议继续观察</div><p>学生能否在不熟悉或更复杂的话题中，也表现出「' + indicatorNames[0] + '」相关的能力，而不是只在熟悉兴趣中表现。</p></article>' +
+      '<article class="suggestion"><div class="suggestion-title">下次交流可以这样问</div><p>围绕学生感兴趣的话题，自然地追问"为什么""后来呢""还有别的吗"，观察学生是否能展开叙述或表达想法。</p></article>' +
+    '</div>';
+  return section;
+}
+
+// ============================================================
+//  Review Panel (Sidebar)
+// ============================================================
+function buildReviewPanel(confirmedCount, rejectedCount) {
+  var section = el('section', 'panel');
+
+  // 使用维度级复核状态（已持久化），而非逐条证据计数
+  var state = _effectiveReviewState;
+  var badgeText, badgeCls, titleText, descText, titleColor;
+  var boxBg = '', boxBorder = '';
+
+  if (state === 'confirmed') {
+    badgeText = '教师已确认'; badgeCls = 'green';
+    titleText = '当前维度结论已确认'; titleColor = '#169254';
+    descText = '教师确认不会自动提高证据等级，原始 AI 版本和操作记录均已保留。';
+    boxBg = 'var(--green-soft)'; boxBorder = '#bce8cf';
+  } else if (state === 'rejected') {
+    badgeText = '教师认为不准确'; badgeCls = 'red';
+    titleText = '当前维度结论已标记不准确'; titleColor = '#e84f59';
+    descText = 'AI 原始结果未删除，原因和教师说明已写入审计记录。';
+    boxBg = 'var(--red-soft)'; boxBorder = '#ffbdc2';
+  } else if (state === 'needs_re_review') {
+    badgeText = '待复核（证据已更新）'; badgeCls = 'orange';
+    titleText = '自上次复核后证据有变化，需重新确认';
+    titleColor = '#ec7b12';
+    descText = '对话数据或分析结果在教师上次确认/标记之后发生了变化，请重新复核当前维度结论。';
+    if (_effectiveConclusionText) {
+      descText += ' 你之前手写的结论文本仍在下方保留，未被清除。';
+    }
+    boxBg = 'var(--orange-soft)'; boxBorder = '#ffe0b8';
+  } else {
+    badgeText = '未复核'; badgeCls = 'orange';
+    titleText = '等待教师判断'; titleColor = '#dc7712';
+    descText = '请结合学生实际情况和完整上下文，对整个维度结论进行确认或修正。';
+    boxBg = 'var(--orange-soft)'; boxBorder = '#ffe0b8';
+  }
+  // 附上操作时间
+  var reviewTimeHtml = '';
+  if (_dimReviewData && _dimReviewData.reviewedAt) {
+    reviewTimeHtml = '<div id="reviewTime" style="font-size:11px;color:var(--muted);margin-top:5px;">操作时间：' + fmtDate(_dimReviewData.reviewedAt) + '</div>';
+  } else {
+    reviewTimeHtml = '<div id="reviewTime"></div>';
+  }
+
+  // 教师手写结论文本展示
+  var conclusionHtml = '';
+  if (_effectiveConclusionText) {
+    conclusionHtml = '<div style="margin-top:10px;padding:10px 12px;border:1px solid #d3ceff;border-radius:8px;background:var(--primary-soft);font-size:13px;color:#4f42db;line-height:1.65;">' +
+      '<div style="font-weight:700;margin-bottom:5px;">教师手写结论（保留中）：</div>' +
+      '<div>' + _effectiveConclusionText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>' +
+    '</div>';
+  }
+
+  section.innerHTML =
+    '<div class="panel-head"><h2 class="panel-title">教师复核</h2><span class="badge ' + badgeCls + '" id="reviewBadge">' + badgeText + '</span></div>' +
+    '<div class="review-body">' +
+      '<div class="review-status" id="reviewStatus" style="background:' + boxBg + ';border-color:' + boxBorder + '">' +
+        '<div class="review-status-title" id="reviewTitle" style="color:' + titleColor + '">' + titleText + '</div>' +
+        '<div class="review-status-desc" id="reviewDesc">' + descText + '</div>' +
+      '</div>' +
+      reviewTimeHtml +
+      conclusionHtml +
+      '<div class="review-actions">' +
+        '<button class="btn success" id="confirmDimension" type="button">✓ 确认当前结论</button>' +
+        '<button class="btn" id="openModifyModal" type="button">✎ 修改维度结论</button>' +
+        '<button class="btn danger" id="openRejectModal" type="button">× 标记结论不准确</button>' +
+      '</div>' +
+    '</div>';
+
+  return section;
+}
+
+function buildRubricPanel(currentTier) {
+  var section = el('section', 'panel');
+  // 用 tier 名匹配高亮行
+  var isActive = function(tierName) { return currentTier === tierName; };
+  var rubricHTML =
+    '<div class="panel-head"><h2 class="panel-title">观察等级规则</h2><span class="text-link">v2.0</span></div>' +
+    '<div class="rubric">' +
+      '<div class="rubric-row' + (currentTier === '暂无法判断' ? ' active' : '') + '"><span class="level">—</span><div><div class="rubric-name">暂无法判断</div><div class="rubric-desc">该维度暂无有效方向证据，或对话数据积累不足。</div></div></div>' +
+      '<div class="rubric-row' + (isActive('微弱信号') ? ' active' : '') + '"><span class="level">·</span><div><div class="rubric-name">微弱信号</div><div class="rubric-desc">有部分证据但方向性不足，无法形成稳定判断。建议继续观察。</div></div></div>' +
+      '<div class="rubric-row' + (isActive('需要引导') ? ' active' : '') + '"><span class="level">!</span><div><div class="rubric-name">需要引导</div><div class="rubric-desc">多次出现负向行为模式，建议教师主动关注和干预。</div></div></div>' +
+      '<div class="rubric-row' + (isActive('初步线索') ? ' active' : '') + '"><span class="level">1</span><div><div class="rubric-name">初步线索</div><div class="rubric-desc">至少 1 个不同自然日出现正向证据。</div></div></div>' +
+      '<div class="rubric-row' + (isActive('重复出现') ? ' active' : '') + '"><span class="level">2</span><div><div class="rubric-name">重复出现</div><div class="rubric-desc">至少 2 个不同自然日出现正向证据，方向一致。</div></div></div>' +
+      '<div class="rubric-row' + (isActive('稳定趋势') ? ' active' : '') + '"><span class="level">3</span><div><div class="rubric-name">稳定趋势</div><div class="rubric-desc">至少 3 个自然日、2 类话题中重复出现正向证据。</div></div></div>' +
+    '</div>';
+  section.innerHTML = rubricHTML;
+  return section;
+}
+
+function buildReviewLogPanel() {
+  var section = el('section', 'panel');
+  var logHTML =
+    '<div class="panel-head"><h2 class="panel-title">最近复核记录</h2><span class="text-link" onclick="showToast(\'查看全部记录\')">查看全部</span></div>' +
+    '<div class="review-log" id="reviewLog">';
+  for (var i = 0; i < _reviewLogEntries.length; i++) {
+    var entry = _reviewLogEntries[i];
+    logHTML += '<div class="log-item"><span class="log-dot" style="background:' + (entry.color || 'var(--primary)') + '"></span><div><b>' + entry.title + '</b><div>' + entry.detail + '</div><div class="log-time">' + fmtDate(entry.time) + '</div></div></div>';
+  }
+  logHTML += '</div>';
+  section.innerHTML = logHTML;
+  return section;
+}
+
+// ============================================================
+//  Modal events
+// ============================================================
+function bindModalEvents() {
+  // Close buttons
+  document.querySelectorAll('.modal-close').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      btn.closest('.modal-mask').classList.remove('show');
+    });
+  });
+  // Backdrop click
+  document.querySelectorAll('.modal-mask').forEach(function (mask) {
+    mask.addEventListener('click', function (e) {
+      if (e.target === mask) mask.classList.remove('show');
+    });
+  });
+
+  // Confirm dimension
+  var confirmDimBtn = document.getElementById('confirmDimension');
+  if (confirmDimBtn) {
+    confirmDimBtn.addEventListener('click', function () {
+      saveDimensionReview('confirm', '');
+    });
+  }
+
+  // Open modify modal
+  var openModifyBtn = document.getElementById('openModifyModal');
+  if (openModifyBtn) {
+    openModifyBtn.addEventListener('click', function () {
+      document.getElementById('modifyModal').classList.add('show');
+    });
+  }
+
+  // Open reject modal
+  var openRejectBtn = document.getElementById('openRejectModal');
+  if (openRejectBtn) {
+    openRejectBtn.addEventListener('click', function () {
+      document.getElementById('rejectModal').classList.add('show');
+    });
+  }
+
+  // Save modify
+  var saveModifyBtn = document.getElementById('saveModify');
+  if (saveModifyBtn) {
+    saveModifyBtn.addEventListener('click', function () {
+      var text = document.getElementById('revisedText').value.trim();
+      if (!text) { showToast('请填写教师修订后的结论'); return; }
+      if (!document.getElementById('modifyNote').value.trim()) {
+        showToast('请填写修改依据');
+        return;
+      }
+      document.getElementById('modifyModal').classList.remove('show');
+      saveDimensionReview('modify', text);
+    });
+  }
+
+  // Save reject
+  var saveRejectBtn = document.getElementById('saveReject');
+  if (saveRejectBtn) {
+    saveRejectBtn.addEventListener('click', function () {
+      if (!document.getElementById('correctText').value.trim()) {
+        showToast('请填写正确情况或补充说明');
+        return;
+      }
+      document.getElementById('rejectModal').classList.remove('show');
+      saveDimensionReview('reject', '');
+    });
+  }
+
+  // Save single reject
+  var saveSingleRejectBtn = document.getElementById('saveSingleReject');
+  if (saveSingleRejectBtn) {
+    saveSingleRejectBtn.addEventListener('click', function () {
+      if (!document.getElementById('singleNote').value.trim()) {
+        showToast('请填写教师说明');
+        return;
+      }
+      var modal = document.getElementById('singleRejectModal');
+      var insightId = modal.dataset.insightId;
+      var card = modal._card;
+      modal.classList.remove('show');
+      if (insightId && card) {
+        submitSingleReview(insightId, { reviewStatus: 'rejected' }, card, card.querySelector('.single-reject-btn'));
+      }
+      addReviewLog('教师 · 标记单条证据不准确', document.getElementById('singleReason').value, 'var(--red)');
+      showToast('已排除该证据并记录重新计算请求');
+    });
+  }
+}
+
+/**
+ * 发送维度复核结果到后端（持久化）+ 更新 DOM。
+ * @param {string} type — 'confirm' | 'reject' | 'modify'
+ * @param {string} conclusionText — 仅 modify 时需要
+ */
+function saveDimensionReview(type, conclusionText) {
+  var digest = buildEvidenceDigest();
+  var body = {
+    dimension: dimension,
+    action: type,
+    evidenceDigest: digest,
+  };
+  if (type === 'modify') {
+    body.conclusionText = conclusionText;
+  }
+
+  fetch('/api/teacher/student/' + encodeURIComponent(studentId) + '/dimension-review', {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  }).then(function (r) {
+    if (!r.ok) throw new Error('fail');
+    return r.json();
+  }).then(function (data) {
+    // 用服务器返回值更新本地状态
+    if (data && data.dimensionReviews) {
+      _narrativeData = { dimensionReviews: data.dimensionReviews };
+      _dimReviewData = data.dimensionReviews[dimension] || null;
+    }
+    computeEffectiveReviewState();
+    updateReviewPanelDOM();
+
+    if (type === 'confirm') {
+      showToast('已确认当前维度结论并保存');
+      addReviewLog('教师 · 确认当前维度结论', '确认观察结论基本准确');
+    } else if (type === 'reject') {
+      showToast('已标记维度结论不准确并保存');
+      addReviewLog('教师 · 标记维度结论不准确', document.getElementById('rejectReason') ? document.getElementById('rejectReason').value : '', 'var(--red)');
+    } else if (type === 'modify') {
+      showToast('教师修订已保存');
+      addReviewLog('教师 · 修改维度结论', document.getElementById('modifyReason') ? document.getElementById('modifyReason').value : '', 'var(--blue)');
+    }
+  }).catch(function () {
+    showToast('保存失败，请重试');
+  });
+}
+
+/**
+ * 就地更新复核面板 DOM（无需全页刷新）。
+ */
+function updateReviewPanelDOM() {
+  var badge = document.getElementById('reviewBadge');
+  var box = document.getElementById('reviewStatus');
+  var title = document.getElementById('reviewTitle');
+  var desc = document.getElementById('reviewDesc');
+  if (!badge || !box || !title || !desc) return;
+
+  var state = _effectiveReviewState;
+  badge.className = 'badge';
+
+  if (state === 'confirmed') {
+    badge.classList.add('green'); badge.textContent = '教师已确认';
+    box.style.background = 'var(--green-soft)'; box.style.borderColor = '#bce8cf';
+    title.style.color = '#169254'; title.textContent = '当前维度结论已确认';
+    desc.textContent = '教师确认不会自动提高证据等级，原始 AI 版本和操作记录均已保留。';
+  } else if (state === 'rejected') {
+    badge.classList.add('red'); badge.textContent = '教师认为不准确';
+    box.style.background = 'var(--red-soft)'; box.style.borderColor = '#ffbdc2';
+    title.style.color = '#e84f59'; title.textContent = '当前维度结论已标记不准确';
+    desc.textContent = 'AI 原始结果未删除，原因和教师说明已写入审计记录。';
+  } else if (state === 'needs_re_review') {
+    badge.classList.add('orange'); badge.textContent = '待复核（证据已更新）';
+    box.style.background = 'var(--orange-soft)'; box.style.borderColor = '#ffe0b8';
+    title.style.color = '#ec7b12'; title.textContent = '自上次复核后证据有变化，需重新确认';
+    desc.textContent = '对话数据或分析结果在教师上次确认/标记之后发生了变化，请重新复核当前维度结论。';
+  } else {
+    badge.classList.add('orange'); badge.textContent = '未复核';
+    box.style.background = 'var(--orange-soft)'; box.style.borderColor = '#ffe0b8';
+    title.style.color = '#dc7712'; title.textContent = '等待教师判断';
+    desc.textContent = '请结合学生实际情况和完整上下文，对整个维度结论进行确认或修正。';
+  }
+  // 更新操作时间
+  var timeEl = document.getElementById('reviewTime');
+  if (timeEl) {
+    if (_dimReviewData && _dimReviewData.reviewedAt) {
+      timeEl.textContent = '操作时间：' + fmtDate(_dimReviewData.reviewedAt);
+      timeEl.style.display = '';
+    } else {
+      timeEl.style.display = 'none';
+    }
+  }
+}
+
+function addReviewLog(title, detail, color) {
+  _reviewLogEntries.unshift({
+    title: title, detail: detail, time: new Date().toISOString(), color: color || 'var(--primary)'
+  });
+  var logEl = document.getElementById('reviewLog');
+  if (logEl) {
+    var item = el('div', 'log-item');
+    var now = new Date();
+    var timeStr = (now.getMonth()+1) + '月' + now.getDate() + '日 ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+    item.innerHTML = '<span class="log-dot" style="background:' + (color || 'var(--primary)') + '"></span><div><b>' + title + '</b><div>' + detail + '</div><div class="log-time">' + timeStr + '</div></div>';
+    logEl.prepend(item);
+  }
+}
+
+// ============================================================
+//  Single evidence review (API)
+// ============================================================
+function submitSingleReview(insightId, patch, card, btn) {
+  if (!insightId) return;
+  var url = '/api/teacher/student/' + encodeURIComponent(studentId) + '/insights/' + encodeURIComponent(insightId) + '/review';
+  fetch(url, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(patch) })
+    .then(function (r) {
+      if (r.status === 401) { window.location.href = '/login.html?role=teacher'; return null; }
+      if (!r.ok) throw new Error('fail');
+      return r.json();
+    })
+    .then(function (data) {
+      if (!data) return;
+      if (data.error) { showToast('保存失败: ' + data.error); return; }
+      if (patch.reviewStatus === 'teacher_confirmed') {
+        card.dataset.reviewStatus = 'teacher_confirmed';
+        if (btn) { btn.textContent = '已确认有效'; btn.disabled = true; btn.style.opacity = '.72'; }
+        showToast('该证据已确认有效');
+      } else if (patch.reviewStatus === 'rejected') {
+        card.dataset.reviewStatus = 'rejected';
+        if (btn) { btn.textContent = '已标记不准确'; btn.disabled = true; btn.style.opacity = '.72'; }
+        showToast('已标记该证据不准确');
+      }
+      // 即时显示复核时间戳
+      var reviewedAt = (data.insight && data.insight.reviewedAt) ? data.insight.reviewedAt : new Date().toISOString();
+      var timeEl = card.querySelector('.review-time');
+      if (!timeEl) {
+        timeEl = document.createElement('div');
+        timeEl.className = 'review-time';
+        timeEl.style.cssText = 'font-size:11px;color:var(--muted);margin-top:6px;';
+        var btnsDiv = card.querySelector('.evidence-btns');
+        if (btnsDiv && btnsDiv.parentNode) btnsDiv.parentNode.insertBefore(timeEl, btnsDiv.nextSibling);
+      }
+      timeEl.textContent = (patch.reviewStatus === 'teacher_confirmed' ? '确认' : '标记不准确') + ' · ' + fmtDate(reviewedAt);
+      addReviewLog('教师 · 复核单条证据', patch.reviewStatus === 'teacher_confirmed' ? '确认有效' : '标记不准确',
+        patch.reviewStatus === 'teacher_confirmed' ? 'var(--green)' : 'var(--red)');
+    })
+    .catch(function () {
+      showToast('保存失败，请稍后重试');
+    });
+}
+</script>
+</body>
+</html>

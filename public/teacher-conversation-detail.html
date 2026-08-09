@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>对话详情 · AI 伯乐</title>
+  <style>
+    :root{
+      --bg:#f7f8fc;
+      --surface:#ffffff;
+      --text:#17233f;
+      --text-2:#526079;
+      --muted:#9099ad;
+      --line:#e6eaf2;
+      --line-2:#d8deea;
+      --primary:#6557f5;
+      --primary-soft:#efedff;
+      --blue:#4e7cf2;
+      --blue-soft:#edf4ff;
+      --shadow:0 10px 30px rgba(30,46,92,.05);
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      min-width:320px;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 10% 0%,rgba(101,87,245,.05),transparent 30%),
+        var(--bg);
+      font-family:"Microsoft YaHei","PingFang SC","Noto Sans SC",Arial,sans-serif;
+      font-size:14px;
+    }
+
+    button,input{font:inherit}
+    button{cursor:pointer}
+
+    .topbar{
+      height:66px;
+      padding:0 28px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:18px;
+      background:rgba(255,255,255,.96);
+      border-bottom:1px solid var(--line);
+      position:sticky;
+      top:0;
+      z-index:20;
+      backdrop-filter:blur(12px);
+    }
+
+    .topbar-left,
+    .title-wrap,
+    .tabs,
+    .meta-row{
+      display:flex;
+      align-items:center;
+    }
+
+    .topbar-left{gap:18px}
+    .title-wrap{gap:12px}
+
+    .back-btn{
+      height:40px;
+      padding:0 14px;
+      border:1px solid var(--line-2);
+      border-radius:10px;
+      background:#fff;
+      color:var(--text-2);
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+    }
+
+    .page-title{
+      margin:0;
+      font-size:22px;
+      font-weight:780;
+    }
+
+    .conversation-name{
+      color:var(--muted);
+      font-size:15px;
+    }
+
+    .teacher{
+      height:38px;
+      padding:0 13px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border:0;
+      border-radius:10px;
+      color:#6f5d57;
+      background:#fff7f3;
+    }
+
+    .container{
+      width:min(960px,calc(100% - 32px));
+      margin:0 auto;
+      padding:24px 0 40px;
+    }
+
+    .card{
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:var(--surface);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .conversation-head{
+      padding:20px 22px 16px;
+      border-bottom:1px solid var(--line);
+    }
+
+    .conversation-title{
+      margin:0 0 8px;
+      font-size:19px;
+      font-weight:760;
+    }
+
+    .meta-row{
+      gap:9px;
+      flex-wrap:wrap;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .status{
+      min-height:24px;
+      padding:0 9px;
+      display:inline-flex;
+      align-items:center;
+      border:1px solid #bce8cf;
+      border-radius:999px;
+      color:#159254;
+      background:#edf9f3;
+      font-size:12px;
+      font-weight:700;
+    }
+
+    .status.ended{
+      color:#159254;
+      border-color:#bce8cf;
+      background:#edf9f3;
+    }
+
+    .status.active-status{
+      color:#ec7b12;
+      border-color:#ffd6aa;
+      background:#fff5e8;
+    }
+
+    .toolbar{
+      padding:14px 22px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      border-bottom:1px solid var(--line);
+      background:#fbfcff;
+    }
+
+    .tabs{
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .tab-btn{
+      height:34px;
+      padding:0 14px;
+      border:1px solid var(--line-2);
+      border-radius:9px;
+      background:#fff;
+      color:#66718a;
+      font-weight:680;
+    }
+
+    .tab-btn.active{
+      color:#fff;
+      border-color:var(--primary);
+      background:var(--primary);
+      box-shadow:0 6px 14px rgba(101,87,245,.16);
+    }
+
+    .search{
+      width:240px;
+      height:36px;
+      padding:0 12px;
+      border:1px solid var(--line-2);
+      border-radius:9px;
+      outline:0;
+      color:var(--text);
+      background:#fff;
+    }
+
+    .search:focus{
+      border-color:#aaa2ff;
+      box-shadow:0 0 0 3px rgba(101,87,245,.08);
+    }
+
+    .messages{
+      padding:20px 22px 24px;
+      display:grid;
+      gap:15px;
+    }
+
+    .message{
+      display:grid;
+      grid-template-columns:48px minmax(0,1fr);
+      gap:11px;
+      align-items:start;
+    }
+
+    .avatar{
+      width:40px;
+      height:40px;
+      display:grid;
+      place-items:center;
+      border-radius:50%;
+      font-size:12px;
+      font-weight:760;
+    }
+
+    .avatar.ai{
+      color:#6548dc;
+      background:var(--primary-soft);
+    }
+
+    .avatar.student{
+      color:#3970d8;
+      background:var(--blue-soft);
+    }
+
+    .message-head{
+      margin-bottom:6px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    .message-name{
+      color:var(--text-2);
+      font-weight:760;
+    }
+
+    .bubble{
+      padding:13px 15px;
+      border-radius:14px;
+      line-height:1.75;
+      color:#47526c;
+      border:1px solid transparent;
+    }
+
+    .bubble.ai{
+      background:#f4f1ff;
+      border-color:#e5e0ff;
+    }
+
+    .bubble.student{
+      background:#edf4ff;
+      border-color:#dbe8ff;
+    }
+
+    .empty{
+      display:none;
+      padding:56px 20px;
+      text-align:center;
+      color:var(--muted);
+    }
+
+    .empty.show{display:block}
+
+    .loading-state{
+      text-align:center;
+      padding:60px 20px;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .error-state{
+      text-align:center;
+      padding:60px 20px;
+    }
+
+    .error-state-text{
+      color:#e04040;
+      font-size:14px;
+      margin-bottom:16px;
+    }
+
+    .error-state a{
+      color:var(--primary);
+      text-decoration:none;
+      font-weight:500;
+    }
+
+    .error-state a:hover{text-decoration:underline}
+
+    /* Safety alert banner */
+    .safety-banner{
+      margin:0 22px 16px;
+      padding:12px 16px;
+      border-radius:10px;
+      background:#fff0f2;
+      border:1px solid #ffbdc2;
+      color:#e84f59;
+      font-size:13px;
+      display:flex;
+      align-items:flex-start;
+      gap:8px;
+      line-height:1.6;
+    }
+
+    @media(max-width:700px){
+      .topbar{
+        height:auto;
+        min-height:64px;
+        padding:12px 14px;
+        align-items:flex-start;
+      }
+
+      .title-wrap{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:2px;
+      }
+
+      .page-title{font-size:19px}
+      .conversation-name{font-size:13px}
+      .teacher span:nth-child(2){display:none}
+
+      .container{
+        width:calc(100% - 20px);
+        padding-top:12px;
+      }
+
+      .conversation-head,
+      .toolbar,
+      .messages{
+        padding-left:14px;
+        padding-right:14px;
+      }
+
+      .toolbar{
+        align-items:stretch;
+        flex-direction:column;
+      }
+
+      .search{width:100%}
+
+      .message{
+        grid-template-columns:40px minmax(0,1fr);
+      }
+
+      .avatar{
+        width:34px;
+        height:34px;
+        font-size:11px;
+      }
+
+      .safety-banner{margin:0 14px 12px;}
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-left">
+      <a class="back-btn" id="backLink" href="">← 返回历史对话</a>
+      <div class="title-wrap">
+        <h1 class="page-title">对话详情</h1>
+        <span class="conversation-name" id="conversationNameLabel"></span>
+      </div>
+    </div>
+
+    <span class="teacher" id="teacherNameDisplay">
+      <span>🧑‍🏫</span>
+      <span>教师</span>
+    </span>
+  </header>
+
+  <main class="container" id="mainContainer">
+    <div class="loading-state" id="loadingState">加载中…</div>
+  </main>
+
+  <script>
+  (function () {
+    fetch('/api/auth/me').then(function (resp) {
+      if (!resp.ok) { window.location.href = '/login.html?role=teacher'; return null; }
+      return resp.json();
+    }).then(function (data) {
+      if (!data || !data.user || data.user.role !== 'teacher') {
+        window.location.href = '/home.html';
+        return;
+      }
+      if (data.user.username) {
+        var td = document.getElementById('teacherNameDisplay');
+        td.innerHTML = '<span>🧑‍🏫</span><span>' + data.user.username + '</span>';
+      }
+      initPage();
+    }).catch(function () {
+      window.location.href = '/login.html?role=teacher';
+    });
+  })();
+
+  // ============================================================
+  //  Helpers
+  // ============================================================
+  function el(tag, cls, html) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (html) e.innerHTML = html;
+    return e;
+  }
+
+  function safeStr(val) { return (typeof val === 'string') ? val : ''; }
+  function safeNum(n) { return (typeof n === 'number' && isFinite(n) && n >= 0) ? Math.floor(n) : 0; }
+  function safeEncode(str) { return encodeURIComponent(String(str || '')); }
+
+  function fmtDate(iso) {
+    if (!iso) return '';
+    try {
+      var d = new Date(iso);
+      if (isNaN(d.getTime())) return '';
+      var m = d.getMonth() + 1;
+      var dd = d.getDate();
+      var hh = String(d.getHours()).padStart(2, '0');
+      var mm = String(d.getMinutes()).padStart(2, '0');
+      return m + '月' + dd + '日 ' + hh + ':' + mm;
+    } catch (_) { return ''; }
+  }
+
+  function fmtTime(iso) {
+    if (!iso) return '';
+    try {
+      var d = new Date(iso);
+      if (isNaN(d.getTime())) return '';
+      return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') + ':' + String(d.getSeconds()).padStart(2, '0');
+    } catch (_) { return ''; }
+  }
+
+  // ============================================================
+  //  URL params
+  // ============================================================
+  var params = new URLSearchParams(window.location.search);
+  var studentId = params.get('studentId') || '';
+  var conversationId = params.get('conversationId') || '';
+
+  document.getElementById('backLink').href = '/teacher-conversations.html?studentId=' + safeEncode(studentId);
+
+  var container = document.getElementById('mainContainer');
+  var _allMessages = [];
+  var _currentRole = 'all';
+
+  function initPage() {
+    if (!studentId || !conversationId) {
+      showError('缺少参数：无法加载对话详情。', '/teacher-conversations.html?studentId=' + safeEncode(studentId));
+      return;
+    }
+    loadData();
+  }
+
+  function showError(msg, backUrl) {
+    container.innerHTML = '';
+    var wrap = el('div', 'error-state');
+    var text = el('div', 'error-state-text');
+    text.textContent = msg;
+    wrap.appendChild(text);
+    if (backUrl) {
+      var link = el('a');
+      link.href = backUrl;
+      link.textContent = '← 返回历史对话';
+      wrap.appendChild(link);
+    }
+    container.appendChild(wrap);
+  }
+
+  function loadData() {
+    var encSid = safeEncode(studentId);
+    var encCid = safeEncode(conversationId);
+
+    var pStudent = fetch('/api/teacher/student/' + encSid).then(function (r) {
+      if (!r.ok) return null;
+      return r.json();
+    });
+    var pConv = fetch('/api/teacher/student/' + encSid + '/conversations/' + encCid).then(function (r) {
+      if (r.status === 401) { window.location.href = '/login.html?role=teacher'; return null; }
+      if (!r.ok) return { error: true, status: r.status };
+      return r.json();
+    });
+
+    Promise.all([pStudent, pConv]).then(function (results) {
+      var studentData = results[0];
+      var convResult = results[1];
+
+      if (convResult === null) return;
+      if (convResult.error) {
+        showError(
+          convResult.status === 404 ? '未找到该次对话，可能已被删除。' : '加载失败，请稍后重试。',
+          '/teacher-conversations.html?studentId=' + safeEncode(studentId)
+        );
+        return;
+      }
+
+      if (!convResult || !convResult.conversation) {
+        showError('对话数据为空。', '/teacher-conversations.html?studentId=' + safeEncode(studentId));
+        return;
+      }
+
+      var studentName = '';
+      if (studentData && studentData.student && studentData.student.username) {
+        studentName = studentData.student.username;
+      }
+
+      renderPage(convResult.conversation, studentName);
+    }).catch(function () {
+      showError('网络错误，请稍后重试。', '/teacher-conversations.html?studentId=' + safeEncode(studentId));
+    });
+  }
+
+  // ============================================================
+  //  Render page
+  // ============================================================
+  function renderPage(conv, studentName) {
+    container.innerHTML = '';
+
+    // Conversation name label in topbar
+    var topic = conv.activeTopic || (conv.conversationState && conv.conversationState.activeTopic) || '';
+    document.getElementById('conversationNameLabel').textContent = studentName + (topic ? ' · ' + topic : '');
+
+    // Build card
+    var card = el('div', 'card');
+
+    // --- Conversation head ---
+    var head = el('div', 'conversation-head');
+    var title = el('h2', 'conversation-title');
+    title.textContent = topic || '对话记录';
+    head.appendChild(title);
+
+    var meta = el('div', 'meta-row');
+    meta.appendChild(renderMetaSpan(fmtDate(conv.startTime)));
+    meta.appendChild(renderMetaDot());
+    meta.appendChild(renderMetaSpan((conv.turnCount || 0) + '轮对话'));
+    if (topic) {
+      meta.appendChild(renderMetaDot());
+      meta.appendChild(renderMetaSpan('自定义主题'));
+    }
+    // Status badge
+    var statusBadge = el('span', 'status');
+    if (conv.completed === false) {
+      statusBadge.classList.add('active-status');
+      statusBadge.textContent = '进行中';
+    } else {
+      statusBadge.classList.add('ended');
+      statusBadge.textContent = '已结束';
+    }
+    meta.appendChild(statusBadge);
+    head.appendChild(meta);
+    card.appendChild(head);
+
+    // --- Safety alert ---
+    if (conv.analysis && conv.analysis.safetyAlert) {
+      var banner = el('div', 'safety-banner');
+      banner.innerHTML = '<span>⚠</span><span>' + (conv.analysis.safetyNote || '该对话触发了安全提示') + '</span>';
+      card.appendChild(banner);
+    }
+
+    // --- Toolbar ---
+    var toolbar = el('div', 'toolbar');
+
+    var tabs = el('div', 'tabs');
+    var tabAll = el('button', 'tab-btn active');
+    tabAll.type = 'button';
+    tabAll.dataset.role = 'all';
+    tabAll.textContent = '全部消息';
+    tabs.appendChild(tabAll);
+
+    var tabStudent = el('button', 'tab-btn');
+    tabStudent.type = 'button';
+    tabStudent.dataset.role = 'student';
+    tabStudent.textContent = '只看学生';
+    tabs.appendChild(tabStudent);
+
+    var tabAi = el('button', 'tab-btn');
+    tabAi.type = 'button';
+    tabAi.dataset.role = 'ai';
+    tabAi.textContent = '只看AI';
+    tabs.appendChild(tabAi);
+
+    toolbar.appendChild(tabs);
+
+    var searchInput = el('input', 'search');
+    searchInput.id = 'searchInput';
+    searchInput.type = 'search';
+    searchInput.placeholder = '搜索聊天内容...';
+    toolbar.appendChild(searchInput);
+
+    card.appendChild(toolbar);
+
+    // --- Messages ---
+    var messagesContainer = el('div', 'messages');
+    messagesContainer.id = 'messages';
+
+    var rawMessages = conv.messages || [];
+    _allMessages = [];
+    for (var i = 0; i < rawMessages.length; i++) {
+      var m = rawMessages[i];
+      var role = (m.role === 'user') ? 'student' : 'ai';
+      var name = (m.role === 'user') ? (studentName || '学生') : '小新';
+      var avatarText = (m.role === 'user') ? (studentName || '学生') : '小新';
+      var turnLabel = (i === rawMessages.length - 1 && conv.completed !== false) ? '结束语' : ('第' + (i + 1) + '轮');
+      var time = fmtTime(m.time || m.timestamp || '');
+
+      var searchText = (m.content || '').replace(/\s+/g, ' ').trim();
+
+      var msgArticle = el('article', 'message');
+      msgArticle.dataset.role = role;
+      msgArticle.dataset.text = searchText;
+
+      var avatar = el('div', 'avatar ' + role);
+      avatar.textContent = avatarText;
+      msgArticle.appendChild(avatar);
+
+      var msgBody = el('div', '');
+      var msgHead = el('div', 'message-head');
+      msgHead.innerHTML = '<span class="message-name">' + name + '</span><span>' + turnLabel + '</span><span>' + time + '</span>';
+      msgBody.appendChild(msgHead);
+
+      var bubble = el('div', 'bubble ' + role);
+      bubble.textContent = m.content || '';
+      msgBody.appendChild(bubble);
+
+      msgArticle.appendChild(msgBody);
+      _allMessages.push(msgArticle);
+      messagesContainer.appendChild(msgArticle);
+    }
+
+    card.appendChild(messagesContainer);
+
+    // --- Empty state ---
+    var emptyState = el('div', 'empty');
+    emptyState.id = 'emptyState';
+    emptyState.textContent = '没有找到符合条件的聊天内容。';
+    card.appendChild(emptyState);
+
+    container.appendChild(card);
+
+    // --- Bind events ---
+    bindFilters(tabs, searchInput, emptyState);
+  }
+
+  function renderMetaSpan(text) {
+    var span = document.createElement('span');
+    span.textContent = text;
+    return span;
+  }
+
+  function renderMetaDot() {
+    var span = document.createElement('span');
+    span.textContent = '·';
+    return span;
+  }
+
+  // ============================================================
+  //  Filter & Search
+  // ============================================================
+  function bindFilters(tabButtons, searchInput, emptyState) {
+    var tabs = tabButtons.querySelectorAll('.tab-btn');
+
+    function applyFilters() {
+      var query = searchInput.value.trim().toLowerCase();
+      var visibleCount = 0;
+
+      for (var i = 0; i < _allMessages.length; i++) {
+        var msg = _allMessages[i];
+        var roleMatch = _currentRole === 'all' || msg.dataset.role === _currentRole;
+        var textMatch = !query || msg.dataset.text.toLowerCase().includes(query);
+        var visible = roleMatch && textMatch;
+
+        msg.style.display = visible ? '' : 'none';
+        if (visible) visibleCount++;
+      }
+
+      emptyState.classList.toggle('show', visibleCount === 0);
+    }
+
+    for (var ti = 0; ti < tabs.length; ti++) {
+      tabs[ti].addEventListener('click', function () {
+        for (var tj = 0; tj < tabs.length; tj++) tabs[tj].classList.remove('active');
+        this.classList.add('active');
+        _currentRole = this.dataset.role;
+        applyFilters();
+      });
+    }
+
+    searchInput.addEventListener('input', applyFilters);
+  }
+  </script>
+</body>
+</html>

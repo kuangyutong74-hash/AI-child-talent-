@@ -1,0 +1,263 @@
+/* ==========================================
+   Common Styles — AI 伯乐 · 探索空间
+   Shared reset, design tokens, header & pinyin toggle
+   ========================================== */
+
+/* === Reset === */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { min-height: 100%; }
+body {
+  font-family: -apple-system, "Microsoft YaHei", "PingFang SC", sans-serif;
+  /* ===== 柔和渐变背景 ===== */
+  background-image:
+    radial-gradient(ellipse 50% 50% at 20% 15%, rgba(255,180,140,0.35) 0%, transparent 55%),
+    radial-gradient(ellipse 45% 55% at 82% 80%, rgba(165,185,230,0.32) 0%, transparent 55%),
+    radial-gradient(ellipse 30% 35% at 55% 25%, rgba(240,200,210,0.28) 0%, transparent 60%),
+    radial-gradient(ellipse 28% 32% at 25% 85%, rgba(175,210,200,0.22) 0%, transparent 58%),
+    radial-gradient(ellipse 80% 80% at 50% 50%, #FDF7F0 0%, #f5efe8 100%);
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+/* === Design Tokens === */
+:root {
+  --c-brand:        #D85A30;
+  --c-brand-hover:  #c04a20;
+  --c-brand-light:  #fef2ea;
+  --c-brand-soft:   #FAECE7;
+  --c-bg:           #FDF7F0;
+  --c-text:         #4A1B0C;
+  --c-text2:        #8b6b50;
+  --c-text3:        #a09080;
+  --c-text4:        #c0b0a0;
+  --c-border:       #e0d5ca;
+  --c-border-light: #ece0d0;
+  --c-border-subtle:#e8dcd0;
+
+  --shadow-sm:  0 2px 12px rgba(180, 150, 120, 0.06);
+  --radius-sm:  10px;
+  --radius-md:  16px;
+  --radius-lg:  22px;
+  --radius-pill: 50px;
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.25, 0.8, 0.25, 1.2);
+
+  /* ===== Responsive Spacing Tokens (desktop defaults) ===== */
+  --space-page-x:  24px;
+  --space-page-y:  24px;
+  --space-card:    20px;
+  --space-gap:     16px;
+  --header-h:      56px;
+  --header-pad-x:  24px;
+  --font-h1:       19px;
+  --font-h2:       16px;
+  --font-body:     14px;
+  --font-small:    12px;
+  --font-tiny:     10px;
+  --touch-target:  38px;
+}
+
+/* ==========================================
+   Responsive Breakpoints — applied via :root overrides
+   ========================================== */
+
+/* Tablet: 768px – 1024px */
+@media (max-width: 1024px) {
+  :root {
+    --space-page-x:  20px;
+    --space-page-y:  20px;
+    --space-card:    16px;
+    --space-gap:     14px;
+    --header-pad-x:  20px;
+    --font-h1:       18px;
+    --font-h2:       15px;
+    --touch-target:  42px;
+  }
+}
+
+/* Mobile: ≤ 768px */
+@media (max-width: 768px) {
+  :root {
+    --space-page-x:  14px;
+    --space-page-y:  14px;
+    --space-card:    14px;
+    --space-gap:     12px;
+    --header-h:      50px;
+    --header-pad-x:  14px;
+    --font-h1:       16px;
+    --font-h2:       14px;
+    --font-body:     13px;
+    --font-small:    11px;
+    --font-tiny:     10px;
+    --touch-target:  44px;
+  }
+}
+
+/* Small phone: ≤ 400px */
+@media (max-width: 400px) {
+  :root {
+    --space-page-x:  10px;
+    --space-page-y:  10px;
+    --space-card:    12px;
+    --space-gap:     10px;
+    --header-pad-x:  10px;
+    --font-h1:       15px;
+    --font-h2:       13px;
+    --font-body:     13px;
+    --touch-target:  44px;
+  }
+}
+
+/* ==========================================
+   Shared Card Shell — 毛玻璃卡片（对齐 login.html .card-auth）
+   页面主内容容器统一使用此类
+   ========================================== */
+.app-card {
+  background: rgba(255,255,255,0.5);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.6);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+}
+
+/* 大尺寸变体 — 接近全屏但保留边距露出背景渐变 */
+.app-card--full {
+  width: calc(100% - var(--space-page-x) * 2);
+  height: calc(100% - var(--space-page-y) * 2);
+  margin: var(--space-page-y) var(--space-page-x);
+}
+@media (max-width: 768px) {
+  .app-card--full {
+    width: calc(100% - var(--space-page-x) * 2);
+    height: calc(100% - var(--space-page-y) * 2);
+    margin: var(--space-page-y) var(--space-page-x);
+    border-radius: 18px;
+  }
+}
+
+/* === Transparent Header (毛玻璃) === */
+.site-header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--header-h);
+  display: flex; align-items: center; justify-content: flex-end;
+  padding: 0 var(--header-pad-x);
+  pointer-events: none;
+}
+.site-header > * { pointer-events: auto; }
+
+/* ==========================================
+   Responsive Utilities
+   ========================================== */
+
+/* Hide on mobile */
+@media (max-width: 768px) {
+  .hide-mobile { display: none !important; }
+}
+
+/* Hide on desktop (show only on mobile/tablet) */
+@media (min-width: 1025px) {
+  .hide-desktop { display: none !important; }
+}
+
+/* Hide on tablet and below */
+@media (max-width: 1024px) {
+  .hide-tablet-down { display: none !important; }
+}
+
+/* Stack flex children vertically on mobile */
+@media (max-width: 768px) {
+  .stack-mobile {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+}
+
+/* Touch-friendly minimum tap area */
+.touch-target {
+  min-width: var(--touch-target);
+  min-height: var(--touch-target);
+}
+
+/* Responsive max-width container */
+.content-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+@media (max-width: 1024px) {
+  .content-container { max-width: 680px; }
+}
+@media (max-width: 768px) {
+  .content-container { max-width: 100%; }
+}
+
+/* ==========================================
+   Pinyin Capsule Toggle Switch
+   胶囊型滑动拨动开关
+   ========================================== */
+.btn-pinyin {
+  /* 轨道 */
+  width: 54px; height: 32px;
+  border-radius: 50px;
+  border: 1.5px solid rgba(180, 160, 145, 0.35);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  cursor: pointer;
+  padding: 0;
+  font-size: 0;          /* 隐藏原始文字，改用 ::after */
+  position: relative;
+  transition: background 0.35s var(--ease-bounce),
+              border-color 0.35s var(--ease-bounce),
+              box-shadow 0.35s var(--ease-bounce);
+  user-select: none;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 滑块圆钮 */
+.btn-pinyin::after {
+  content: '拼';
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: #fff;
+  color: #8b6b5a;
+  font-size: 11.5px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  position: absolute;
+  top: 50%; left: 2px;
+  transform: translateY(-50%);
+  transition: all 0.35s var(--ease-bounce);
+  box-shadow: 0 1.5px 5px rgba(0, 0, 0, 0.08);
+  line-height: 1;
+  letter-spacing: 0.5px;
+}
+
+/* hover: 轨道微微变色 */
+.btn-pinyin:hover {
+  border-color: rgba(216, 90, 48, 0.35);
+  background: rgba(255, 255, 255, 0.75);
+  box-shadow: 0 2px 14px rgba(216, 90, 48, 0.1);
+}
+.btn-pinyin:hover::after {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+/* 激活态：轨道变品牌橘，滑块滑到右侧 */
+.btn-pinyin.on {
+  background: var(--c-brand);
+  border-color: var(--c-brand);
+  box-shadow: 0 2px 14px rgba(216, 90, 48, 0.25);
+}
+.btn-pinyin.on::after {
+  left: 24px;            /* 54 - 26 - 4 = 24 → 滑到右边 */
+  color: var(--c-brand);
+  box-shadow: 0 1.5px 5px rgba(0, 0, 0, 0.1);
+}
+.btn-pinyin.on:hover {
+  background: #e06838;
+  border-color: #e06838;
+  box-shadow: 0 4px 18px rgba(216, 90, 48, 0.32);
+}

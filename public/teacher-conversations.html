@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>历史对话 · AI 伯乐</title>
+  <style>
+    :root {
+      --page: #f5f7fc;
+      --surface: #ffffff;
+      --surface-2: #fafbff;
+      --text: #17233f;
+      --text-2: #4f5b76;
+      --muted: #8a95ac;
+      --line: #e5e9f2;
+      --line-2: #d8deea;
+      --primary: #6556f5;
+      --primary-2: #4f42db;
+      --primary-soft: #efedff;
+      --blue: #4d7ef3;
+      --blue-soft: #eef4ff;
+      --green: #22b66b;
+      --green-soft: #edf9f3;
+      --orange: #ff9829;
+      --orange-soft: #fff5e8;
+      --red: #f05e68;
+      --red-soft: #fff0f2;
+      --purple: #8d5be9;
+      --purple-soft: #f5f0ff;
+      --shadow: 0 10px 34px rgba(30, 46, 92, .055);
+      --radius-xl: 22px;
+      --radius-lg: 17px;
+      --radius-md: 13px;
+      --radius-sm: 10px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    html, body { height: 100%; overflow: hidden; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 12% 0%, rgba(101, 86, 245, .065), transparent 30%),
+        linear-gradient(180deg, #f8f9fd 0%, var(--page) 100%);
+      font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans SC", Arial, sans-serif;
+      font-size: 14px;
+      display: flex;
+      flex-direction: column;
+    }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    .hidden { display: none !important; }
+
+    /* Topbar */
+    .topbar {
+      flex-shrink: 0;
+      z-index: 50;
+      height: 68px;
+      padding: 0 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      background: rgba(255, 255, 255, .93);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(14px);
+    }
+    .topbar-left, .topbar-right, .page-title-wrap, .inline, .button-row {
+      display: flex;
+      align-items: center;
+    }
+    .topbar-left { gap: 18px; min-width: 0; }
+    .topbar-right { gap: 10px; }
+    .page-title-wrap { gap: 13px; min-width: 0; }
+    .page-title {
+      margin: 0;
+      font-size: 23px;
+      font-weight: 780;
+      letter-spacing: -.45px;
+      white-space: nowrap;
+    }
+    .page-subtitle {
+      color: var(--muted);
+      font-size: 15px;
+      white-space: nowrap;
+    }
+
+    .btn, .icon-btn, .chip-btn, .filter-btn, .status-btn {
+      border: 1px solid var(--line-2);
+      border-radius: 10px;
+      background: #fff;
+      color: var(--text-2);
+      transition: .17s ease;
+    }
+    .btn {
+      min-height: 40px;
+      padding: 0 15px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: 680;
+    }
+    .btn:hover, .filter-btn:hover, .status-btn:hover, .icon-btn:hover {
+      transform: translateY(-1px);
+      border-color: #bcc5d8;
+    }
+    .btn.primary {
+      color: #fff;
+      background: var(--primary);
+      border-color: var(--primary);
+      box-shadow: 0 8px 18px rgba(101, 86, 245, .18);
+    }
+    .btn.primary:hover { background: var(--primary-2); }
+    .btn.soft {
+      color: var(--primary);
+      background: var(--primary-soft);
+      border-color: #d3ceff;
+    }
+    .btn.danger {
+      color: #e84f59;
+      background: #fff;
+      border-color: #ffb5bb;
+    }
+    .btn.success {
+      color: #169757;
+      background: #fff;
+      border-color: #9fdfbd;
+    }
+    .btn.small {
+      min-height: 34px;
+      padding: 0 12px;
+      font-size: 12px;
+    }
+    .back-btn {
+      min-height: 40px;
+      padding: 0 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      border: 1px solid var(--line-2);
+      border-radius: 10px;
+      background: #fff;
+      color: #58647e;
+      white-space: nowrap;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .teacher-chip {
+      height: 38px;
+      padding: 0 13px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 0;
+      border-radius: 10px;
+      color: #6c5b55;
+      background: #fff7f3;
+      font-size: 13px;
+    }
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+    }
+
+    .container {
+      flex: 1;
+      overflow: hidden;
+      min-height: 0;
+      width: min(1560px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 20px 0 0;
+    }
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .panel-head {
+      min-height: 58px;
+      padding: 0 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+    .panel-title {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 16px;
+      font-weight: 770;
+    }
+    .text-link {
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 680;
+      cursor: pointer;
+    }
+    .badge {
+      min-height: 25px;
+      padding: 0 9px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .badge.green { color: #169254; background: var(--green-soft); border-color: #bce8cf; }
+    .badge.orange { color: #ec7b12; background: var(--orange-soft); border-color: #ffd6aa; }
+    .badge.blue { color: #4670ce; background: var(--blue-soft); border-color: #cbdcff; }
+    .badge.red { color: #e84f59; background: var(--red-soft); border-color: #ffbdc2; }
+    .badge.purple { color: #5d4ddc; background: var(--primary-soft); border-color: #cec8ff; }
+    .badge.gray { color: #707b93; background: #f4f6fa; border-color: #e1e5ee; }
+
+    /* History layout */
+    .history-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 20px;
+      height: 100%;
+    }
+    .history-left {
+      overflow-y: auto;
+      height: 100%;
+      padding-bottom: 42px;
+      scroll-behavior: smooth;
+    }
+    .history-left::-webkit-scrollbar { width: 5px; }
+    .history-left::-webkit-scrollbar-thumb { background: #d0d5e0; border-radius: 4px; }
+    .right-rail {
+      display: grid;
+      gap: 16px;
+      overflow-y: auto;
+      height: 100%;
+      padding-bottom: 42px;
+      align-content: start;
+    }
+    .right-rail::-webkit-scrollbar { width: 5px; }
+    .right-rail::-webkit-scrollbar-thumb { background: #d0d5e0; border-radius: 4px; }
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .metric {
+      min-height: 92px;
+      padding: 17px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+    .metric-icon {
+      width: 48px; height: 48px;
+      flex: 0 0 auto;
+      display: grid; place-items: center;
+      border-radius: 50%;
+      font-size: 21px;
+    }
+    .metric-icon.purple { background: var(--primary-soft); color: var(--primary); }
+    .metric-icon.green { background: var(--green-soft); color: var(--green); }
+    .metric-icon.orange { background: var(--orange-soft); color: var(--orange); }
+    .metric-icon.red { background: var(--red-soft); color: var(--red); }
+    .metric-label { color: var(--text-2); margin-bottom: 4px; font-size: 13px; }
+    .metric-value { font-size: 27px; font-weight: 780; line-height: 1; }
+    .metric-unit { font-size: 13px; color: var(--muted); font-weight: 500; margin-left: 5px; }
+
+    .history-panel { padding: 16px; min-height: 680px; }
+    .search {
+      height: 45px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 14px;
+      border: 1px solid var(--line-2);
+      border-radius: 11px;
+      background: #fff;
+    }
+    .search:focus-within {
+      border-color: #aaa1ff;
+      box-shadow: 0 0 0 3px rgba(101, 86, 245, .08);
+    }
+    .search span { font-size: 18px; color: #79849b; }
+    .search input {
+      width: 100%;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--text);
+    }
+    .search input::placeholder { color: #a1aabd; }
+    .filter-row {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .filter-group { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+    .filter-btn, .status-btn {
+      height: 34px;
+      padding: 0 14px;
+      font-size: 13px;
+    }
+    .filter-btn.active {
+      color: #fff;
+      background: var(--primary);
+      border-color: var(--primary);
+      box-shadow: 0 6px 14px rgba(101, 86, 245, .16);
+    }
+    .status-btn.active {
+      color: var(--primary);
+      background: var(--primary-soft);
+      border-color: #bbb4ff;
+    }
+    .sort-select {
+      height: 34px;
+      min-width: 148px;
+      padding: 0 12px;
+      border: 1px solid var(--line-2);
+      border-radius: 9px;
+      background: #fff;
+      color: #59647e;
+      outline: 0;
+    }
+
+    /* Date custom row */
+    .date-custom-row {
+      display: none;
+      gap: 8px;
+      align-items: center;
+      margin-top: 8px;
+    }
+    .date-custom-row.show { display: flex; }
+    .date-custom-row label { font-size: 12px; color: var(--muted); white-space: nowrap; }
+    .date-custom-row input[type="date"] {
+      font-size: 12px;
+      padding: 4px 8px;
+      border: 1px solid var(--line-2);
+      border-radius: 8px;
+      color: var(--text);
+      background: #fff;
+      font-family: inherit;
+      width: 135px;
+    }
+    .date-custom-row input[type="date"]:focus { outline: none; border-color: #aaa1ff; }
+    .search-result-hint {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 6px;
+      min-height: 18px;
+    }
+    .table-wrap {
+      margin-top: 15px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      overflow: hidden;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+    th {
+      height: 43px;
+      padding: 0 18px;
+      color: #6e7891;
+      background: #fbfcff;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      font-size: 13px;
+      font-weight: 650;
+    }
+    td {
+      height: 50px;
+      padding: 0 18px;
+      border-bottom: 1px solid var(--line);
+      color: var(--text-2);
+      vertical-align: middle;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    tbody tr {
+      cursor: pointer;
+      transition: .14s ease;
+    }
+    tbody tr:hover { background: #fafaff; }
+    tbody tr.selected { background: linear-gradient(90deg, #f0eeff 0%, #faf9ff 100%); }
+    /* 风险提示行 — 置顶 + 红色高亮 */
+    tbody tr.row-risk {
+      background: #fff5f5;
+      border-left: 3px solid var(--red);
+      box-shadow: inset 0 0 0 1px rgba(240, 94, 104, .12);
+    }
+    tbody tr.row-risk:hover { background: #ffeded; }
+    tbody tr.row-risk.selected { background: linear-gradient(90deg, #ffe8e8 0%, #fff0f0 100%); }
+    tbody tr.row-risk .topic-cell { color: #c0392b; }
+    /* 置顶分隔线 */
+    tbody tr.risk-divider td {
+      border-bottom: 2px dashed #f5c6cb;
+      height: 1px;
+      padding: 0;
+      background: #fffafafa;
+    }
+    tbody tr.risk-divider td::after {
+      content: "—— 以下为普通对话 ——";
+      display: block;
+      text-align: center;
+      font-size: 11px;
+      color: #c0a8a8;
+      padding: 4px 0;
+    }
+    tbody tr:last-child td { border-bottom: 0; }
+    .time-cell { color: #7c879e; }
+    .topic-cell { font-weight: 720; color: var(--text); }
+    .summary-cell { color: #7d879f; }
+    .arrow-cell { text-align: center; font-size: 22px; color: #8993aa; }
+    .status-stack { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .load-more {
+      margin-top: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .empty-state {
+      display: none;
+      padding: 50px 20px;
+      color: var(--muted);
+      text-align: center;
+    }
+    .empty-state.show { display: block; }
+    .loading-state { text-align: center; color: var(--muted); padding: 60px 20px; font-size: 16px; }
+
+    /* Preview */
+    .preview-body { padding: 18px; }
+    .preview-topic { font-size: 16px; font-weight: 770; margin-bottom: 7px; }
+    .preview-meta { color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+    .chat-stream { display: grid; gap: 13px; }
+    .chat-line {
+      display: grid;
+      grid-template-columns: 35px minmax(0, 1fr);
+      gap: 9px;
+      align-items: start;
+    }
+    .role {
+      width: fit-content;
+      height: 26px;
+      padding: 0 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .role.student { color: #376bd8; background: var(--blue-soft); }
+    .role.ai { color: #6848dc; background: var(--primary-soft); }
+    .bubble {
+      padding: 10px 12px;
+      border-radius: 12px;
+      color: #47526e;
+      line-height: 1.62;
+      font-size: 13px;
+    }
+    .bubble.student { background: #edf4ff; }
+    .bubble.ai { background: #f4f0ff; }
+    .preview-footer {
+      margin-top: 16px;
+      padding-top: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      border-top: 1px solid var(--line);
+      color: #68728a;
+      font-size: 13px;
+    }
+    .safe { color: var(--green); }
+
+    /* Timeline */
+    .timeline { padding: 17px 18px 18px; }
+    .timeline-item {
+      position: relative;
+      min-height: 45px;
+      display: grid;
+      grid-template-columns: 22px minmax(0, 1fr);
+      gap: 9px;
+    }
+    .timeline-item:not(:last-child)::before {
+      content: "";
+      position: absolute;
+      top: 20px; left: 7px;
+      width: 1px; height: calc(100% - 4px);
+      background: #dce1eb;
+    }
+    .timeline-dot {
+      width: 15px; height: 15px;
+      margin-top: 2px;
+      border: 3px solid currentColor;
+      border-radius: 50%;
+      background: #fff;
+      z-index: 1;
+    }
+    .timeline-dot.green { color: var(--green); }
+    .timeline-dot.orange { color: var(--orange); }
+    .timeline-dot.gray { color: #a5afc2; }
+    .timeline-content {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 15px;
+      color: var(--text-2);
+      font-size: 13px;
+    }
+    .timeline-time { color: var(--muted); white-space: nowrap; }
+
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 150;
+      min-width: 260px;
+      max-width: 390px;
+      padding: 13px 15px;
+      border-radius: 12px;
+      color: #fff;
+      background: #202d50;
+      box-shadow: 0 16px 36px rgba(20, 31, 65, .22);
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: .22s ease;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    /* Responsive */
+    @media (max-width: 1180px) {
+      html, body { overflow: auto; height: auto; }
+      body { display: block; }
+      .container { overflow: visible; flex: none; padding: 20px 0 42px; }
+      .history-layout { grid-template-columns: 1fr; height: auto; }
+      .right-rail {
+        overflow-y: visible;
+        height: auto;
+        padding-bottom: 0;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .history-left { overflow-y: visible; height: auto; padding-bottom: 0; }
+      .metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 800px) {
+      .topbar {
+        height: auto;
+        min-height: 66px;
+        padding: 12px 14px;
+        align-items: flex-start;
+      }
+      .page-title-wrap { flex-direction: column; align-items: flex-start; gap: 2px; }
+      .page-title { font-size: 19px; }
+      .page-subtitle { font-size: 13px; }
+      .container { width: calc(100% - 24px); padding-top: 12px; }
+      .metric-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .metric { min-height: 80px; padding: 13px; }
+      .metric-icon { width: 40px; height: 40px; }
+      .metric-value { font-size: 22px; }
+      .history-panel { padding: 12px; }
+      th:nth-child(3), td:nth-child(3), th:nth-child(4), td:nth-child(4) { display: none; }
+      th, td { padding: 0 10px; }
+      .right-rail { grid-template-columns: 1fr; }
+      .teacher-chip span:nth-child(2) { display: none; }
+    }
+    @media (max-width: 500px) {
+      .back-btn { padding: 0 10px; }
+      .metric-grid { grid-template-columns: 1fr; }
+      .filter-row { align-items: stretch; }
+      .sort-select { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <a class="back-btn" id="backLink" href="">
+      <span>←</span><span>返回学生详情</span>
+    </a>
+    <div class="page-title-wrap">
+      <h1 class="page-title">历史对话</h1>
+      <span class="page-subtitle" id="studentNameLabel"></span>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <button class="btn soft" id="openEvidenceBtn" type="button">查看画像证据</button>
+    <span class="teacher-chip" id="teacherNameDisplay"><span></span><span>教师</span></span>
+  </div>
+</header>
+
+<main class="container">
+  <div class="history-layout">
+    <div class="history-left">
+      <!-- Metric Grid -->
+      <section class="metric-grid" aria-label="对话概况">
+        <article class="metric">
+          <div class="metric-icon purple">💬</div>
+          <div><div class="metric-label">总会话</div><div class="metric-value" id="metricTotal">0<span class="metric-unit">次</span></div></div>
+        </article>
+        <article class="metric">
+          <div class="metric-icon green">✓</div>
+          <div><div class="metric-label">已分析</div><div class="metric-value" id="metricAnalyzed">0<span class="metric-unit">次</span></div></div>
+        </article>
+        <article class="metric">
+          <div class="metric-icon orange">◷</div>
+          <div><div class="metric-label">待复核</div><div class="metric-value" id="metricPending">0<span class="metric-unit">次</span></div></div>
+        </article>
+        <article class="metric">
+          <div class="metric-icon red">⬟</div>
+          <div><div class="metric-label">安全提示</div><div class="metric-value" id="metricSafety">0<span class="metric-unit">次</span></div></div>
+        </article>
+      </section>
+
+      <!-- Table Panel -->
+      <section class="panel history-panel">
+        <div class="search">
+          <span>⌕</span>
+          <input id="searchInput" type="search" placeholder="搜索话题、内容、关键词..." />
+        </div>
+
+        <div class="filter-row">
+          <div class="filter-group" id="dateChips">
+            <button class="filter-btn active" data-range="all" type="button">全部时间</button>
+            <button class="filter-btn" data-range="30d" type="button">最近 30 天</button>
+            <button class="filter-btn" data-range="7d" type="button">最近 7 天</button>
+            <button class="filter-btn" data-range="custom" type="button">📅 指定日期</button>
+          </div>
+        </div>
+
+        <div class="date-custom-row" id="customDateRow">
+          <label>从</label>
+          <input type="date" id="dateFrom" />
+          <label>至</label>
+          <input type="date" id="dateTo" />
+          <button class="btn small" id="btnDateApply" type="button">应用</button>
+        </div>
+
+        <div class="filter-row">
+          <div class="filter-group" id="statusChips">
+            <button class="status-btn active" data-status="all" type="button">全部状态</button>
+            <button class="status-btn" data-status="done" type="button">已分析</button>
+            <button class="status-btn" data-status="pending_analysis" type="button">待分析</button>
+            <button class="status-btn" data-status="review" type="button">需教师复核</button>
+            <button class="status-btn" data-status="safety" type="button">有安全提示<span id="safetyBadge" style="display:none;background:#f05e68;color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;margin-left:4px;">0</span></button>
+          </div>
+          <select class="sort-select" id="sortSelect">
+            <option value="new">⇅ 最近更新</option>
+            <option value="old">⇅ 最早开始</option>
+            <option value="topic">按主题排序</option>
+          </select>
+        </div>
+
+        <div class="search-result-hint" id="searchHint"></div>
+
+        <div class="table-wrap">
+          <table>
+            <colgroup>
+              <col style="width:145px">
+              <col style="width:210px">
+              <col>
+              <col style="width:105px">
+              <col style="width:180px">
+              <col style="width:62px">
+            </colgroup>
+            <thead>
+              <tr><th>时间</th><th>主题</th><th>内容摘要</th><th>轮次</th><th>状态</th><th></th></tr>
+            </thead>
+            <tbody id="conversationBody"></tbody>
+          </table>
+          <div class="empty-state" id="emptyState">没有找到符合条件的对话记录。</div>
+        </div>
+
+        <div class="load-more" id="paginationArea">
+          <button class="btn" id="btnLoadMore" type="button">加载更多 <span id="remainingCount"></span></button>
+          <span id="paginationInfo">已展示 0 / 0 次对话</span>
+        </div>
+      </section>
+    </div>
+
+    <!-- Right Sidebar -->
+    <aside class="right-rail">
+      <section class="panel">
+        <div class="panel-head">
+          <h2 class="panel-title"><span style="color:var(--primary)">♙</span>会话预览</h2>
+          <span class="text-link" id="historyToEvidence">查看画像证据&nbsp;↗</span>
+        </div>
+        <div class="preview-body">
+          <div class="preview-topic" id="previewTopic">选择一条对话</div>
+          <div class="preview-meta" id="previewMeta">点击对话行查看预览</div>
+          <div class="chat-stream" id="previewChatStream">
+            <div class="chat-line"><span class="role student">学生</span><div class="bubble student">—</div></div>
+            <div class="chat-line"><span class="role ai">AI</span><div class="bubble ai">—</div></div>
+          </div>
+          <div class="preview-footer"><span id="previewDimensions">关联画像：—</span><span id="previewReview">复核：—</span><span class="safe" id="previewSafety">✓ 安全提示：无</span></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2 class="panel-title">分析状态</h2></div>
+        <div class="timeline" id="analysisTimeline">
+          <div class="timeline-item"><span class="timeline-dot green"></span><div class="timeline-content"><span>已生成摘要</span><span class="timeline-time">—</span></div></div>
+          <div class="timeline-item"><span class="timeline-dot orange"></span><div class="timeline-content"><span>待教师复核</span><span class="timeline-time">—</span></div></div>
+          <div class="timeline-item"><span class="timeline-dot gray"></span><div class="timeline-content"><span>可查看原始对话</span><span class="timeline-time">复核后留痕</span></div></div>
+        </div>
+      </section>
+
+    </aside>
+  </div>
+</main>
+
+<div class="toast" id="toast" aria-live="polite"></div>
+
+<script>
+// ============================================================
+//  Login guard
+// ============================================================
+(function () {
+  fetch('/api/auth/me').then(function (resp) {
+    if (!resp.ok) { window.location.href = '/login.html?role=teacher'; return null; }
+    return resp.json();
+  }).then(function (data) {
+    if (!data || !data.user || data.user.role !== 'teacher') {
+      window.location.href = '/home.html';
+      return;
+    }
+    if (data.user.username) {
+      document.getElementById('teacherNameDisplay').innerHTML = '<span></span><span>' + data.user.username + '</span>';
+    }
+    initPage();
+  }).catch(function () {
+    window.location.href = '/login.html?role=teacher';
+  });
+})();
+
+// ============================================================
+//  Helpers
+// ============================================================
+function el(tag, cls, html) {
+  var e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (html) e.innerHTML = html;
+  return e;
+}
+function safeStr(val) { return (typeof val === 'string') ? val : ''; }
+function safeNum(n) { return (typeof n === 'number' && isFinite(n) && n >= 0) ? Math.floor(n) : 0; }
+function safeEncode(str) { return encodeURIComponent(String(str || '')); }
+function fmtDate(iso) {
+  if (!iso) return '';
+  try {
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    var m = d.getMonth() + 1;
+    var dd = d.getDate();
+    var hh = String(d.getHours()).padStart(2, '0');
+    var mm = String(d.getMinutes()).padStart(2, '0');
+    return m + '月' + dd + '日 ' + hh + ':' + mm;
+  } catch (_) { return ''; }
+}
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(function () { t.classList.remove('show'); }, 2200);
+}
+
+// ============================================================
+//  URL param & State
+// ============================================================
+var params = new URLSearchParams(window.location.search);
+var studentId = params.get('studentId') || '';
+
+document.getElementById('backLink').href = '/teacher-student.html?studentId=' + safeEncode(studentId);
+
+var _allConvs = [];
+var _filteredConvs = [];
+var _convPageSize = 10;
+var _convVisibleCount = 0;
+var _dateRange = 'all';
+var _customDateFrom = '';
+var _customDateTo = '';
+var _currentStatus = 'all';
+var _selectedConv = null;
+
+function initPage() {
+  if (!studentId) {
+    document.querySelector('.container').innerHTML = '<div class="loading-state" style="padding:60px">缺少学生标识。<br><br><a href="/teacher-home.html">← 返回学生名单</a></div>';
+    return;
+  }
+  loadData();
+}
+
+var _studentSafetyPendingCount = 0;  // 当前学生的待处理安全信号数
+var _pendingSafetyConvIds = {};       // 有待处理安全信号的 conversationId 集合
+
+function loadData() {
+  var encSid = safeEncode(studentId);
+  var pStudent = fetch('/api/teacher/student/' + encSid).then(function (r) { return r.ok ? r.json() : null; });
+  var pConvs = fetch('/api/teacher/student/' + encSid + '/conversations').then(function (r) {
+    if (r.status === 401) { window.location.href = '/login.html?role=teacher'; return null; }
+    if (!r.ok) return { conversations: [] };
+    return r.json();
+  });
+  var pSafetySignals = fetch('/api/teacher/safety-signals?status=pending').then(function (r) {
+    if (!r.ok) return { signals: [] };
+    return r.json();
+  });
+
+  Promise.all([pStudent, pConvs, pSafetySignals]).then(function (results) {
+    var studentData = results[0];
+    var convsData = results[1];
+    var safetyData = results[2];
+    if (convsData === 401 || convsData === null) return;
+
+    // 统计当前学生的待处理安全信号数 + 涉及的对话ID
+    _studentSafetyPendingCount = 0;
+    _pendingSafetyConvIds = {};
+    if (safetyData && Array.isArray(safetyData.signals)) {
+      for (var si = 0; si < safetyData.signals.length; si++) {
+        if (safetyData.signals[si].studentId === studentId) {
+          _studentSafetyPendingCount++;
+          var cid = safetyData.signals[si].conversationId;
+          if (cid) _pendingSafetyConvIds[cid] = true;
+        }
+      }
+    }
+
+    // 更新当前学生安全角标
+    var badge = document.getElementById('safetyBadge');
+    // _studentSafetyPendingCount 已在上方按 studentId 精确过滤得出
+    // pendingCount 是教师全局合计，不应用于单个学生页面
+    if (_studentSafetyPendingCount > 0) {
+      badge.textContent = _studentSafetyPendingCount;
+      badge.style.display = '';
+    }
+
+    var studentName = '';
+    if (studentData && studentData.student && studentData.student.username) {
+      studentName = studentData.student.username;
+    }
+    document.getElementById('studentNameLabel').textContent = studentName;
+
+    var convs = (convsData && Array.isArray(convsData.conversations)) ? convsData.conversations : [];
+    // 风险提示始终置顶（首次加载也应用）
+    convs = sortRiskFirst(convs);
+    _allConvs = convs;
+    _filteredConvs = convs;
+    _convVisibleCount = 0;
+
+    renderPage(convs);
+  }).catch(function () {
+    document.querySelector('.container').innerHTML = '<div class="loading-state" style="padding:60px">加载失败，请稍后重试。</div>';
+  });
+}
+
+// ============================================================
+//  Render
+// ============================================================
+function renderPage(convs) {
+  // 待复核 = insight未复核 OR 安全信号待处理
+  var analyzed = 0, needsReview = 0, safety = 0;
+  for (var i = 0; i < convs.length; i++) {
+    if (convs[i].analysisStatus === 'done') analyzed++;
+    // insight 未复核 或 安全信号待处理 都算"待复核"
+    if (convs[i].needsReview ||
+        (convs[i].hasSafetyAlert && _pendingSafetyConvIds[convs[i].id])) {
+      needsReview++;
+    }
+    if (convs[i].hasSafetyAlert) safety++;
+  }
+  document.getElementById('metricTotal').innerHTML = convs.length + '<span class="metric-unit">次</span>';
+  document.getElementById('metricAnalyzed').innerHTML = analyzed + '<span class="metric-unit">次</span>';
+  document.getElementById('metricPending').innerHTML = needsReview + '<span class="metric-unit">次</span>';
+  document.getElementById('metricSafety').innerHTML = safety + '<span class="metric-unit">次</span>';
+
+  // Update pagination info
+  document.getElementById('paginationInfo').textContent = '已展示 0 / ' + convs.length + ' 次对话';
+
+  // Bind events
+  bindEvents();
+
+  // Initial load
+  loadMoreConversations();
+}
+
+// ============================================================
+//  Events
+// ============================================================
+function bindEvents() {
+  // Search
+  var searchInput = document.getElementById('searchInput');
+  var debounceTimer = null;
+  searchInput.addEventListener('input', function () {
+    if (debounceTimer) clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(function () { applyFilters(); }, 250);
+  });
+
+  // Date chips
+  var dateChips = document.querySelectorAll('#dateChips .filter-btn');
+  for (var di = 0; di < dateChips.length; di++) {
+    dateChips[di].addEventListener('click', function () {
+      _dateRange = this.dataset.range;
+      if (_dateRange !== 'custom') { _customDateFrom = ''; _customDateTo = ''; }
+      refreshDateChips();
+      refreshCustomRow();
+      applyFilters();
+    });
+  }
+
+  // Custom date apply
+  document.getElementById('btnDateApply').addEventListener('click', function () {
+    _customDateFrom = document.getElementById('dateFrom').value;
+    _customDateTo = document.getElementById('dateTo').value;
+    applyFilters();
+  });
+
+  // Status chips
+  var statusChips = document.querySelectorAll('#statusChips .status-btn');
+  for (var si = 0; si < statusChips.length; si++) {
+    statusChips[si].addEventListener('click', function () {
+      _currentStatus = this.dataset.status;
+      for (var sj = 0; sj < statusChips.length; sj++) statusChips[sj].classList.remove('active');
+      this.classList.add('active');
+      applyFilters();
+    });
+  }
+
+  // Sort
+  document.getElementById('sortSelect').addEventListener('change', function () {
+    sortAndReRender();
+  });
+
+  // Load more
+  document.getElementById('btnLoadMore').addEventListener('click', function () {
+    if (this.disabled) return;
+    this.disabled = true;
+    loadMoreConversations();
+  });
+
+  // Evidence navigation
+  // "查看画像证据" → 回到学生详情页，从那里各个维度的卡片分别跳转
+  var navEvidence = function () {
+    window.location.href = '/teacher-student.html?studentId=' + safeEncode(studentId);
+  };
+  document.getElementById('openEvidenceBtn').addEventListener('click', navEvidence);
+  document.getElementById('historyToEvidence').addEventListener('click', navEvidence);
+}
+
+function refreshDateChips() {
+  var chips = document.querySelectorAll('#dateChips .filter-btn');
+  for (var ci = 0; ci < chips.length; ci++) {
+    chips[ci].classList.toggle('active', chips[ci].dataset.range === _dateRange);
+  }
+}
+
+function refreshCustomRow() {
+  document.getElementById('customDateRow').classList.toggle('show', _dateRange === 'custom');
+}
+
+// ============================================================
+//  Filter & Sort
+// ============================================================
+
+/**
+ * 始终将风险提示对话排在列表最前面。
+ * 风险项之间按原始顺序（API 返回的新→旧），非风险项同理。
+ * 返回新数组，不修改原数组。
+ */
+function sortRiskFirst(convs) {
+  var riskItems = [];
+  var normalItems = [];
+  for (var i = 0; i < convs.length; i++) {
+    if (convs[i].hasSafetyAlert) riskItems.push(convs[i]);
+    else normalItems.push(convs[i]);
+  }
+  return riskItems.concat(normalItems);
+}
+
+function applyFilters() {
+  var query = document.getElementById('searchInput').value.trim();
+
+  // Date cutoff
+  var cutoffMs = 0;
+  var customFromMs = 0, customToMs = 0;
+  if (_dateRange === '7d') cutoffMs = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  else if (_dateRange === '30d') cutoffMs = Date.now() - 30 * 24 * 60 * 60 * 1000;
+  else if (_dateRange === 'custom') {
+    if (_customDateFrom) { var d1 = new Date(_customDateFrom + 'T00:00:00'); if (!isNaN(d1.getTime())) customFromMs = d1.getTime(); }
+    if (_customDateTo) { var d2 = new Date(_customDateTo + 'T23:59:59'); if (!isNaN(d2.getTime())) customToMs = d2.getTime(); }
+  }
+
+  var q = query.toLowerCase();
+  var qParts = q.length > 0 ? q.split(/\s+/) : [];
+
+  _filteredConvs = [];
+  for (var i = 0; i < _allConvs.length; i++) {
+    var c = _allConvs[i];
+
+    // Date filter
+    if (cutoffMs > 0 && c.startTime) { if (Date.parse(c.startTime) < cutoffMs) continue; }
+    if (_dateRange === 'custom') {
+      if (c.startTime) {
+        var ct = Date.parse(c.startTime);
+        if (customFromMs > 0 && ct < customFromMs) continue;
+        if (customToMs > 0 && ct > customToMs) continue;
+      } else { if (customFromMs > 0 || customToMs > 0) continue; }
+    }
+
+    // Status filter
+    if (_currentStatus !== 'all') {
+      if (_currentStatus === 'done' && c.analysisStatus !== 'done') continue;
+      if (_currentStatus === 'pending_analysis' && c.analysisStatus === 'done') continue;
+      if (_currentStatus === 'review' && !c.needsReview && !(c.hasSafetyAlert && _pendingSafetyConvIds[c.id])) continue;
+      if (_currentStatus === 'safety' && !c.hasSafetyAlert) continue;
+    }
+
+    // Keyword filter
+    if (qParts.length > 0) {
+      var haystack = ((c.activeTopic || '') + ' ' + (c.preview || '') + ' ' + (c.startTime ? fmtDate(c.startTime) : '')).toLowerCase();
+      var match = true;
+      for (var pi = 0; pi < qParts.length; pi++) { if (haystack.indexOf(qParts[pi]) < 0) { match = false; break; } }
+      if (!match) continue;
+    }
+
+    _filteredConvs.push(c);
+  }
+
+  // 风险提示始终置顶
+  _filteredConvs = sortRiskFirst(_filteredConvs);
+
+  // Update hint
+  var hasFilter = q.length > 0 || _dateRange !== 'all' || _currentStatus !== 'all';
+  document.getElementById('searchHint').textContent = hasFilter ? '筛选出 ' + _filteredConvs.length + ' 次对话' : '';
+
+  // Reset list
+  _convVisibleCount = 0;
+  _riskDividerInserted = false;
+  document.getElementById('conversationBody').textContent = '';
+  document.getElementById('emptyState').classList.remove('show');
+  loadMoreConversations();
+}
+
+function sortAndReRender() {
+  var sortVal = document.getElementById('sortSelect').value;
+
+  // 分离风险项和普通项
+  var riskItems = [];
+  var normalItems = [];
+  for (var i = 0; i < _filteredConvs.length; i++) {
+    if (_filteredConvs[i].hasSafetyAlert) riskItems.push(_filteredConvs[i]);
+    else normalItems.push(_filteredConvs[i]);
+  }
+
+  // 在各自组内应用排序
+  function applySort(all) {
+    if (sortVal === 'old') {
+      all.sort(function (a, b) {
+        return (a.startTime || '') < (b.startTime || '') ? -1 : 1;
+      });
+    } else if (sortVal === 'topic') {
+      all.sort(function (a, b) {
+        return (a.activeTopic || '').localeCompare(b.activeTopic || '', 'zh-CN');
+      });
+    } else {
+      // 'new' — default (already sorted from API, but ensure)
+      all.sort(function (a, b) {
+        return (a.startTime || '') > (b.startTime || '') ? -1 : 1;
+      });
+    }
+    return all;
+  }
+
+  _filteredConvs = applySort(riskItems).concat(applySort(normalItems));
+  _convVisibleCount = 0;
+  _riskDividerInserted = false;
+  document.getElementById('conversationBody').textContent = '';
+  loadMoreConversations();
+}
+
+// ============================================================
+//  Pagination
+// ============================================================
+var _riskDividerInserted = false;  // 确保分隔线只插入一次
+
+function loadMoreConversations() {
+  var tbody = document.getElementById('conversationBody');
+  var all = _filteredConvs;
+  var current = _convVisibleCount;
+  var next = Math.min(current + _convPageSize, all.length);
+
+  if (current >= all.length) {
+    document.getElementById('btnLoadMore').style.display = 'none';
+    document.getElementById('paginationInfo').textContent = all.length === 0 ? '无匹配结果' : '已展示全部 ' + all.length + ' 次对话';
+    document.getElementById('emptyState').classList.toggle('show', all.length === 0 && _allConvs.length > 0);
+    return;
+  }
+
+  for (var i = current; i < next; i++) {
+    // 在最后一个风险项之后插入分隔线
+    if (!_riskDividerInserted && i > 0 && all[i - 1].hasSafetyAlert && !all[i].hasSafetyAlert) {
+      var dividerRow = document.createElement('tr');
+      dividerRow.className = 'risk-divider';
+      var dividerTd = document.createElement('td');
+      dividerTd.setAttribute('colspan', '6');
+      dividerRow.appendChild(dividerTd);
+      tbody.appendChild(dividerRow);
+      _riskDividerInserted = true;
+    }
+    tbody.appendChild(buildConvRow(all[i]));
+  }
+  _convVisibleCount = next;
+
+  var remaining = all.length - _convVisibleCount;
+  var loadMoreBtn = document.getElementById('btnLoadMore');
+  if (_convVisibleCount >= all.length) {
+    loadMoreBtn.style.display = 'none';
+    document.getElementById('paginationInfo').textContent = '已展示全部 ' + all.length + ' 次对话';
+  } else {
+    loadMoreBtn.style.display = '';
+    loadMoreBtn.disabled = false;
+    document.getElementById('remainingCount').textContent = '（还剩 ' + remaining + ' 次对话）⌄';
+    document.getElementById('paginationInfo').textContent = '已展示 ' + _convVisibleCount + ' / ' + all.length + ' 次对话';
+  }
+}
+
+// ============================================================
+//  Build table row
+// ============================================================
+function buildConvRow(c) {
+  var tr = document.createElement('tr');
+  tr.className = 'conversation-row';
+  if (c.hasSafetyAlert) {
+    tr.classList.add('row-risk');
+  }
+  tr.dataset.convId = String(c.id || '');
+
+  // Time
+  var tdTime = document.createElement('td');
+  tdTime.className = 'time-cell';
+  tdTime.textContent = fmtDate(c.startTime);
+  tr.appendChild(tdTime);
+
+  // Topic
+  var tdTopic = document.createElement('td');
+  tdTopic.className = 'topic-cell';
+  tdTopic.textContent = c.activeTopic || '暂无话题';
+  if (!c.activeTopic) tdTopic.style.cssText = 'color:#9ba4b5;font-weight:500';
+  tr.appendChild(tdTopic);
+
+  // Summary
+  var tdSummary = document.createElement('td');
+  tdSummary.className = 'summary-cell';
+  var previewText = (c.preview || '').replace(/�/g, '').trim();
+  tdSummary.textContent = previewText || '暂无预览';
+  tr.appendChild(tdSummary);
+
+  // Turn count
+  var tdTurns = document.createElement('td');
+  tdTurns.textContent = (c.turnCount || 0) + ' 轮';
+  tr.appendChild(tdTurns);
+
+  // Status
+  var tdStatus = document.createElement('td');
+  var statusStack = document.createElement('div');
+  statusStack.className = 'status-stack';
+
+  if (c.analysisStatus === 'done') {
+    var badgeDone = document.createElement('span');
+    badgeDone.className = 'badge green';
+    badgeDone.textContent = '已分析';
+    statusStack.appendChild(badgeDone);
+    // 已分析但未复核（insight或安全信号） → 加"需教师复核"徽章
+    var needsAnyReview = c.needsReview || (c.hasSafetyAlert && _pendingSafetyConvIds[c.id]);
+    if (needsAnyReview) {
+      var badgeReview = document.createElement('span');
+      badgeReview.className = 'badge orange';
+      badgeReview.textContent = '需教师复核';
+      statusStack.appendChild(badgeReview);
+    }
+  } else if (c.analysisStatus === 'failed') {
+    var badgeFailed = document.createElement('span');
+    badgeFailed.className = 'badge orange';
+    badgeFailed.textContent = '分析失败';
+    badgeFailed.style.cursor = 'pointer';
+    badgeFailed.title = '点击重新分析';
+    badgeFailed.addEventListener('click', function (ev) {
+      ev.stopPropagation();
+      if (badgeFailed.dataset.retrying === '1') return;
+      badgeFailed.dataset.retrying = '1';
+      badgeFailed.textContent = '重试中...';
+      badgeFailed.style.opacity = '0.6';
+      fetch('/api/history/' + safeEncode(c.id) + '/reanalyze', { method: 'POST' })
+        .then(function (r) {
+          if (r.status === 401) { window.location.href = '/login.html?role=teacher'; return null; }
+          if (!r.ok) throw new Error('fail');
+          return r.json();
+        })
+        .then(function (data) {
+          if (data && data.ok) { badgeFailed.textContent = '已触发重试'; badgeFailed.className = 'badge blue'; }
+          else { badgeFailed.textContent = '重试失败'; }
+        })
+        .catch(function () { badgeFailed.textContent = '网络错误'; })
+        .finally(function () { badgeFailed.style.opacity = '1'; badgeFailed.dataset.retrying = '0'; });
+    });
+    statusStack.appendChild(badgeFailed);
+  } else {
+    var badgePending = document.createElement('span');
+    badgePending.className = 'badge blue';
+    badgePending.textContent = '未分析';
+    statusStack.appendChild(badgePending);
+  }
+
+  if (c.hasSafetyAlert) {
+    var badgeSafety = document.createElement('span');
+    badgeSafety.className = 'badge red';
+    badgeSafety.textContent = '有风险提示';
+    statusStack.appendChild(badgeSafety);
+  }
+
+  if (c.completed === false) {
+    var badgeInProgress = document.createElement('span');
+    badgeInProgress.className = 'badge orange';
+    badgeInProgress.textContent = '进行中';
+    statusStack.appendChild(badgeInProgress);
+  }
+
+  tdStatus.appendChild(statusStack);
+  tr.appendChild(tdStatus);
+
+  // Arrow
+  var tdArrow = document.createElement('td');
+  tdArrow.className = 'arrow-cell';
+  tdArrow.textContent = '›';
+  tr.appendChild(tdArrow);
+
+  // Click → select row + update preview
+  tr.addEventListener('click', function (e) {
+    selectRow(tr, c);
+    // Arrow cell or double-click opens conversation detail
+    if (e.target.closest('.arrow-cell')) {
+      window.open('/teacher-conversation-detail.html?studentId=' + safeEncode(studentId) + '&conversationId=' + safeEncode(c.id), '_blank');
+    }
+  });
+  // Double-click → open conversation detail
+  tr.addEventListener('dblclick', function () {
+    window.open('/teacher-conversation-detail.html?studentId=' + safeEncode(studentId) + '&conversationId=' + safeEncode(c.id), '_blank');
+  });
+
+  return tr;
+}
+
+// ============================================================
+//  Row selection & Preview
+// ============================================================
+function selectRow(tr, c) {
+  // Deselect all
+  var allRows = document.querySelectorAll('.conversation-row');
+  for (var ri = 0; ri < allRows.length; ri++) allRows[ri].classList.remove('selected');
+  tr.classList.add('selected');
+  _selectedConv = c;
+
+  // Update preview
+  document.getElementById('previewTopic').textContent = c.activeTopic || '暂无话题';
+  document.getElementById('previewMeta').textContent = fmtDate(c.startTime) + ' ｜ ' + (c.turnCount || 0) + ' 轮对话';
+
+  // Preview chat stream
+  var stream = document.getElementById('previewChatStream');
+  stream.textContent = '';
+  // Show preview snippet
+  var previewText = (c.preview || '').replace(/�/g, '').trim();
+  if (previewText) {
+    var line1 = document.createElement('div');
+    line1.className = 'chat-line';
+    line1.innerHTML = '<span class="role student">学生</span><div class="bubble student">' + previewText.slice(0, 120) + '</div>';
+    stream.appendChild(line1);
+  } else {
+    var lineDef = document.createElement('div');
+    lineDef.className = 'chat-line';
+    lineDef.innerHTML = '<span class="role student">学生</span><div class="bubble student">暂无预览内容</div>';
+    stream.appendChild(lineDef);
+  }
+
+  // Dimensions
+  var dimText = '—';
+  if (c.dimensionsFound && c.dimensionsFound.length > 0) {
+    dimText = c.dimensionsFound.join('、');
+  }
+  document.getElementById('previewDimensions').textContent = '关联画像：' + dimText;
+
+  // Review status (includes safety signal status)
+  var reviewEl = document.getElementById('previewReview');
+  if (c.analysisStatus === 'done') {
+    if (c.needsReview) {
+      reviewEl.textContent = '复核：' + (c.unreviewedInsightCount || 0) + ' 条待确认';
+      reviewEl.style.color = 'var(--orange)';
+    } else if (c.hasSafetyAlert && _studentSafetyPendingCount > 0) {
+      reviewEl.textContent = '复核：安全提示待处理';
+      reviewEl.style.color = 'var(--red)';
+    } else {
+      reviewEl.textContent = '复核：已完成';
+      reviewEl.style.color = 'var(--green)';
+    }
+  } else {
+    reviewEl.textContent = '复核：—';
+    reviewEl.style.color = '';
+  }
+
+  // Safety
+  var safetyEl = document.getElementById('previewSafety');
+  if (c.hasSafetyAlert) {
+    safetyEl.textContent = '⚠ 安全提示：有';
+    safetyEl.className = '';
+    safetyEl.style.color = 'var(--red)';
+  } else {
+    safetyEl.textContent = '✓ 安全提示：无';
+    safetyEl.className = 'safe';
+    safetyEl.style.color = '';
+  }
+
+  // Timeline update
+  updateTimeline(c);
+}
+
+function updateTimeline(c) {
+  var timeline = document.getElementById('analysisTimeline');
+  timeline.textContent = '';
+
+  if (c.analysisStatus === 'done') {
+    addTimelineItem(timeline, 'green', '已生成分析摘要', fmtDate(c.startTime) || '最近');
+    if (c.needsReview) {
+      addTimelineItem(timeline, 'orange', '待教师复核insight', '有 ' + (c.unreviewedInsightCount || 0) + ' 条线索待确认');
+    } else if (c.hasSafetyAlert && _studentSafetyPendingCount > 0) {
+      addTimelineItem(timeline, 'red', '安全提示待处理', '该对话有未处理的安全信号');
+    } else {
+      addTimelineItem(timeline, 'green', '教师已复核', '所有线索已确认/驳回');
+    }
+  } else if (c.analysisStatus === 'failed') {
+    addTimelineItem(timeline, 'orange', '分析失败', '可点击重试');
+  } else {
+    addTimelineItem(timeline, 'gray', '尚未分析', '等待 AI 处理');
+  }
+  addTimelineItem(timeline, 'gray', '可查看原始对话', '点击行在新标签页打开');
+}
+
+function addTimelineItem(timeline, dotClass, label, time) {
+  var item = document.createElement('div');
+  item.className = 'timeline-item';
+  item.innerHTML = '<span class="timeline-dot ' + dotClass + '"></span><div class="timeline-content"><span>' + label + '</span><span class="timeline-time">' + time + '</span></div>';
+  timeline.appendChild(item);
+}
+</script>
+</body>
+</html>
