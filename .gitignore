@@ -25,11 +25,5 @@ server/data/
 .idea/
 
 # Operating-system files
-# Career-experience module runtime data and generated media
-*.db
-career_sim.db
-**/static/tts/
-tts_smoke.mp3
-
 .DS_Store
 Thumbs.db
