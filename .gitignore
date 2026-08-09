@@ -1,5 +1,29 @@
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
 server/.env
+
+# Dependencies and build output
 node_modules/
 dist/
+
+# Python cache and virtual environments
 __pycache__/
-*.pyc
+*.py[cod]
+.venv/
+venv/
+
+# Runtime data and logs
+*.log
+db_logs.json
+server/data/
+
+# Local editor and AI assistant settings
+.claude/
+.vscode/
+.idea/
+
+# Operating-system files
+.DS_Store
+Thumbs.db

@@ -9,9 +9,7 @@
       <p class="text-xs text-cyan-50/80 mt-0.5">本报告面向家长与教育工作者，解读儿童在游戏化情境中的发展表现</p>
       </div>
       <div class="text-right text-xs text-cyan-100/80">
-        <div v-if="gameState.playerName" class="text-sm font-bold text-cyan-700">{{ gameState.playerName }}</div>
         <div>ID: {{ gameState.studentId }}</div>
-        <div>年龄: {{ gameState.age || '—' }}岁</div>
         <div>评测日期: {{ today }}</div>
         <div>总耗时: {{ totalTime }}</div>
       </div>
@@ -548,9 +546,7 @@ function printReport() {
       <div style="font-size:14px;color:#475569;margin-top:2px">本报告面向家长及教育工作者，基于游戏化情境中的客观行为数据生成</div>
     </div>
     <div style="text-align:right;font-size:14px;color:#475569;line-height:1.7">
-      ${gs.value.playerName ? `<div style="font-size:16px;font-weight:700;color:#155e75">${gs.value.playerName}</div>` : ''}
       <div>ID: ${gs.value.studentId || 'stu_9527'}</div>
-      <div>年龄: ${gs.value.age || '—'}岁</div>
       <div>日期: ${today}</div>
       <div>总耗时: ${totalTime.value}</div>
     </div>

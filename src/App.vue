@@ -166,8 +166,7 @@ const debugButtons = [
 
 const gameState = reactive({
   studentId: 'stu_' + Date.now(),
-  playerName: '',                    // 🧑 玩家姓名（从封面页获取）
-  age: '8',                          // 年龄段（用于常模对照）
+  age: '8',                          // 匿名评测使用固定常模，不向玩家收集年龄
   level1_duration: 0, level1_errors: 0,
   level2_duration: 0, level2_pipes_used: 0,
   level3_duration: 0, level3_harmony_score: 0,
@@ -202,11 +201,9 @@ function isGameLevel(state) {
   return state === 'LEVEL_1' || state === 'LEVEL_2' || state === 'LEVEL_3'
 }
 
-function handleGoLevel(level, playerInfo) {
-  // 从封面页接收玩家信息
-  if (playerInfo) {
-    gameState.playerName = playerInfo.name || '小队长'
-    gameState.age = playerInfo.age || '8'
+function handleGoLevel(level) {
+  // 每次从封面进入第一关时创建新的匿名评测会话
+  if (currentState.value === 'START' && level === 'LEVEL_1') {
     gameState.studentId = 'stu_' + Date.now()
   }
 
@@ -284,7 +281,7 @@ function handleGoReport() {
 
 function handleBackStart() {
   Object.assign(gameState, {
-    playerName: '',
+    age: '8',
     level1_duration: 0, level1_errors: 0,
     level2_duration: 0, level2_pipes_used: 0,
     level3_duration: 0, level3_harmony_score: 0,

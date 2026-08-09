@@ -26,29 +26,6 @@
         <p class="hero-story max-w-2xl text-base md:text-xl font-medium leading-relaxed mb-6"
            v-html="p('风暴摧毁了海底家园，珊瑚公寓、电力管网和海洋议事厅都在等待修复。小队长，带领伙伴们让基地重新发光吧！')"></p>
 
-        <!-- 🧑 小队长信息登记 -->
-        <div class="player-info-card mb-6">
-          <div class="pic-title"><span>📋</span> 小队长信息登记</div>
-          <div class="pic-fields">
-            <div class="pic-field">
-              <label class="pic-label">你的名字</label>
-              <input v-model="playerName" type="text" maxlength="10" placeholder="输入你的名字…"
-                     class="pic-input" @keyup.enter="startGame" />
-            </div>
-            <div class="pic-field">
-              <label class="pic-label">你的年龄</label>
-              <div class="pic-age-selector">
-                <button v-for="a in ageOptions" :key="a"
-                        @click="playerAge = a"
-                        class="pic-age-btn"
-                        :class="{ active: playerAge === a }">
-                  {{ a }}岁
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <div class="flex flex-wrap items-center gap-3">
           <button @mouseenter="playHover" @click="startGame" class="start-cta group">
             <span v-html="p('开始深海任务')"></span>
@@ -93,7 +70,6 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
 import { playHover } from '../utils/sounds.js'
 import { usePinyinText } from '../utils/pinyin.js'
 import StartEffects from './effects/StartEffects.vue'
@@ -105,15 +81,8 @@ const { p } = usePinyinText()
 
 const emit = defineEmits(['go-level'])
 
-const playerName = ref('')
-const playerAge = ref(8)
-const ageOptions = [6, 7, 8, 9, 10]
-
 function startGame() {
-  emit('go-level', 'LEVEL_1', {
-    name: playerName.value || '小队长',
-    age: String(playerAge.value),
-  })
+  emit('go-level', 'LEVEL_1')
 }
 
 const missions = [
@@ -222,100 +191,6 @@ const missions = [
   transition: transform .2s, box-shadow .2s;
 }
 .start-cta:hover { transform: translateY(-2px); box-shadow: 0 16px 38px rgba(249,115,22,.34); }
-
-/* 🧑 小队长信息登记卡 */
-.player-info-card {
-  padding: 16px 18px;
-  border-radius: 18px;
-  background: rgba(255,255,255,.72);
-  border: 1px solid rgba(8,145,178,.2);
-  box-shadow: 0 8px 24px rgba(8,47,73,.1), inset 0 1px white;
-  backdrop-filter: blur(8px);
-}
-.pic-title {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 14px;
-  font-weight: 800;
-  color: #0e7490;
-  margin-bottom: 12px;
-}
-.pic-title span { font-size: 16px; }
-.pic-fields {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.pic-field {
-  width: 100%;
-}
-.pic-label {
-  display: block;
-  font-size: 11px;
-  font-weight: 700;
-  color: #0e7490;
-  margin-bottom: 5px;
-  letter-spacing: .04em;
-}
-.pic-input {
-  width: 100%;
-  padding: 9px 12px;
-  border-radius: 12px;
-  border: 1.5px solid rgba(8,145,178,.25);
-  background: rgba(255,255,255,.85);
-  color: #082f49;
-  font-size: 15px;
-  font-weight: 600;
-  outline: none;
-  transition: border-color .2s, box-shadow .2s;
-}
-.pic-input:focus {
-  border-color: #06b6d4;
-  box-shadow: 0 0 0 3px rgba(6,182,212,.18);
-}
-.pic-input::placeholder {
-  color: #94a3b8;
-  font-weight: 400;
-}
-.pic-age-selector {
-  display: flex;
-  gap: 6px;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-  padding-bottom: 4px;
-}
-.pic-age-selector::-webkit-scrollbar {
-  height: 4px;
-}
-.pic-age-selector::-webkit-scrollbar-thumb {
-  background: rgba(8,145,178,.3);
-  border-radius: 99px;
-}
-.pic-age-btn {
-  flex: 0 0 auto;
-  padding: 7px 14px;
-  border-radius: 10px;
-  border: 1.5px solid rgba(8,145,178,.22);
-  background: rgba(255,255,255,.7);
-  color: #155e75;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all .2s;
-}
-.pic-age-btn:hover {
-  border-color: #22d3ee;
-  background: rgba(255,255,255,.92);
-}
-.pic-age-btn.active {
-  background: linear-gradient(135deg, #0e7490, #0891b2);
-  color: white;
-  border-color: #06b6d4;
-  box-shadow: 0 4px 12px rgba(8,145,178,.25);
-}
 
 .mission-console {
   padding: 22px;
