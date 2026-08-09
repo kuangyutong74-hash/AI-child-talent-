@@ -1,0 +1,76 @@
+.story-fairy-player {
+  position: fixed;
+  z-index: 50;
+  right: 12px;
+  bottom: 140px;
+  pointer-events: none;
+}
+
+.fairy-orb, .fairy-player-panel { pointer-events: auto; }
+
+.fairy-orb {
+  width: 72px; height: 72px; flex: 0 0 72px;
+  display: grid; place-items: center; overflow: visible;
+  padding: 0; border: 0; background: transparent;
+  cursor: grab; touch-action: none;
+  filter: drop-shadow(0 6px 8px rgba(123, 101, 48, .18));
+}
+.fairy-orb:active { cursor: grabbing; }
+
+.fairy-orb svg { width: 68px; height: 68px; overflow: visible; }
+.fairy-star-body { fill: #f6dda0; stroke: #c6a968; stroke-width: 1.7; stroke-linejoin: round; }
+.fairy-eye { fill: #6e604a; }
+.fairy-eye-light { fill: #fffdf7; }
+.fairy-cheek { fill: #eeb7a9; opacity: .72; }
+.fairy-orb-smile { fill: none; stroke: #75644d; stroke-width: 2; stroke-linecap: round; }
+.fairy-little-arm { fill: none; stroke: #b99a5d; stroke-width: 2.2; stroke-linecap: round; }
+.fairy-listening { filter: drop-shadow(0 6px 8px rgba(123, 101, 48, .18)) drop-shadow(0 0 8px rgba(231, 207, 145, .55)); }
+.fairy-listening svg { animation: fairyBob 1.8s ease-in-out infinite; }
+
+.fairy-player-panel {
+  position: absolute; right: 82px; top: 0;
+  width: min(300px, calc(100vw - 100px));
+  padding: 15px 16px 12px;
+  border: 1px solid #ecd278;
+  border-radius: 18px 18px 5px 18px;
+  background: rgba(255, 251, 226, .97);
+  box-shadow: 0 10px 30px rgba(104, 76, 18, .2);
+  animation: fairyPanelIn .24s ease-out;
+}
+.fairy-player-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; color: #9b6500; font-size: 12px; font-weight: 800; letter-spacing: .08em; }
+.fairy-player-heading button { width: 24px; height: 24px; padding: 0; border-radius: 50%; background: rgba(155,101,0,.08); color: #9b6500; font-size: 18px; line-height: 1; }
+.fairy-player-panel p { margin: 0; color: var(--color-text); font-size: 14px; line-height: 1.65; }
+.fairy-sound-wave { display: flex; align-items: center; gap: 3px; height: 13px; margin-top: 8px; }
+.fairy-sound-wave i { display: block; width: 3px; height: 5px; border-radius: 4px; background: #e0a31d; animation: fairyWave .9s ease-in-out infinite alternate; }
+.fairy-sound-wave i:nth-child(2), .fairy-sound-wave i:nth-child(4) { animation-delay: .18s; }
+.fairy-sound-wave i:nth-child(3) { animation-delay: .35s; }
+
+@keyframes fairyBob { 50% { transform: translateY(-3px) rotate(3deg); } }
+@keyframes fairyPanelIn { from { transform: translateX(10px) scale(.96); opacity: 0; } }
+@keyframes fairyWave { to { height: 12px; } }
+
+@media (max-width: 768px) {
+  .story-fairy-player {
+    right: 6px; bottom: 90px;
+    flex-direction: column-reverse;
+    align-items: flex-end;
+  }
+  .fairy-orb { width: 44px; height: 44px; flex: 0 0 44px; }
+  .fairy-orb svg { width: 40px; height: 40px; }
+  .fairy-player-panel {
+    width: min(200px, calc(100vw - 60px));
+    padding: 8px 10px 6px;
+    font-size: 12px;
+    border-radius: 12px 12px 4px 12px;
+  }
+  .fairy-player-heading { font-size: 10px; }
+  .fairy-player-panel p { font-size: 12px; }
+}
+
+@media (max-width: 400px) {
+  .story-fairy-player { right: 2px; bottom: 80px; }
+  .fairy-orb { width: 36px; height: 36px; flex-basis: 36px; }
+  .fairy-orb svg { width: 34px; height: 34px; }
+  .fairy-player-panel { width: min(160px, calc(100vw - 44px)); padding: 6px 8px; font-size: 11px; }
+  .fairy-player-panel p { font-size: 11px; line-height: 1.4; }
+}

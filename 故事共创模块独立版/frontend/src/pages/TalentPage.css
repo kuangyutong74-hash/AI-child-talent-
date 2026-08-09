@@ -1,0 +1,185 @@
+.talent-page { padding-top: 24px; padding-bottom: 56px; }
+.talent-error { padding: 64px 24px; text-align: center; color: var(--color-danger); }
+
+.talent-hero {
+  width: 100%; max-width: 700px; margin: 18px auto 22px; padding: 30px; box-sizing: border-box;
+  border-radius: var(--radius-card); text-align: center;
+  background: linear-gradient(135deg, #FFF8F0, #FFE8D6);
+}
+.talent-hero h1 { margin: 0 0 12px; font-size: clamp(24px, 4vw, 36px); color: var(--color-primary); }
+.talent-meta { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.talent-meta span { padding: 6px 14px; border-radius: 999px; background: white; color: var(--color-text-light); font-size: 12px; font-weight: 600; }
+
+/* ── Three score cards ── */
+.talent-cards {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+  max-width: 700px; margin: 0 auto 22px;
+}
+.talent-card-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 24px 16px; border-radius: var(--radius-card); border: 2px solid #F0E8DC;
+  background: white; cursor: pointer; font-family: var(--font-family);
+  transition: all 0.2s ease;
+}
+.talent-card-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
+
+.talent-card-emoji { font-size: 36px; }
+.talent-card-title { font-size: 16px; font-weight: 700; color: var(--color-text); }
+.talent-card-score strong { font-size: 36px; color: var(--color-primary); display: block; line-height: 1; }
+.talent-card-score small { font-size: 12px; color: var(--color-text-light); }
+.talent-card-level { font-size: 12px; color: var(--color-text-light); padding: 2px 12px; border-radius: 999px; background: #f8f4ec; }
+.talent-card-hint { font-size: 11px; color: #ccc; margin-top: 4px; }
+
+/* ── Detail panel (inside modal) ── */
+.talent-detail { padding: 8px 0; }
+.talent-detail-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.talent-detail-header h2 { margin: 0; font-size: 20px; }
+.talent-detail-level { padding: 4px 14px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+
+.talent-detail-breakdown { display: flex; gap: 8px; margin-bottom: 18px; font-size: 13px; color: var(--color-text-light); }
+.talent-detail-breakdown b { color: var(--color-primary); }
+
+.talent-detail-dims { display: flex; flex-direction: column; gap: 10px; }
+.talent-detail-dim { border: 1px solid #eadfd2; border-radius: 11px; background: #fffdfa; transition: border-color .2s ease, box-shadow .2s ease; }
+.talent-detail-dim:hover, .talent-detail-dim-open { border-color: #dcb177; box-shadow: 0 4px 14px rgba(110, 78, 35, .08); }
+.talent-detail-dim-trigger { width: 100%; padding: 12px 13px 10px; border: 0; background: transparent; color: inherit; font-family: inherit; text-align: left; }
+.talent-detail-dim-head { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 13px; }
+.talent-detail-dim-score { color: var(--color-primary); }
+
+.talent-detail-track { height: 8px; border-radius: 99px; background: #F1E8DD; overflow: hidden; }
+.talent-detail-track span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #FFB380, #FF8C42); transition: width 0.6s ease; }
+
+.talent-detail-evidence-hint { display: flex; align-items: center; justify-content: flex-end; gap: 5px; margin-top: 8px; color: #987044; font-size: 11px; font-weight: 700; }
+.talent-detail-evidence-hint i { font-style: normal; font-size: 15px; transition: transform .2s ease; }
+.talent-detail-dim-open .talent-detail-evidence-hint i { transform: rotate(180deg); }
+.talent-detail-evidence { display: grid; gap: 10px; padding: 12px 13px 13px; border-top: 1px solid #eee3d7; animation: talentEvidenceIn .2s ease-out; }
+.talent-detail-reason { margin: 0; padding: 10px 11px; border-radius: 8px; background: #f7f2eb; color: var(--color-text-light); font-size: 12px; line-height: 1.65; }
+.talent-evidence-item { padding: 11px; border: 1px solid #eee3d7; border-radius: 9px; background: white; }
+.talent-evidence-meta { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 8px; color: #a18464; font-size: 10px; }
+.talent-evidence-item blockquote { margin: 0 0 9px; padding: 9px 11px; border-left: 3px solid #dcb177; border-radius: 0 7px 7px 0; background: #fff9f1; color: var(--color-text); font-size: 12px; line-height: 1.7; }
+.talent-evidence-analysis b { display: block; margin-bottom: 3px; color: #96672d; font-size: 10px; }
+.talent-evidence-analysis p { margin: 0; color: var(--color-text-light); font-size: 12px; line-height: 1.65; }
+@keyframes talentEvidenceIn { from { opacity: 0; transform: translateY(-4px); } }
+
+.talent-detail-close { margin-top: 18px; padding: 8px 20px; border-radius: var(--radius-button); border: 1px solid #ddd; background: #f8f8f8; font-size: 13px; cursor: pointer; font-family: var(--font-family); }
+.talent-card-invalid { border-color: #dfd8cf; background: #f8f6f3; }
+.talent-card-invalid .talent-card-score strong { color: #9c8d7b; }
+.talent-invalid-notice {
+  margin: 14px 0 4px;
+  padding: 15px 16px;
+  border: 1px solid #e8ddd0;
+  border-radius: 11px;
+  background: #fffaf4;
+  color: #715f4d;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+/* ── Highlights ── */
+.talent-card {
+  max-width: 700px; margin: 0 auto 18px; padding: 24px; border-radius: var(--radius-card);
+  background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+}
+.talent-card h2 { margin: 0 0 14px; font-size: 18px; }
+.talent-quotes { display: grid; gap: 8px; }
+.talent-quotes blockquote {
+  margin: 0; padding: 12px 14px; border-left: 3px solid var(--color-primary);
+  background: #faf6f0; border-radius: 0 8px 8px 0; font-size: 13px; line-height: 1.6;
+}
+
+.talent-actions { display: flex; justify-content: center; gap: 12px; margin-top: 16px; }
+
+/* Child-facing moments, strengths and small challenges */
+.talent-kids-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(216, 186, 123, .42);
+}
+.talent-kids-card::before,
+.talent-kids-card::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.talent-kids-card::before {
+  width: 72px; height: 72px; right: -28px; top: -30px;
+  background: rgba(255,255,255,.48);
+}
+.talent-kids-card::after {
+  width: 13px; height: 13px; right: 48px; top: 18px;
+  background: rgba(255,255,255,.72);
+  box-shadow: -24px 18px 0 rgba(255,255,255,.45), 16px 27px 0 rgba(255,255,255,.38);
+}
+.talent-moments-card { background: linear-gradient(145deg, #fffdf3, #fff3cf); }
+.talent-strength-card { background: linear-gradient(145deg, #f5fff4, #e3f5df); }
+.talent-challenge-card { background: linear-gradient(145deg, #f5f9ff, #e5effd); }
+.talent-kids-card h2 { position: relative; z-index: 1; color: #665237; }
+.talent-kids-card li {
+  position: relative;
+  margin-bottom: 11px;
+  padding: 11px 12px 11px 26px;
+  border-radius: 11px;
+  background: rgba(255,255,255,.68);
+  color: #554b3f;
+  line-height: 2.15;
+  list-style: none;
+}
+.talent-kids-card li::before {
+  content: '';
+  position: absolute;
+  left: 11px; top: 19px;
+  width: 7px; height: 7px;
+  border-radius: 2px;
+  background: #e7bb5f;
+  transform: rotate(45deg);
+}
+.talent-challenge-card li::before { background: #8bb4e9; }
+.talent-kids-card ruby { ruby-align: center; }
+.talent-kids-card rt {
+  color: #9a8265;
+  font-size: .48em;
+  line-height: 1;
+}
+.talent-moments-card blockquote {
+  background: rgba(255,255,255,.72);
+  color: #584b3d;
+  line-height: 2.25;
+}
+.talent-kids-feedback { max-width: 700px; margin: 0 auto; }
+.talent-kids-tabs {
+  display: flex;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto 12px;
+  padding: 4px;
+  gap: 4px;
+  border: 1px solid #eadfce;
+  border-radius: 14px;
+  background: #fffaf2;
+}
+.talent-kids-tabs button {
+  min-width: 120px;
+  padding: 9px 16px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #806f5b;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background .2s ease, color .2s ease, box-shadow .2s ease;
+}
+.talent-kids-tabs button.active {
+  background: #fff;
+  color: #5d4d39;
+  box-shadow: 0 2px 8px rgba(112, 87, 49, .12);
+  font-weight: 700;
+}
+.talent-kids-feedback .talent-card { margin-bottom: 18px; }
+
+@media (max-width: 600px) {
+  .talent-cards { grid-template-columns: 1fr; }
+  .talent-kids-tabs { width: 100%; }
+  .talent-kids-tabs button { flex: 1; min-width: 0; padding-inline: 8px; }
+}

@@ -1,0 +1,101 @@
+.music-player {
+  position: fixed; z-index: 999;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  user-select: none;
+}
+
+/* ── Cartoon character ball ── */
+.music-btn {
+  width: 60px; height: 60px; border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #FFFEF9, #FFE8CC);
+  border: 3px solid #F0C080;
+  cursor: grab; touch-action: none;
+  box-shadow: 0 4px 18px rgba(200,150,80,0.15), inset 0 2px 0 rgba(255,255,255,0.9);
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: visible;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+.music-btn:hover { transform: scale(1.08); }
+.music-btn:active { cursor: grabbing; }
+.music-btn.music-playing {
+  background: radial-gradient(circle at 40% 35%, #FFFEF5, #FFE0B0);
+  border-color: #E8A040;
+  box-shadow: 0 4px 24px rgba(255,150,40,0.25), inset 0 2px 0 rgba(255,255,255,0.9);
+  animation: floatBounce 2s ease-in-out infinite;
+}
+@keyframes floatBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+/* Face */
+.music-face {
+  position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 8px; align-items: center; justify-content: center;
+}
+.music-eye {
+  width: 7px; height: 9px; border-radius: 50%; background: #5C3A1E;
+  transition: all 0.3s ease;
+}
+.music-playing .music-eye { height: 5px; border-radius: 4px; } /* happy squint */
+.music-mouth {
+  position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%);
+  width: 10px; height: 4px; border-radius: 0 0 6px 6px; background: #5C3A1E;
+  transition: all 0.3s ease;
+}
+.music-mouth.singing { width: 14px; height: 8px; border-radius: 50%; background: #5C3A1E; }
+
+.music-note {
+  position: absolute; right: -4px; top: -8px;
+  font-size: 22px; transition: all 0.3s ease;
+}
+.music-playing .music-note { animation: noteFloat 1.5s ease-in-out infinite; }
+@keyframes noteFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  50% { transform: translateY(-6px) rotate(10deg); opacity: 0.7; }
+}
+
+/* Controls — hidden by default, show on hover */
+.music-controls {
+  position: absolute; left: 50%; top: 68px; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 14px; border-radius: 20px;
+  background: white; border: 1.5px solid #ECE4D8;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  white-space: nowrap;
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity .16s ease, visibility .16s ease;
+}
+.music-controls-show {
+  opacity: 1; visibility: visible; pointer-events: auto;
+}
+
+/* Keep the 8px visual gap inside the same hover path. */
+.music-controls::before {
+  content: ""; position: absolute; left: 0; right: 0; top: -10px; height: 10px;
+}
+
+.music-vol-label {
+  font-size: 12px; color: var(--color-text-light); min-width: 50px; text-align: right;
+}
+
+.music-source {
+  font-size: 11px; color: var(--color-primary-dark); white-space: nowrap;
+}
+.music-source:hover { text-decoration: underline; }
+
+.music-error {
+  max-width: 220px; padding: 7px 11px; border-radius: 10px;
+  background: #fff; color: var(--color-danger);
+  box-shadow: var(--shadow-sm); font-size: 12px;
+}
+
+.music-slider {
+  width: 70px; height: 6px;
+  -webkit-appearance: none; appearance: none;
+  background: #E8E0D8; border-radius: 10px; outline: none; cursor: pointer;
+}
+.music-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%;
+  background: var(--color-primary); cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+}

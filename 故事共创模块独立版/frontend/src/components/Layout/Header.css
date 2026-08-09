@@ -1,0 +1,35 @@
+.app-header{
+  position:sticky;top:12px;z-index:100;display:flex;align-items:center;justify-content:space-between;
+  max-width:1120px;margin:12px auto 0;padding:10px 20px;border-radius:var(--radius-lg);
+  background:rgba(255,255,255,.78);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.6);
+  box-shadow:var(--shadow-card);width:calc(100% - 32px)
+}
+.header-logo{display:flex;align-items:center;gap:10px}
+.header-brand{display:flex;align-items:center;gap:14px;min-width:0}
+.header-platform{
+  display:inline-flex;align-items:center;gap:6px;flex:0 0 auto;padding:8px 14px;
+  border:1px solid rgba(117,102,217,.2);border-radius:var(--radius-full);
+  background:rgba(255,255,255,.8);color:#5f52a8;font-size:var(--font-size-xs);font-weight:700;
+  box-shadow:0 5px 14px rgba(95,82,168,.1);transition:transform .2s ease,box-shadow .2s ease
+}
+.header-platform:hover{transform:translateY(-1px);box-shadow:0 7px 17px rgba(95,82,168,.16)}
+.logo-star{position:absolute;animation:starFloat 3s ease-in-out infinite;pointer-events:none}
+.logo-star-1{width:18px;top:-6px;left:28px;animation-delay:0s}
+.logo-star-2{width:12px;top:8px;left:38px;animation-delay:-1.5s}
+@keyframes starFloat{0%,100%{transform:translateY(0) rotate(0deg);opacity:.6}50%{transform:translateY(-6px) rotate(15deg);opacity:1}}
+
+.logo-icon{
+  width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--pink),var(--lavender));font-size:18px;color:#FFF;transform:rotate(-6deg)
+}
+.logo-text{font-family:var(--font-display);font-size:var(--font-size-md);color:var(--color-text);letter-spacing:.02em}
+.header-user{display:flex;align-items:center;gap:10px}
+.header-greeting{font-size:var(--font-size-xs);color:var(--color-text-light)}
+.header-home,.header-logout{
+  padding:7px 16px;border-radius:var(--radius-full);font-size:var(--font-size-xs);font-weight:600
+}
+.header-home{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(117,102,217,.16);background:linear-gradient(135deg,#e9e4ff,#d8cffb);color:#5f52a8;transition:transform .2s ease,box-shadow .2s ease}
+.header-home:hover{transform:translateY(-1px);box-shadow:0 6px 14px rgba(95,82,168,.15)}
+.header-logout{background:#F5F0F8;color:var(--color-text-light)}
+@media(max-width:640px){.app-header{padding:8px 10px;border-radius:var(--radius-md)}.header-brand{gap:7px}.header-platform{padding:7px 9px}.header-greeting{display:none}.header-user{gap:6px}.header-home,.header-logout{padding:7px 10px}.logo-text{font-size:1rem}}
+@media(max-width:430px){.logo-text{display:none}.header-platform{font-size:.76rem}.header-logout{padding-inline:9px}}

@@ -1,0 +1,14 @@
+.bg-deco{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.bg-deco-home{background-image:linear-gradient(180deg,rgba(247,246,255,.48),rgba(255,255,255,.92)),url('/story-create/home/starry-background.png');background-position:center top;background-size:cover;background-repeat:no-repeat}
+.bg-deco-home .bg-orb{opacity:.05}
+.bg-orb{position:absolute;border-radius:50%;opacity:.14;filter:blur(60px)}
+.bg-orb-1{width:400px;height:400px;top:-80px;left:-100px;background:var(--pink)}
+.bg-orb-2{width:350px;height:350px;top:50%;right:-120px;background:var(--sky)}
+.bg-orb-3{width:300px;height:300px;bottom:-60px;left:30%;background:var(--mint)}
+.bg-float{position:absolute;font-size:28px;opacity:.08;color:var(--color-primary);animation:floatCandy 6s ease-in-out infinite;font-family:serif}
+.bg-float-1{top:15%;left:8%;animation-delay:0s}
+.bg-float-2{top:25%;right:12%;animation-delay:-2s}
+.bg-float-3{top:65%;left:6%;animation-delay:-4s}
+.bg-float-4{top:72%;right:10%;animation-delay:-1s}
+@keyframes floatCandy{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-14px) rotate(6deg)}}
+@media(max-width:640px){.bg-orb{opacity:.08}.bg-deco-home{background-position:62% top}.bg-deco-home .bg-orb{opacity:.03}.bg-float{display:none}}

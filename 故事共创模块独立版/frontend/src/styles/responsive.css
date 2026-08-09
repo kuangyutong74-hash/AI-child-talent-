@@ -1,0 +1,199 @@
+/* ═══════════════════════════════════════════
+   Responsive — Tablet & Phone overrides
+   ═══════════════════════════════════════════ */
+
+/* Tablet: preserve desktop composition, give more room */
+@media (max-width: 900px) {
+  .page {
+    max-width: 760px;
+    padding: 20px;
+  }
+  .app-header {
+    padding-inline: 18px;
+  }
+  .home-page {
+    padding-inline: 20px;
+  }
+}
+
+/* Phone typography and spacing */
+@media (max-width: 600px) {
+  :root {
+    --font-size-xs: 0.8125rem;
+    --font-size-sm: 0.9375rem;
+    --font-size-body: 1.0625rem;
+    --font-size-md: 1.25rem;
+    --font-size-lg: 1.625rem;
+    --font-size-xl: 2rem;
+    --font-size-xxl: 2.35rem;
+  }
+
+  body {
+    line-height: 1.65;
+    overflow-wrap: anywhere;
+  }
+
+  .page {
+    padding: 16px 14px 32px;
+  }
+
+  .app-header {
+    min-height: 58px;
+    padding: 8px 12px;
+    gap: 8px;
+  }
+
+  .header-logo {
+    min-width: 0;
+    gap: 6px;
+  }
+
+  .logo-icon { font-size: 22px; }
+  .logo-text {
+    max-width: 112px;
+    font-size: 1rem;
+    line-height: 1.25;
+  }
+
+  .header-user { gap: 6px; }
+  .header-greeting { display: none; }
+  .header-channel,
+  .header-logout {
+    min-height: 36px;
+    padding: 5px 9px;
+    white-space: nowrap;
+  }
+
+  input,
+  textarea {
+    padding: 10px 12px;
+    line-height: 1.55;
+  }
+
+  .btn-sm { padding: 8px 14px; }
+  .btn-md { padding: 11px 22px; }
+  .btn-lg {
+    width: 100%;
+    padding: 13px 20px;
+  }
+
+  .home-page { padding: 24px 14px 36px; }
+  .home-hero { margin-bottom: 24px; }
+  .home-title { line-height: 1.25; }
+  .home-subtitle { line-height: 1.65; }
+  .home-channel { flex-wrap: wrap; }
+  .home-actions { margin-bottom: 32px; }
+  .home-feature { padding: 20px 16px; }
+
+  .login-page,
+  .channel-page { padding: 14px; }
+  .login-card,
+  .channel-card { padding: 28px 18px; }
+  .channel-options { flex-direction: column; }
+  .channel-option { padding: 18px 14px; }
+
+  .character-page { padding-top: 20px; }
+  .start-story-card { padding: 18px 14px; }
+  .theme-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .theme-option { min-height: 68px; }
+  .character-card { padding: 14px; }
+
+  .story-play-page {
+    min-height: calc(100dvh - 58px);
+  }
+  .story-play-top { padding: 7px 10px; }
+  .story-title-inline { font-size: 1rem; }
+  .story-chat-area { padding: 16px 10px; }
+  .chat-msg {
+    max-width: 96%;
+    gap: 7px;
+  }
+  .chat-avatar,
+  .typing-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 17px;
+  }
+  .chat-body {
+    padding: 12px 14px;
+    line-height: 1.75;
+  }
+  .chat-text { line-height: 1.75; }
+  .chat-text:has(ruby) { line-height: 2.65; }
+  .story-input-wrapper { padding: 10px 10px 12px; }
+  .story-input-row { gap: 7px; }
+  .voice-btn { width: 44px; height: 44px; }
+  .story-input-send { width: 42px; height: 42px; }
+  .story-input-hint { line-height: 1.45; }
+  .story-ended-card { padding: 20px 14px; }
+  .story-ended-actions { flex-direction: column; }
+
+  .gallery-header {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .gallery-actions { flex-wrap: wrap; }
+  .story-card { padding: 12px; }
+  .story-card-cover { width: 56px; min-width: 56px; }
+  .story-card-preview { line-height: 1.55; }
+  .story-actions { flex-wrap: wrap; }
+  .gallery-action-btn { min-height: 36px; }
+
+  .talent-hero,
+  .talent-radar,
+  .talent-scores,
+  .talent-tags,
+  .talent-highlights,
+  .talent-fb-card {
+    padding: 18px 14px;
+  }
+  .talent-hero-desc { line-height: 1.75; }
+  .talent-hero-meta { flex-wrap: wrap; }
+  .talent-radar-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .talent-bar-header { flex-wrap: wrap; }
+  .talent-bar-trend { min-width: auto; }
+  .talent-actions { flex-direction: column; }
+
+  .modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+  .modal-content {
+    max-height: 92dvh;
+    border-radius: var(--radius-card) var(--radius-card) 0 0;
+  }
+  .modal-header { padding: 14px 16px; }
+  .modal-body { padding: 14px; }
+  .reader-toolbar { top: -14px; }
+  .reader-content {
+    font-size: var(--font-size-body);
+    line-height: 1.8;
+  }
+
+  .onboarding-overlay { padding: 14px; }
+  .onboarding-card { padding: 28px 18px; }
+  .onboarding-desc { line-height: 1.7; }
+
+  .music-player {
+    right: 12px;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+  }
+  .music-controls { max-width: calc(100vw - 24px); }
+}
+
+/* Extra small */
+@media (max-width: 380px) {
+  :root {
+    --font-size-body: 1rem;
+    --font-size-xl: 1.75rem;
+  }
+
+  .logo-text { max-width: 92px; font-size: 0.9rem; }
+  .header-channel { font-size: 0.72rem; padding-inline: 7px; }
+  .header-logout { font-size: 0.72rem; padding-inline: 7px; }
+  .chat-avatar,
+  .typing-avatar { display: none; }
+  .chat-msg { max-width: 100%; }
+  .theme-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
+}

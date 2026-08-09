@@ -1,0 +1,168 @@
+/* ═══════════════════════════════════════════
+   Story Co-Create — Animation Keyframes
+   ═══════════════════════════════════════════ */
+
+/* Bounce */
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.animate-bounce { animation: bounce 0.6s ease infinite; }
+
+/* Float */
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-6px) rotate(1deg); }
+  75% { transform: translateY(6px) rotate(-1deg); }
+}
+.animate-float { animation: float 3s ease-in-out infinite; }
+
+/* Gentle float — softer, for decorative elements */
+@keyframes gentleFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* Pulse */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+.animate-pulse { animation: pulse 2s ease-in-out infinite; }
+
+/* Glow pulse — for buttons and focus elements */
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(155,143,212,0.2); }
+  50% { box-shadow: 0 0 24px rgba(155,143,212,0.45); }
+}
+
+/* Shake */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
+}
+.animate-shake { animation: shake 0.5s ease; }
+
+/* Fade In */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in { animation: fadeIn 0.5s ease forwards; }
+
+/* Page enter — whole-page transition */
+@keyframes pageEnter {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Page exit */
+@keyframes pageExit {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-8px); }
+}
+
+/* Typing dots */
+@keyframes typingDot {
+  0%, 60% { opacity: 0.3; transform: translateY(0); }
+  100% { opacity: 1; transform: translateY(-6px); }
+}
+.typing-dot {
+  display: inline-block; width: 8px; height: 8px;
+  border-radius: 50%; background: var(--color-primary);
+  margin: 0 3px; animation: typingDot 1.4s ease infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* Slide Up */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-up { animation: slideUp 0.4s ease forwards; }
+
+/* Pop In — elastic scale */
+@keyframes popIn {
+  0% { opacity: 0; transform: scale(0.5); }
+  70% { transform: scale(1.1); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.animate-pop-in { animation: popIn 0.4s ease forwards; }
+
+/* Story bubble in — with bounce */
+@keyframes storyBubbleIn {
+  0% { opacity: 0; transform: translateY(16px) scale(0.92); }
+  60% { opacity: 1; transform: translateY(-3px) scale(1.03); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Sparkle — star twinkle */
+@keyframes sparkle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.35); }
+}
+.animate-sparkle { animation: sparkle 1.5s ease-in-out infinite; }
+
+/* Star float — for decorative stars */
+@keyframes starFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33% { transform: translateY(-12px) rotate(6deg); }
+  66% { transform: translateY(-4px) rotate(-3deg); }
+}
+
+/* Wave — for decorative dividers */
+@keyframes waveMove {
+  0% { transform: translateX(0); }
+  50% { transform: translateX(-25%); }
+  100% { transform: translateX(0); }
+}
+
+/* Glow border — animated gradient border */
+@keyframes borderGlow {
+  0%, 100% { border-color: rgba(155,143,212,0.35); }
+  50% { border-color: rgba(255,143,171,0.55); }
+}
+
+/* Rainbow shimmer — for loading / magic effects */
+@keyframes rainbowShimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* Book flip hint */
+@keyframes bookFlip {
+  0%, 100% { transform: perspective(400px) rotateY(0deg); }
+  50% { transform: perspective(400px) rotateY(8deg); }
+}
+
+/* Feather write — for typing indicator */
+@keyframes featherWrite {
+  0%, 100% { transform: rotate(-5deg) translateY(0); }
+  50% { transform: rotate(8deg) translateY(-4px); }
+}
+
+/* Gentle sway — for decorative elements */
+@keyframes gentleSway {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg); }
+}
+
+/* Scale in — subtle entrance */
+@keyframes scaleIn {
+  from { transform: scale(0.94); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

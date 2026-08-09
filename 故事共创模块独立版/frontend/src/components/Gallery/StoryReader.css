@@ -1,0 +1,109 @@
+.story-reader {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.reader-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 0;
+  background: transparent;
+}
+
+.reader-toolbar-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-light);
+}
+
+.reader-pinyin-toggle {
+  padding: 6px 14px;
+  border: 1.5px solid var(--color-primary-light);
+  border-radius: var(--radius-button);
+  color: var(--color-primary-dark);
+  background: var(--color-white);
+  font-size: var(--font-size-xs);
+}
+
+.reader-pinyin-toggle.active {
+  color: var(--color-white);
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.reader-message-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.reader-message {
+  display: flex;
+  gap: 12px;
+}
+
+.reader-role-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-round);
+  background: var(--color-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+}
+
+.reader-content {
+  flex: 1;
+  min-width: 0;
+  padding: 14px 18px;
+  border-radius: var(--radius-bubble);
+  line-height: 1.8;
+  font-size: var(--font-size-body);
+}
+
+.reader-message-ai .reader-content {
+  background: var(--color-bubble-ai);
+}
+
+.reader-message-child .reader-content {
+  background: var(--color-bubble-child);
+}
+
+.story-reader-pinyin .reader-message-ai .reader-content p {
+  line-height: 2.7;
+}
+
+.story-reader ruby {
+  ruby-position: over;
+  margin: 0 0.04em;
+}
+
+.story-reader rt {
+  color: var(--color-primary-dark);
+  font-size: 0.58em;
+}
+
+.reader-fs-s .reader-content p { font-size: 1rem; }
+.reader-fs-m .reader-content p { font-size: var(--font-size-body); }
+.reader-fs-l .reader-content p { font-size: 1.5rem; }
+
+.fontsize-toggle { display: flex; gap: 2px; }
+.fs-btn { padding: 3px 8px; border: 1px solid #ddd; border-radius: var(--radius-sm); background: #f8f8f8; font-size: 11px; cursor: pointer; color: var(--color-text-light); }
+.fs-btn:hover { border-color: var(--color-primary); }
+.fs-active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+
+.reader-error {
+  text-align: center;
+  color: var(--color-danger);
+  padding: 24px;
+}
+
+@media (max-width: 600px) {
+  .reader-role-icon { display: none; }
+  .reader-content { padding: 12px 14px; }
+}

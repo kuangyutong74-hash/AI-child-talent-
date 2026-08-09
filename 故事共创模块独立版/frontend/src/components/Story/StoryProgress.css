@@ -1,0 +1,38 @@
+/* ═══════════════════════════════════════════
+   StoryProgress — Rainbow progress bar
+   ═══════════════════════════════════════════ */
+.story-progress {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 20px;
+  background: var(--color-white);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-sm);
+}
+.progress-bar-track {
+  flex: 1; height: 12px;
+  background: #F0E8DC;
+  border-radius: 6px; overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,.04);
+}
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--mint), var(--lavender), var(--pink));
+  border-radius: 6px;
+  transition: width 0.5s ease;
+  position: relative;
+}
+/* Shine effect */
+.progress-bar-fill::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.35) 45%, rgba(255,255,255,.15) 55%, transparent 100%);
+  border-radius: inherit;
+}
+.progress-bar-ending {
+  background: linear-gradient(90deg, var(--yellow), var(--peach), var(--coral)) !important;
+  animation: glowPulse 1.5s ease-in-out infinite;
+}
+.progress-label {
+  font-size: var(--font-size-xs); color: var(--color-text-light);
+  white-space: nowrap; min-width: 100px; text-align: right;
+}

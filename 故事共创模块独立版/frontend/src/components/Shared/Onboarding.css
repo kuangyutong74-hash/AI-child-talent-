@@ -1,0 +1,45 @@
+.onboarding-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,0.5);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+
+.onboarding-card {
+  background: white; border-radius: var(--radius-card);
+  padding: 36px 32px; max-width: 420px; width: 100%;
+  text-align: center; box-shadow: var(--shadow-lg);
+  display: flex; flex-direction: column; align-items: center; gap: 16px;
+}
+
+.onboarding-progress {
+  display: flex; gap: 6px;
+}
+
+.onboarding-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #E0D5C7; transition: all var(--transition-fast);
+}
+.onboarding-dot.active { background: var(--color-primary); width: 20px; border-radius: 4px; }
+.onboarding-dot.done { background: var(--color-secondary); }
+
+.onboarding-emoji { font-size: 56px; }
+
+.onboarding-title {
+  font-size: var(--font-size-lg); color: var(--color-text);
+}
+
+.onboarding-desc {
+  font-size: var(--font-size-sm); color: var(--color-text-light);
+  line-height: 1.8; max-width: 340px;
+}
+
+.onboarding-actions {
+  display: flex; gap: 12px; align-items: center;
+}
+
+.onboarding-skip {
+  background: none; color: #bbb; font-size: var(--font-size-xs);
+  padding: 4px 8px;
+}
+.onboarding-skip:hover { color: #999; }
