@@ -1,0 +1,20 @@
+{% extends "base.html" %}{% block title %}工作日常体验 — 职业体验模拟器{% endblock %}{% block body_class %}page-workday{% endblock %}
+{% block content %}
+<div id="wd-app" class="wd-app">
+  <!-- top bar -->
+  <header class="wd-bar">
+    <a href="/careers" class="wd-back">&#8592; 职业列表</a>
+    <div class="wd-crumbs" id="wd-crumbs"></div><div class="wd-stage-progress" aria-label="职业日常阶段进度"><span id="wd-stage-label">第 1 关</span><i><b id="wd-stage-fill"></b></i></div>
+    <button id="wd-pinyin-toggle" class="wd-pinyin-toggle" type="button" aria-pressed="false" title="显示或隐藏拼音辅助"><span aria-hidden="true">拼</span><b>拼音</b></button>
+    <div class="wd-clock" id="wd-clock">🕐 08:00</div>
+  </header>
+  <!-- main game -->
+  <main id="wd-main" class="wd-main"></main>
+  <!-- bottom hint -->
+  <footer id="wd-hint" class="wd-hint"></footer>
+  <!-- overlay for detail cards -->
+  <div id="wd-overlay" class="wd-overlay" style="display:none"></div>
+</div>
+{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="/static/css/workday.css?v=cartoon-task-art-v12"><link rel="stylesheet" href="/static/css/responsive.css?v=responsive-v2"><link rel="stylesheet" href="/static/css/workday-polish.css?v=task-polish-v1"><link rel="stylesheet" href="/static/css/workday-icon-polish.css?v=icons-v1"><link rel="stylesheet" href="/static/css/workday-stickers.css?v=firefighter-stickers-v1"><link rel="stylesheet" href="/static/css/workday-pinyin.css?v=pinyin-v1"><link rel="stylesheet" href="/static/css/workday-mechanics.css?v=mechanics-v1">{% endblock %}
+{% block extra_js %}<script src="/static/js/workday.js?v=task-mechanics-v19"></script>{% endblock %}

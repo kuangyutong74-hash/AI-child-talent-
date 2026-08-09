@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}教师 / 家长观察台{% endblock %}
+{% block body_class %}page-observer-dashboard{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="/static/css/observer-dashboard.css?v=observer-v1"><link rel="stylesheet" href="/static/css/observer-dashboard-v2.css?v=observer-v2">{% endblock %}
+{% block content %}
+<main class="observer-shell">
+  <header class="observer-hero">
+    <a href="/my-exploration" class="observer-back">← 返回探索中心</a>
+    <div class="observer-head">
+      <div><p>成人陪伴视角 · ECD 观察记录</p><h1>教师 / 家长观察台</h1><span>回看体验过程、证据线索与需要成人关注的状态；不用于给孩子贴标签或作能力排名。</span><div class="observer-hero-tags"><span>任务表现</span><span>过程行为</span><span>安全保护</span></div></div>
+      <div class="observer-seal">🔎<b>成长观察</b></div>
+    </div>
+  </header>
+
+  <section class="observer-boundary"><span>💛</span><p><b>怎么看这份记录？</b> 重点是孩子如何尝试、调整和表达，而不是“答对了多少”。自由表达的敏感原文不会在这里展示。</p></section>
+
+  <section id="observer-loading" class="observer-status"><span>🌱</span><p>正在整理本次探索记录…</p></section>
+  <section id="observer-empty" class="observer-status" hidden><span>🧭</span><h2>暂时还没有可回看的记录</h2><p id="observer-empty-text">完成一次职业情境体验后，这里会出现过程观察。</p><a href="/careers">去开始职业体验 →</a></section>
+
+  <div id="observer-content" hidden>
+    <section class="observer-overview" id="observer-overview"></section>
+    <section class="observer-summary-card"><div class="observer-summary-head"><div><p>整体观察小结</p><h2>这一次，我们看到了什么？</h2></div><span class="observer-summary-mark">✦</span></div><div id="observer-summary" class="observer-summary-body"></div></section>
+    <section class="observer-section"><div class="observer-section-head"><div><p>跨职业证据链</p><h2>观察到的思考与行动线索</h2><span>按 ECD 任务—行为—证据逻辑整理，只呈现已有观察依据的维度。</span></div></div><div id="observer-evidence" class="observer-evidence-grid"></div></section>
+    <section class="observer-section"><div class="observer-section-head"><div><p>职业日常过程</p><h2>参与方式小记</h2><span>专注时长、提示、调整和重试只反映本次过程，不直接换算为能力分数。</span></div></div><div id="observer-process" class="observer-process-list"></div></section>
+    <section class="observer-section"><div class="observer-section-head"><div><p>内容保护与人工关注</p><h2>安全处理状态</h2><span>仅显示保护类别与处理进度，不显示孩子的敏感原话。</span></div></div><div id="observer-safety" class="observer-safety-list"></div></section>
+  </div>
+  <footer class="observer-footer">正式使用时，应配置教师身份权限、监护人知情同意、最小化数据留存和学校未成年人保护流程。</footer>
+</main>
+{% endblock %}
+{% block extra_js %}
+<script>
+function observerEsc(value){return String(value||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function observerFetch(url){
+  if(typeof Auth!=='undefined'&&Auth.isLoggedIn()) return Auth.fetch(url);
+  var token=localStorage.getItem('career-student-token-v1')||'';
+  return fetch(url,{headers:token?{'X-Student-Token':token}:{}});
+}
+function observerSummaryUrl(){
+  if(typeof Auth!=='undefined'&&Auth.isLoggedIn()) return '/api/user/summary';
+  var token=localStorage.getItem('career-student-token-v1')||'';
+  return token?'/api/student/'+encodeURIComponent(token)+'/summary':'';
+}
+function observerDate(value){if(!value)return '刚刚记录';var d=new Date(value);return isNaN(d.getTime())?'刚刚记录':(d.getMonth()+1)+'月'+d.getDate()+'日';}
+function observerEmpty(text){document.getElementById('observer-loading').hidden=true;document.getElementById('observer-empty').hidden=false;document.getElementById('observer-empty-text').textContent=text||'完成一次职业情境体验后，这里会出现过程观察。';}
+function renderObserverOverview(data, feed){
+  var age=(data.student_age||'—')+'岁';var phase=(data.developmental_context||{}).label||'发展参考待补充';
+  document.getElementById('observer-overview').innerHTML='<article><span>🗺️</span><b>'+Number(data.career_count||0)+'</b><small>已完成职业</small></article><article><span>🧩</span><b>'+Number(feed.experience_count||0)+'</b><small>完整体验次数</small></article><article><span>🌱</span><b>'+observerEsc(age)+'</b><small>'+observerEsc(phase)+'</small></article>';
+}
+function renderObserverSummary(data){
+  var box=document.getElementById('observer-summary');if(!box)return;
+  var chains=(data.teacher_chains||[]).filter(function(x){return x.level!=='证据不足';});
+  var featured=chains.slice(0,3).map(function(x){return x.dimension;});
+  var overall=data.career_count>1
+    ? '目前汇总了 '+Number(data.career_count||0)+' 个职业体验。孩子在不同任务要求下留下了可回看的选择、解释与调整记录；其中反复出现的线索值得在新的职业和任务机制中继续验证。'
+    : '目前记录来自一次职业体验，适合将它作为下一次观察的起点，而不是能力结论。可结合孩子的日常表现，在不同任务中继续收集证据。';
+  var directions=featured.length?('可继续在新的职业或不同任务机制中观察：'+featured.join('、')+'。'):'建议继续完成不同职业体验，收集更丰富的行为证据。';
+  var phase=(data.developmental_context||{}).teacher_note||'请结合孩子当时的情境、表达方式与日常表现理解这份记录。';
+  box.innerHTML='<div class="observer-summary-main"><span class="summary-quote">“</span><p>'+observerEsc(overall)+'</p></div><div class="observer-summary-points"><article><b>本次观察范围</b><span>'+Number(data.career_count||0)+' 个职业体验 · '+Number(chains.length||0)+' 个已收集维度</span></article><article><b>可继续关注</b><span>'+observerEsc(directions)+'</span></article><article><b>解读提醒</b><span>'+observerEsc(phase)+'</span></article></div>';
+}
+function renderObserverEvidence(chains){
+  var box=document.getElementById('observer-evidence');
+  var observed=(chains||[]).filter(function(item){return item.level!=='证据不足';});
+  if(!observed.length){box.innerHTML='<div class="observer-blank">完成更多不同职业的情境后，会形成更完整的跨职业证据链。</div>';return;}
+  box.innerHTML=observed.map(function(item){var traces=(item.traces||[]).slice(0,3);return '<article class="observer-evidence-card"><div><b>'+observerEsc(item.dimension)+'</b><span>'+observerEsc(item.level)+'</span></div><p>覆盖 '+Number(item.cover_careers||0)+' 个职业 · '+Number(item.cover_scenarios||0)+' 个情境</p><small>'+observerEsc(item.note||'建议继续收集不同情境中的行为线索。')+'</small><ul>'+traces.map(function(t){return '<li><b>'+observerEsc(t.career)+' · '+observerEsc(t.scenario)+'</b><span>'+(t.actions||[]).map(observerEsc).join('；')+'</span></li>';}).join('')+'</ul></article>';}).join('');
+}
+function renderObserverProcess(history){
+  var box=document.getElementById('observer-process');
+  var useful=(history||[]).filter(function(x){return x.workday_process&&Object.keys(x.workday_process).length;});
+  if(!useful.length){box.innerHTML='<div class="observer-blank">暂未同步职业日常过程记录。完成“职业日常”后再进入同职业情境，过程小记会在这里出现。</div>';return;}
+  box.innerHTML=useful.map(function(item){var p=item.workday_process||{};return '<article class="observer-process-card"><div><b>'+observerEsc(item.career_name)+'</b><span>'+observerDate(item.completed_at)+' · 第 '+Number(item.round||1)+' 次体验</span></div><p><em>'+Number(p.focusMinutes||0)+'</em> 分钟专注体验　<em>'+Number(p.completedStages||0)+'/'+Number(p.stageCount||0)+'</em> 阶段完成</p><small>主动操作 '+Number(p.interactionCount||0)+' 次 · 调整 / 重试 '+(Number(p.adjustmentCount||0)+Number(p.retryCount||0))+' 次 · 查看提示 '+Number(p.hintCount||0)+' 次</small></article>';}).join('');
+}
+function renderObserverSafety(events){
+  var box=document.getElementById('observer-safety');
+  if(!events||!events.length){box.innerHTML='<div class="observer-safe">✓ 本次已完成体验中没有需要额外留痕的内容保护事件。</div>';return;}
+  var labels={urgent:'紧急安全关注',attention:'情绪 / 同伴关系关注',privacy:'个人信息保护',redirect:'不当内容转向'};
+  var states={new:'待成人查看',reviewing:'处理中',closed:'已完成跟进'};
+  box.innerHTML=events.map(function(e){return '<article class="observer-safety-card level-'+observerEsc(e.level)+'"><div><b>'+observerEsc(labels[e.level]||'内容保护提示')+'</b><span>'+observerEsc(states[e.status]||e.status)+'</span></div><p>'+observerEsc(e.career_name)+' · '+observerDate(e.created_at)+'</p><small>系统动作：'+observerEsc(e.student_action||'已进行保护处理')+'；原始内容未保存到观察页面。</small></article>';}).join('');
+}
+async function loadObserver(){
+  var summaryUrl=observerSummaryUrl();if(!summaryUrl){observerEmpty('请先在当前浏览器完成一次职业体验，或登录账号后查看已保存的记录。');return;}
+  try{
+    var results=await Promise.all([observerFetch(summaryUrl),observerFetch('/api/exploration/feed'),observerFetch('/api/observer/safety-summary')]);
+    if(!results[0].ok)throw new Error('summary');
+    var data=await results[0].json(),feed=results[1].ok?await results[1].json():{},safety=results[2].ok?await results[2].json():{};
+    if(!data.career_count&&!(safety.events||[]).length){observerEmpty(data.message||'暂时还没有完成的职业体验记录。');return;}
+    document.getElementById('observer-loading').hidden=true;document.getElementById('observer-content').hidden=false;
+    renderObserverOverview(data,feed);renderObserverSummary(data);renderObserverEvidence(data.teacher_chains||[]);renderObserverProcess(feed.career_history||[]);renderObserverSafety(safety.events||[]);
+  }catch(e){observerEmpty('记录暂时无法加载，请刷新页面后重试。');}
+}
+document.addEventListener('DOMContentLoaded',loadObserver);
+</script>
+{% endblock %}

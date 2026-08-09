@@ -1,0 +1,154 @@
+{% extends "base.html" %}{% block title %}选择职业 — 职业体验模拟器{% endblock %}{% block body_class %}page-careers{% endblock %}
+{% block content %}
+<div class="careers-container">
+<header class="careers-header"><a href="/" class="back-link"><span class="back-arrow">&#8592;</span> 返回首页</a>
+<h1 class="careers-title">选择一座职业小岛</h1><p class="careers-subtitle">每一座小岛都藏着一段职业故事，选一座出发吧！</p></header>
+<div class="careers-grid">{% for career in careers %}
+<div class="career-card island-card" onclick="selectCareer('{{ career.id }}')" style="--career-color: {{ career.color }}">
+<div class="card-bg" style="background: {{ career.bg_gradient }}"></div>
+<div class="island-sand"></div><div class="island-flag">职业小岛</div><div class="card-content"><div class="card-icon">{{ career.icon }}</div><h2 class="card-name">{{ career.name }}</h2>
+<p class="card-tagline">{{ career.tagline }}</p><div class="card-difficulty">
+{% for i in range(career.difficulty) %}<span class="diff-star filled">&#9733;</span>{% endfor %}
+{% for i in range(3 - career.difficulty) %}<span class="diff-star">&#9734;</span>{% endfor %}</div></div></div>{% endfor %}</div>
+
+<div id="career-modal" class="modal-overlay" style="display:none"><div class="modal-card">
+<button class="modal-close" onclick="closeModal()">&#10005;</button>
+<div class="modal-career-info"><span class="modal-icon" id="modal-icon"></span><h2 id="modal-name"></h2><p id="modal-tagline"></p></div>
+<p class="modal-description" id="modal-description"></p><p class="modal-skills" id="modal-skills"></p>
+<div class="modal-scenarios" id="modal-scenarios"></div>
+
+<div class="mode-choose"><p class="mode-label">选择体验方式</p>
+<div class="mode-buttons">
+  <div class="mode-card mode-scenario" id="mode-scenario">
+    <div class="mode-icon-wrap"><span class="mode-icon">&#128172;</span></div>
+    <h3>情境对话</h3>
+    <p>跟随剧情发展，在不同情境中做出选择，AI导师陪你一步步思考</p>
+    <span class="mode-arrow">进入 &#10132;</span>
+  </div>
+  <div class="mode-card mode-workday" id="mode-workday">
+    <div class="mode-icon-wrap"><span class="mode-icon">&#128736;</span></div>
+    <h3>职业日常</h3>
+    <p>以互动游戏的方式体验一天的真实工作流程：准备、操作、决策</p>
+    <span class="mode-arrow">进入 &#10132;</span>
+  </div>
+</div></div>
+
+<form id="session-form" class="session-form" onsubmit="startSession(event)" style="display:none">
+<input type="hidden" id="career-id-input" name="career_id">
+<input type="hidden" id="student-token-input" name="student_token">
+<p id="workday-bridge-note" class="workday-bridge-note" style="display:none">🌱 已保存刚才的职业日常参与小记。完成情境体验后，它会和你的思考过程一起出现在报告中。</p>
+<div class="form-group"><label for="student-name">你的名字（或昵称）</label><input type="text" id="student-name" name="student_name" placeholder="输入你的名字" maxlength="30" required></div>
+<div class="form-group"><label for="student-age">你的年龄</label><select id="student-age" name="age" required>
+<option value="">请选择年龄</option>{% for a in range(6, 15) %}<option value="{{ a }}">{{ a }}岁</option>{% endfor %}</select></div>
+<button type="submit" class="start-session-btn">开始情境对话 <span class="btn-arrow">&#10132;</span></button>
+<button type="button" class="back-to-modes" onclick="backToModes()">&#8592; 重新选择模式</button></form>
+
+<p class="modal-note">* 你的信息仅用于本次体验，不会被保存或分享</p></div></div>
+<div id="loading-overlay" class="loading-overlay" style="display:none"><div class="loading-content"><div class="loading-spinner"></div><p id="loading-msg">正在准备你的体验之旅...</p></div></div>
+</div>{% endblock %}
+{% block extra_js %}<script>
+const careersData={{ careers | tojson | safe }};
+let selectedCareerId = '';
+
+// 轻量学生身份标识：同一浏览器自动生成，跨会话关联。
+// 已知限制：更换浏览器或清除缓存后 token 丢失，历史记录无法关联。
+// 后续如需正式的账号系统，可将此机制替换为 user_id。
+(function(){var K='career-student-token-v1';if(!localStorage.getItem(K)){localStorage.setItem(K,'st_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,10));}})();
+function getStudentToken(){return localStorage.getItem('career-student-token-v1')||'';}
+
+function selectCareer(id){
+  const c=careersData.find(x=>x.id===id);if(!c)return;
+  selectedCareerId = id;
+  document.getElementById('modal-icon').textContent=c.icon;
+  document.getElementById('modal-name').textContent=c.name;
+  document.getElementById('modal-tagline').textContent=c.tagline;
+  document.getElementById('modal-description').textContent=c.description;
+  document.getElementById('modal-skills').textContent=c.skills_intro;
+  document.getElementById('career-id-input').value=id;
+  document.getElementById('modal-scenarios').innerHTML='<h4>情境对话预览：</h4>'+c.scenario_titles.map((t,i)=>'<div class="scenario-preview-item"><span class="sp-num">'+(i+1)+'</span> '+t+'</div>').join('');
+  // Reset to mode selection
+  backToModes();
+  document.getElementById('career-modal').style.display='flex';
+}
+
+function showSessionForm(){
+  document.querySelector('.mode-choose').style.display='none';
+  document.getElementById('modal-scenarios').style.display='none';
+  document.getElementById('session-form').style.display='flex';
+  document.getElementById('modal-description').style.display='none';
+  document.getElementById('modal-skills').style.display='none';
+  // 已登录用户：自动用账号信息填充姓名和年龄
+  var user = Auth.getUser();
+  if (user) {
+    document.getElementById('student-name').value = user.display_name || '';
+    document.getElementById('student-name').readOnly = true;
+    document.getElementById('student-name').style.background = '#f5f5f5';
+    document.getElementById('student-age').value = String(user.age || 10);
+    // select 被 disabled 后不会进入 FormData；保留提交值，只禁止孩子在这里改动。
+    document.getElementById('student-age').disabled = false;
+    document.getElementById('student-age').style.background = '#f5f5f5';
+    document.getElementById('student-age').style.pointerEvents = 'none';
+    document.getElementById('student-age').setAttribute('aria-readonly','true');
+    // 显示提示
+    var note = document.getElementById('workday-bridge-note');
+    if (note) { note.style.display = 'block'; note.innerHTML = '🌱 使用账号信息：「' + (user.display_name||'') + '，' + (user.age||'') + '岁」。体验记录将保存到你的账号。'; }
+  } else {
+    document.getElementById('student-name').readOnly = false;
+    document.getElementById('student-name').style.background = '';
+    document.getElementById('student-age').disabled = false;
+    document.getElementById('student-age').style.background = '';
+    document.getElementById('student-age').style.pointerEvents = '';
+    document.getElementById('student-age').removeAttribute('aria-readonly');
+  }
+  document.getElementById('student-name').focus();
+}
+
+function backToModes(){
+  document.querySelector('.mode-choose').style.display='block';
+  document.getElementById('modal-scenarios').style.display='block';
+  document.getElementById('session-form').style.display='none';
+  document.getElementById('modal-description').style.display='block';
+  document.getElementById('modal-skills').style.display='block';
+}
+
+function closeModal(){document.getElementById('career-modal').style.display='none'}
+
+function goWorkday(){
+  if(!selectedCareerId) return;
+  window.location.href='/workday/'+selectedCareerId;
+}
+
+async function startSession(e){
+  e.preventDefault();
+  document.getElementById('student-token-input').value = getStudentToken();
+  const fd=new FormData(document.getElementById('session-form'));
+  // 已登录时以账号资料为准；即使界面字段的可交互状态改变，也确保提交完整。
+  const activeUser=Auth.getUser();
+  if(activeUser){fd.set('student_name',activeUser.display_name||'');fd.set('age',String(activeUser.age||10));}
+  document.getElementById('loading-overlay').style.display='flex';
+  document.getElementById('loading-msg').textContent='正在准备你的体验之旅...';
+  try{
+    const r=await Auth.fetch('/api/session/start',{method:'POST',body:fd});
+    if(!r.ok){const err=await r.json();const detail=err.error||err.detail||err;
+      const message=Array.isArray(detail)?detail.map(x=>x.msg||x.message||'提交信息不完整').join('；'):(typeof detail==='object'?(detail.message||'创建体验失败，请检查填写的信息'):String(detail));
+      alert(message);document.getElementById('loading-overlay').style.display='none';return}
+    const d=await r.json();window.location.href=d.redirect_url;
+  }catch{ alert('网络连接出问题，请重试');document.getElementById('loading-overlay').style.display='none'; }
+}
+
+// Bind mode cards
+document.getElementById('mode-scenario').addEventListener('click', showSessionForm);
+document.getElementById('mode-workday').addEventListener('click', goWorkday);
+document.getElementById('career-modal').addEventListener('click',function(e){if(e.target===this)closeModal()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal()});
+// 从职业日常返回时，自动打开同一职业的情境体验入口。
+const bridgeParams=new URLSearchParams(window.location.search);
+const bridgeCareerId=bridgeParams.get('career_id');
+if(bridgeParams.get('mode')==='scenario' && careersData.some(c=>c.id===bridgeCareerId)){
+  setTimeout(function(){
+    selectCareer(bridgeCareerId);
+    showSessionForm();
+    if(bridgeParams.get('from_workday')==='1') document.getElementById('workday-bridge-note').style.display='block';
+  },120);
+}
+</script>{% endblock %}

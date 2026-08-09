@@ -1,0 +1,53 @@
+{% extends "base.html" %}{% block title %}职业体验模拟器 — 探索你的无限可能{% endblock %}{% block body_class %}page-landing{% endblock %}
+{% block content %}
+<main class="landing-container">
+  <div class="landing-sky" aria-hidden="true"><i class="cloud cloud-a"></i><i class="cloud cloud-b"></i><i class="cloud cloud-c"></i><i class="sun-orb"></i></div>
+  <section class="hero-section">
+    <div class="hero-copy">
+      <div class="hero-badge"><span class="badge-star">✦</span><span>伯乐计划 · 职业探索站</span></div>
+      <p class="hero-kicker">欢迎来到</p>
+      <h1 class="hero-title"><span>职业体验</span><strong>奇遇岛</strong></h1>
+      <p class="hero-subtitle">选一座职业小岛，完成今天的特别任务。<br>每一次观察、尝试和调整，都是发现自己的线索。</p>
+      <a href="/careers" class="start-button"><span class="btn-play">▶</span><span class="btn-text">登岛开始探索</span><span class="btn-arrow">→</span></a>
+      <p class="hero-hint">没有标准答案 · 适合 10–14 岁探索者</p>
+        <p class="hero-auth-links"><span id="hero-login-link" style="display:none">👋 <a href="#" onclick="Auth.showLoginModal('login');return false">登录</a> 或 <a href="#" onclick="Auth.showLoginModal('register');return false">注册</a>账号，跨设备保存你的所有探索记录</span><span id="hero-logged-in-msg" style="display:none"></span></p>
+    </div>
+    <div class="hero-illustration" aria-hidden="true">
+      <div class="rainbow-arc"></div><div class="cloud puff-one"></div><div class="cloud puff-two"></div>
+      <div class="explorer-mascot"><img src="/static/images/mascots/explorer-guide.png" alt="挥手欢迎你的职业探索向导"></div>
+      <a class="map-card" href="/my-exploration"><span class="map-pin">⌖</span><div><b>我的探索地图</b><small>看看已点亮的职业小岛</small></div></a>
+      <div class="island island-one"><span>⚕</span></div><div class="island island-two"><span>♨</span></div><div class="island island-three"><span>✎</span></div>
+    </div>
+  </section>
+  <section class="how-section">
+    <div class="section-heading-wrap"><p>你的探索路线</p><h2 class="section-title">三步开启职业奇遇</h2></div>
+    <div class="steps-row">
+      <article class="step-card step-yellow"><div class="step-number">1</div><div class="step-icon-wrapper">🗺️</div><h3>挑一座小岛</h3><p>从医生、记者、动物保护员等职业中，选一个你想了解的世界。</p></article>
+      <div class="step-connector">→</div>
+      <article class="step-card step-pink"><div class="step-number">2</div><div class="step-icon-wrapper">💬</div><h3>完成小任务</h3><p>看看线索、做出选择，再和 AI 导师聊聊你的想法。</p></article>
+      <div class="step-connector">→</div>
+      <article class="step-card step-mint"><div class="step-number">3</div><div class="step-icon-wrapper">🌟</div><h3>收集闪光点</h3><p>看看这次体验里，你展现出了哪些思考和行动方式。</p></article>
+    </div>
+  </section>
+  <section class="landing-promise"><span>💛</span><p><b>这不是考试。</b>你不需要答得“标准”，只要大胆地想、认真地试。</p></section>
+  <footer class="landing-footer"><p>每一次选择，都是了解自己的一小步</p><p class="footer-small">本项目用于职业启蒙与成长观察，不用于能力评判或职业匹配</p></footer>
+</main>
+{% endblock %}
+{% block extra_js %}<script>
+window.onAuthChanged = function(user) {
+  var loginLink = document.getElementById('hero-login-link');
+  var loggedInMsg = document.getElementById('hero-logged-in-msg');
+  if (user) {
+    if (loginLink) loginLink.style.display = 'none';
+    if (loggedInMsg) { loggedInMsg.style.display = ''; loggedInMsg.textContent = '👋 欢迎回来，' + user.display_name + '！'; }
+  } else {
+    if (loginLink) loginLink.style.display = '';
+    if (loggedInMsg) loggedInMsg.style.display = 'none';
+  }
+};
+document.addEventListener('DOMContentLoaded', function(){
+  Auth.checkAuth().then(function(user){
+    if (window.onAuthChanged) window.onAuthChanged(user);
+  });
+});
+</script>{% endblock %}

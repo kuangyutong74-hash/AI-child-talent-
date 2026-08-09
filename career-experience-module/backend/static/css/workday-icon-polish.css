@@ -1,0 +1,2 @@
+/* 小任务图标统一使用内置 SVG 插画，而不是系统 emoji。 */
+.mission-icon,.action-mission-icon{display:grid!important;place-items:center;overflow:hidden}.mission-icon .img-slot,.action-mission-icon .img-slot{display:grid!important;place-items:center}.mission-icon svg,.action-mission-icon svg{filter:drop-shadow(0 2px 2px rgba(118,76,42,.13))}.mission-icon .img-slot{width:42px!important;height:42px!important}.action-mission-icon .img-slot{width:42px!important;height:42px!important}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}{% block title %}探索报告{% endblock %}{% block body_class %}page-report{% endblock %}
+{% block content %}
+<div class="report-container"><canvas id="confetti-canvas" class="confetti-canvas"></canvas>
+<header class="report-hero" id="report-hero"><div class="report-view-switch"><button type="button" id="student-view-btn" class="report-view-btn active">&#23398;&#29983;&#29256;</button><button type="button" id="teacher-view-btn" class="report-view-btn">&#25945;&#24072;/&#23478;&#38271;&#35266;&#23519;</button></div><div class="ceremony-badge"><span class="badge-icon">&#127942;</span></div><h1 class="ceremony-title">探索报告</h1><p class="ceremony-subtitle" id="ceremony-career"></p><p class="ceremony-name" id="ceremony-name"></p><p class="ceremony-date" id="ceremony-date"></p></header>
+<section class="report-section report-student-section journey-section"><h2 class="section-heading"><span class="heading-icon">&#128210;</span>体验旅程回顾</h2><div class="journey-timeline" id="journey-timeline"></div></section>
+<section class="report-section report-student-section workday-evidence-section" id="workday-evidence-section" hidden><h2 class="section-heading"><span class="heading-icon">&#128736;</span>职业日常参与小记</h2><p class="section-note">这是你在职业日常任务中的参与过程记录，用来回顾投入、调整和坚持，不会直接换算成能力分数。</p><div id="workday-evidence-card"></div></section><section class="report-section report-student-section radar-section"><h2 class="section-heading"><span class="heading-icon">&#127756;</span>你的独特星图</h2><p class="section-note">这不是分数，而是你在体验中自然展现的思维倾向。<br>每个点都是你独特光芒的一部分。</p><div class="radar-charts"><div class="radar-chart-wrapper"><h3>多元智能倾向</h3><div class="radar-dimensions" id="radar-intelligence-labels"></div><svg id="radar-intelligence" class="radar-svg" viewBox="0 0 300 300"></svg></div><div class="radar-chart-wrapper"><h3>综合素养倾向</h3><div class="radar-dimensions" id="radar-literacy-labels"></div><svg id="radar-literacy" class="radar-svg" viewBox="0 0 300 300"></svg></div></div></section>
+<section class="report-section report-student-section strengths-section"><h2 class="section-heading"><span class="heading-icon">&#11088;</span>你闪耀的特质</h2><div class="strengths-grid" id="strengths-grid"></div></section>
+<section class="report-section report-student-section growth-section"><h2 class="section-heading"><span class="heading-icon">&#127793;</span>探索新方向</h2><div class="growth-cards" id="growth-cards"></div></section>
+<section class="report-section report-student-section message-section"><div class="message-card" id="personalized-message"><div class="message-quote">&#10077;</div><p id="message-text"></p><div class="message-quote right">&#10078;</div></div></section>
+<section class="report-section report-student-section cross-section" id="cross-section" style="display:none"><h2 class="section-heading"><span class="heading-icon">&#128269;</span>跨情境观察</h2><div class="cross-card" id="cross-notes"></div></section>
+<section class="report-section report-student-section anomaly-section" id="anomaly-section" style="display:none"><h2 class="section-heading"><span class="heading-icon">&#128161;</span>温馨提示</h2><div class="anomaly-card" id="anomaly-notes"></div></section>
+<section class="report-section report-student-section certificate-section"><div class="certificate"><div class="certificate-inner"><div class="cert-ornament top">&#10086;</div><h2>探索证书</h2><p class="cert-body">兹证明<br><strong id="cert-name"></strong><br>于 <span id="cert-date"></span><br>完成了 <strong id="cert-career"></strong> 职业体验<br>在<span id="cert-scenarios"></span>个情境中展现了独特的思考与品格</p><p class="cert-motto">每一次探索，都是成长的礼物</p><div class="cert-ornament bottom">&#10086;</div></div></div></section>
+<section class="report-section teacher-evidence-section" id="teacher-evidence-section" hidden><h2 class="section-heading">&#128269; &#25945;&#24072;/&#23478;&#38271;&#35266;&#23519;&#32426;&#24405;</h2><p class="section-note">&#20197;&#19979;&#20026;&#26412;&#27425;&#27491;&#24335;&#24773;&#22659;&#20013;&#30340; ECD &#35266;&#23519;&#32447;&#32034;&#65292;&#19981;&#29992;&#20110;&#32844;&#19994;&#21305;&#37197;&#25110;&#23398;&#29983;&#25490;&#21517;&#12290;</p><div id="teacher-evidence-list" class="teacher-evidence-list"></div></section><section class="report-actions"><a href="/careers" class="action-btn primary">&#127760; 体验另一个职业</a><button class="action-btn secondary" type="button" onclick="downloadReport()">&#128229; 下载报告</button><a href="/" class="action-btn tertiary">&#127968; 回到首页</a></section>
+<footer class="report-footer"><p>本报告旨在帮助学生探索和发现自我，不用于任何形式的评判或比较。</p><p>每个孩子都有独特的闪光方式。</p></footer>
+</div>{% endblock %}
+{% block extra_js %}<script>window.REPORT_CONFIG={sessionId:"{{ session_id }}"};
+async function downloadReport(){
+  const button=document.querySelector('.report-actions .secondary');
+  const original=button.innerHTML;
+  button.disabled=true; button.innerHTML='&#9203; 正在整理报告…';
+  try{
+    const links=[...document.querySelectorAll('link[rel="stylesheet"]')];
+    const css=await Promise.all(links.map(async link=>{try{return await (await fetch(link.href)).text();}catch(e){return ''}}));
+    const clean=document.documentElement.cloneNode(true);
+    clean.querySelectorAll('script, #font-size-control, #replay-guide-btn, .report-actions, .report-view-switch, .confetti-canvas').forEach(el=>el.remove());
+    clean.querySelectorAll('link[rel="stylesheet"]').forEach(el=>el.remove());
+    const style='<style>'+css.join('\n')+'\n@page{margin:12mm}.report-container{max-width:980px;margin:0 auto}.teacher-evidence-section{display:none!important}</style>';
+    const html='<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>职业体验探索报告</title>'+style+'</head><body>'+clean.body.innerHTML+'</body></html>';
+    const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+    const url=URL.createObjectURL(blob), a=document.createElement('a');
+    const name=(document.getElementById('ceremony-name')?.textContent||'学生').trim().replace(/[\\/:*?"<>|]/g,'_');
+    const career=(document.getElementById('ceremony-career')?.textContent||'职业体验').trim().replace(/[\\/:*?"<>|]/g,'_');
+    a.href=url; a.download=name+'_'+career+'_探索报告.html'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    button.innerHTML='&#9989; 已下载'; setTimeout(()=>{button.innerHTML=original;button.disabled=false},1600);
+  }catch(err){console.error(err);button.innerHTML='&#9888; 下载失败，请重试';setTimeout(()=>{button.innerHTML=original;button.disabled=false},2200)}
+}</script>{% endblock %}

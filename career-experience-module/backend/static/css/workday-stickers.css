@@ -1,0 +1,43 @@
+/* 消防员装备检查：更像收集装备贴纸，而不是填写表单。 */
+.prep-card.has-sticker{
+  min-height:214px !important;
+  overflow:hidden;
+  border-color:#f0c58f !important;
+  background:radial-gradient(circle at 50% 22%,rgba(255,221,143,.34),transparent 38%),linear-gradient(160deg,#fffefa 0%,#fff4df 100%) !important;
+}
+.prep-card.has-sticker .prep-icon{
+  width:118px !important;
+  height:91px !important;
+  margin:1px auto 7px !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+.prep-sticker{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  filter:drop-shadow(0 7px 5px rgba(117,70,32,.18));
+  transform:rotate(-2deg);
+  transition:transform .22s ease,filter .22s ease;
+}
+.prep-card.has-sticker:nth-child(even) .prep-sticker{transform:rotate(2deg)}
+.prep-card.has-sticker:hover .prep-sticker{filter:drop-shadow(0 10px 8px rgba(117,70,32,.23));transform:translateY(-4px) rotate(0deg) scale(1.07)}
+.prep-card.has-sticker .prep-label{font-size:.92rem !important;line-height:1.25}
+.prep-card.has-sticker.done .prep-sticker{filter:drop-shadow(0 5px 5px rgba(74,139,90,.15)) saturate(.85)}
+@media(max-width:560px){.prep-card.has-sticker{min-height:188px !important}.prep-card.has-sticker .prep-icon{width:94px !important;height:72px !important;margin-bottom:4px !important}.prep-card.has-sticker .prep-label{font-size:.8rem !important}}
+
+/* 同为准备任务，但每种职业使用不同的工作台和流程语言。 */
+.collect-intro{margin:10px 0 15px;padding:9px 12px;border-radius:12px;background:rgba(255,255,255,.68);color:#805f4b;font-size:.82rem;line-height:1.55}
+.prep-group-title{display:flex;grid-column:1/-1;align-items:center;gap:8px;margin:5px 2px -2px;color:var(--collect-accent,#a45d35);font-size:.79rem;font-weight:900;letter-spacing:.04em}
+.prep-group-title span{width:9px;height:9px;border-radius:99px;background:var(--collect-accent,#e58b55);box-shadow:0 0 0 4px color-mix(in srgb,var(--collect-accent,#e58b55) 16%,transparent)}
+.prep-group-title i{height:1px;flex:1;background:color-mix(in srgb,var(--collect-accent,#e58b55) 30%,transparent)}
+.collect-clinic{--collect-accent:#3e9ca4}.collect-clinic .task-mission{border-color:#a6dce0!important;background:linear-gradient(135deg,#f7ffff,#ddf5f5)!important}.collect-clinic .prep-card.has-sticker{border-radius:14px!important;border-color:#b9dfe1!important;background:linear-gradient(155deg,#fcffff,#e8f8f7)!important}.collect-clinic .prep-step{background:#d9f0ef!important;color:#277982!important}
+.collect-locker{--collect-accent:#c95f43}.collect-locker .task-mission{border-color:#f0bea1!important;background:linear-gradient(135deg,#fff8f0,#ffe5d3)!important}.collect-locker .prep-card.has-sticker{border-radius:16px!important;border-color:#efbf96!important;background:linear-gradient(155deg,#fffaf2,#fff0db)!important}.collect-locker .prep-step{background:#ffe0c5!important;color:#aa4b32!important}
+.collect-classroom{--collect-accent:#4d89b8}.collect-classroom .task-mission{border-color:#b7d7ec!important;background:linear-gradient(135deg,#f5fbff,#e5f2ff)!important}.collect-classroom .prep-card.has-sticker{border-radius:22px 22px 13px 13px!important;border-color:#bfd8ea!important;background:linear-gradient(155deg,#fffefa,#eef8ff)!important}.collect-classroom .prep-step{background:#dceefd!important;color:#3778aa!important}
+.collect-kitchen{--collect-accent:#bd7140}.collect-kitchen .task-mission{border-color:#efc195!important;background:linear-gradient(135deg,#fffaf2,#ffead5)!important}.collect-kitchen .prep-card.has-sticker{border-radius:12px!important;border-color:#e8c28e!important;background:linear-gradient(155deg,#fffdf7,#fff0d9)!important}.collect-kitchen .prep-step{background:#ffe2b9!important;color:#a95e2f!important}
+.collect-newsroom{--collect-accent:#8b5ca8}.collect-newsroom .task-mission{border-color:#d5bfdf!important;background:linear-gradient(135deg,#fffaff,#eee4f6)!important}.collect-newsroom .prep-card.has-sticker{border-radius:8px!important;border-color:#d5c0df!important;background:linear-gradient(155deg,#fffdfd,#f7effb)!important;box-shadow:2px 4px 0 rgba(117,74,145,.12)!important}.collect-newsroom .prep-step{background:#eadcf1!important;color:#78508f!important}
+.collect-shelter{--collect-accent:#4c987d}.collect-shelter .task-mission{border-color:#b8dfcf!important;background:linear-gradient(135deg,#f8fffb,#e2f5e9)!important}.collect-shelter .prep-card.has-sticker{border-radius:26px 26px 16px 16px!important;border-color:#b9dfcf!important;background:linear-gradient(155deg,#fffffb,#eaf8ed)!important}.collect-shelter .prep-step{background:#d9f1e2!important;color:#347b62!important}
+@media(max-width:560px){.collect-intro{font-size:.73rem}.prep-group-title{font-size:.72rem;margin-top:3px}}

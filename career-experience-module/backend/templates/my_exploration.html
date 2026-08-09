@@ -1,0 +1,453 @@
+{% extends "base.html" %}{% block title %}我的探索中心{% endblock %}{% block body_class %}page-my-exploration{% endblock %}
+{% block content %}<main class="my-center-shell">
+  <header class="my-center-hero"><a href="/" class="my-center-back">← 回到奇遇岛</a><div class="my-center-head"><div><p>我的成长手账</p><h1>探索中心</h1><span>这里收藏着你完成过的职业体验和每一座点亮的小岛。</span></div><a class="observer-entry" href="/observer" aria-label="进入教师和家长观察台"><span>👨‍👩‍👧</span><b>教师 / 家长观察</b><small>查看过程记录与证据线索 →</small></a><div class="my-avatar"><img src="/static/images/mascots/explorer-guide.png" alt="探索向导"><b>探索者</b></div></div></header>
+  <section class="my-progress-card"><div class="my-progress-icon">🧭</div><div><b><span id="explored-career-count">0</span> 座职业小岛已点亮</b><small id="my-map-message">从第一座感兴趣的小岛开始吧！</small></div><a href="/careers">去探索新职业 →</a></section>
+  <section class="next-quest-card" aria-labelledby="next-quest-title">
+    <div class="next-quest-mascot" aria-hidden="true"><img src="/static/images/mascots/explorer-guide.png" alt=""></div>
+    <div class="next-quest-copy"><p>下一站小任务</p><h2 id="next-quest-title">先点亮一座你感兴趣的小岛吧！</h2><span id="next-quest-copy">每一次体验，都是认识自己的一条新线索。</span></div>
+    <a id="next-quest-link" href="/careers">出发探索 →</a>
+  </section>
+  <section class="my-exploration-badges" aria-label="我的探索收藏">
+    <article><span aria-hidden="true">🗺️</span><b id="badge-careers">0</b><small>点亮小岛</small></article>
+    <article><span aria-hidden="true">✨</span><b id="badge-journeys">0</b><small>体验旅程</small></article>
+    <article><span aria-hidden="true">🔁</span><b id="badge-retries">0</b><small>再次探索</small></article>
+  </section>
+  <section class="exploration-map-section my-map-section" aria-labelledby="exploration-map-title"><div class="map-section-heading"><div><p>职业收集地图</p><h2 id="exploration-map-title">我的职业小岛</h2><span>完成该职业的情境体验并生成报告后，小岛就会亮起来。</span></div><div class="map-progress-badge"><b id="explored-career-count-copy">0</b><span>/ 6 座已点亮</span></div></div>
+    <div class="exploration-map" id="exploration-map"><div class="map-path path-a" aria-hidden="true"></div><div class="map-path path-b" aria-hidden="true"></div><div class="map-path path-c" aria-hidden="true"></div>
+      <a class="career-map-island island-doctor" data-career-id="doctor" href="/careers" aria-label="医生岛，尚未点亮"><img src="/static/images/roles/doctor-character-v1.png" alt=""><span class="island-glow">✦</span><b>医生岛</b><small>诊疗守护者</small><i>未探索</i></a><a class="career-map-island island-firefighter" data-career-id="firefighter" href="/careers" aria-label="消防员岛，尚未点亮"><img src="/static/images/roles/firefighter-character-v1.png" alt=""><span class="island-glow">✦</span><b>消防员岛</b><small>勇气行动派</small><i>未探索</i></a><a class="career-map-island island-teacher" data-career-id="teacher" href="/careers" aria-label="教师岛，尚未点亮"><img src="/static/images/roles/teacher-character-v1.png" alt=""><span class="island-glow">✦</span><b>教师岛</b><small>成长引路人</small><i>未探索</i></a><a class="career-map-island island-chef" data-career-id="chef" href="/careers" aria-label="厨师岛，尚未点亮"><img src="/static/images/roles/chef-character-v1.png" alt=""><span class="island-glow">✦</span><b>厨师岛</b><small>美味创造家</small><i>未探索</i></a><a class="career-map-island island-journalist" data-career-id="journalist" href="/careers" aria-label="记者岛，尚未点亮"><img src="/static/images/roles/journalist-character-v1.png" alt=""><span class="island-glow">✦</span><b>记者岛</b><small>故事发现者</small><i>未探索</i></a><a class="career-map-island island-animal" data-career-id="animal_caretaker" href="/careers" aria-label="动物保护员岛，尚未点亮"><img src="/static/images/roles/animal_caretaker-character-v1.png" alt=""><span class="island-glow">✦</span><b>动物保护员岛</b><small>自然守护者</small><i>未探索</i></a><div class="map-compass" aria-hidden="true">✦<span>探索地图</span></div>
+    </div><p class="map-tip">点亮记录的是一次认真完成的体验，不是职业推荐，也不代表能力高低。</p></section>
+  <section class="my-center-note"><span>💛</span><p><b>每一座岛都值得慢慢探索。</b>完成后，你可以在报告里回看自己的选择、想法和成长线索。</p></section>
+  <section class="island-archive-section" aria-labelledby="island-archive-title">
+    <div class="archive-heading"><div><p>我的收藏册</p><h2 id="island-archive-title">小岛探索档案</h2><span>每完成一次体验，就会收进一张属于你的探索卡。</span></div><a href="/careers">发现新小岛 →</a></div>
+    <div id="island-archive-empty" class="archive-empty"><span>📮</span><p>你的第一张小岛探索卡，正等着被收进这里。</p></div>
+    <div id="island-archive-list" class="island-archive-list" hidden></div>
+  </section>
+  <div id="island-dossier" class="island-dossier" hidden><div class="island-dossier-card"><button type="button" class="dossier-close" aria-label="关闭">×</button><div id="island-dossier-content"></div></div></div>
+  <section class="exploration-feed-section" aria-labelledby="exploration-feed-title">
+    <div class="feed-heading"><div><p>我的探索动态</p><h2 id="exploration-feed-title">成长足迹</h2><span>记录每一次认真完成的体验；它不是排名，也不会给职业下结论。</span></div><a href="/careers">继续探索 →</a></div>
+    <div id="exploration-feed-empty" class="feed-empty"><span>🌱</span><p>完成第一段职业情境后，这里会留下你的第一条探索足迹。</p></div>
+    <ol id="exploration-feed-list" class="exploration-feed-list" hidden></ol>
+    <details id="experience-history" class="experience-history" hidden><summary>查看我的全部体验记录</summary><div id="experience-history-list"></div></details>
+  </section>
+
+<!-- ===== 综合成长报告 ===== -->
+<details class="cross-career-discovery" id="cross-career-discovery">
+  <summary><span>🔎</span><b>想看看跨职业的成长线索吗？</b><small>展开后可回看不同体验中的观察记录</small></summary>
+<section class="cross-career-report-section" id="cross-career-report" aria-labelledby="cross-career-title">
+  <div class="cross-career-hero">
+    <div class="cross-career-head">
+      <p>综合成长报告</p>
+      <h2 id="cross-career-title">🌟 我的成长线索</h2>
+      <span>这份报告汇总了你所有已完成职业体验中的观察线索。它不是分数或排名，而是帮你发现自己如何在不同的情境中自然地思考和行动。</span>
+    </div>
+    <div class="cross-career-mascot"><img src="/static/images/mascots/explorer-guide.png" alt="成长向导"><b>成长向导</b></div>
+  </div>
+
+  <!-- 加载中 / 无数据状态 -->
+  <div id="cross-career-loading" class="cross-career-status">
+    <div class="cross-career-status-icon">🔍</div>
+    <p>正在汇总你的成长线索…</p>
+  </div>
+  <div id="cross-career-empty" class="cross-career-status" style="display:none">
+    <div class="cross-career-status-icon">🌱</div>
+    <p id="cross-career-empty-msg">完成一次职业情境体验后，这里的成长报告会自动更新。</p>
+  </div>
+
+  <!-- 报告内容 -->
+  <div id="cross-career-content" style="display:none">
+    <!-- 概览卡片 -->
+    <div class="cross-career-overview" id="cross-career-overview"></div>
+
+    <!-- 单职业提示 -->
+    <div id="cross-career-warning" class="cross-career-warning" style="display:none"></div>
+
+    <!-- 维度证据列表 -->
+    <div class="cross-career-dimensions" id="cross-career-dimensions">
+      <h3>📋 各维度观察线索</h3>
+      <p class="section-note">按维度汇总，而不是按职业汇总。同一个维度如果在不同职业中反复出现，会被特别标注出来。</p>
+      <div class="cross-career-dim-grid" id="cross-career-dim-grid"></div>
+    </div>
+
+    <!-- AI 综合小结 -->
+    <div class="cross-career-ai-summary" id="cross-career-ai-summary" style="display:none">
+      <h3>💌 成长向导的综合小结</h3>
+      <div class="ai-summary-card" id="ai-summary-card"></div>
+    </div>
+
+    <!-- 教师/家长观察（可切换） -->
+    <div class="cross-career-teacher" id="cross-career-teacher" style="display:none">
+      <button type="button" class="teacher-toggle-btn" id="teacher-toggle-btn" onclick="toggleTeacherView()">📖 查看教师/家长观察记录</button>
+      <div class="teacher-evidence-list" id="cross-teacher-list" style="display:none"></div>
+    </div>
+  </div>
+</section>
+</details>
+</main>{% endblock %}{% block extra_js %}<script>
+// 直接根据已完成职业，把小岛链接改写为对应报告页
+document.addEventListener('DOMContentLoaded',function(){
+  var explored=JSON.parse(localStorage.getItem('career-explored-v1')||'[]');
+  if(!explored.length)return;
+  identityFetch('/api/sessions/latest-by-career').then(function(r){return r.json()}).then(function(d){
+    var map=(d&&d.career_session_map)||{};
+    explored.forEach(function(cid){
+      var sid=map[cid];if(!sid)return;
+      var el=document.querySelector('.career-map-island[data-career-id="'+cid+'"]');
+      if(el)el.setAttribute('href','/report/'+sid);
+    });
+  }).catch(function(){});
+});
+
+// ===== 综合成长报告 =====
+var teacherChainsData = [];
+
+function identityFetch(url, options){
+  options = options || {};
+  if (Auth.isLoggedIn()) return Auth.fetch(url, options);
+  var token = localStorage.getItem('career-student-token-v1') || '';
+  options.headers = options.headers || {};
+  if (token) options.headers['X-Student-Token'] = token;
+  return fetch(url, options);
+}
+
+function formatActivityDate(value){
+  if (!value) return '\u521a\u521a\u5b8c\u6210';
+  var date = new Date(value);
+  if (isNaN(date.getTime())) return '\u521a\u521a\u5b8c\u6210';
+  return (date.getMonth()+1)+'\u6708'+date.getDate()+'\u65e5';
+}
+
+var CAREER_COLLECTIONS={doctor:['观察记录卡','我发现了身体信号'],firefighter:['安全路线卡','我规划了一条安全路线'],teacher:['课堂心愿卡','我想到了照顾大家的办法'],chef:['美味步骤卡','我排好了行动步骤'],journalist:['小小报道卡','我整理了重要线索'],animal_caretaker:['守护记录卡','我记下了动物的需要']};
+function showIslandDossier(item){
+  var wrap=document.getElementById('island-dossier'), content=document.getElementById('island-dossier-content');if(!wrap||!content)return;
+  var collection=CAREER_COLLECTIONS[item.career_id]||['探索收藏卡','我完成了一次职业体验'];var wd=item.workday_process||{};
+  var process=wd.completedStages?('职业日常：完成 '+wd.completedStages+'/'+(wd.stageCount||wd.completedStages)+' 个阶段；提示 '+(wd.hintCount||0)+' 次；重试 '+(wd.retryCount||0)+' 次。'):'职业日常：本次未留下过程小记。';
+  var clues=(item.evidence_clues||[]).filter(Boolean);var clueHtml=clues.length?clues.map(function(x){return '<li>✦ '+escHtml(x)+'</li>';}).join(''):'<li>✦ 这次体验的线索会在完成更多任务后慢慢出现。</li>';
+  content.innerHTML='<div class="dossier-art">🗂️</div><p>我的小岛档案</p><h2>'+escHtml(item.career_name)+'小岛</h2><span class="dossier-date">'+formatActivityDate(item.completed_at)+' · 第 '+item.round+' 次体验</span><section><b>'+collection[0]+'</b><strong>'+collection[1]+'</strong></section><section><b>本次完成</b><span>'+item.scenario_count+' 个情境</span><small>'+process+'</small></section><section><b>我收集到的线索</b><ul>'+clueHtml+'</ul></section><p class="dossier-feedback">'+escHtml((item.student_feedback||'每一次认真体验，都会帮你更了解自己的做法。').slice(0,150))+'</p><a href="/report/'+encodeURIComponent(item.session_id)+'">回看这次体验</a><a class="dossier-retry" href="/careers">再挑战一次，看看新变化 →</a>';
+  wrap.hidden=false;wrap.querySelector('.dossier-close').onclick=()=>wrap.hidden=true;wrap.onclick=function(e){if(e.target===wrap)wrap.hidden=true;};
+}
+function renderExplorationDashboard(activities, records, careerCount, experienceCount, activeCareers){
+  activities = activities || []; records = records || [];
+  var unique = {};
+  records.forEach(function(item){ unique[item.career_id] = item; });
+  var explored = Object.keys(unique);
+  var repeats = Math.max(0, (experienceCount || records.length) - explored.length);
+  var setText = function(id, value){ var el=document.getElementById(id); if(el) el.textContent=value; };
+  setText('badge-careers', careerCount || explored.length);
+  setText('badge-journeys', experienceCount || records.length);
+  setText('badge-retries', repeats);
+
+  var questTitle=document.getElementById('next-quest-title');
+  var questCopy=document.getElementById('next-quest-copy');
+  var questLink=document.getElementById('next-quest-link');
+  if (!explored.length) {
+    if(questTitle) questTitle.textContent='先点亮一座你感兴趣的小岛吧！';
+    if(questCopy) questCopy.textContent='每一次体验，都是认识自己的一条新线索。';
+  } else if (explored.length < 6) {
+    if(questTitle) questTitle.textContent='去试试一座全新的职业小岛！';
+    if(questCopy) questCopy.textContent='换一种任务玩法，发现自己在不同情境里的新办法。';
+  } else {
+    if(questTitle) questTitle.textContent='六座小岛都点亮啦，来一次新的挑战！';
+    if(questCopy) questCopy.textContent='再体验一次，看看这次你会不会用新的方法完成任务。';
+  }
+  if(questLink) questLink.href='/careers';
+
+  var empty=document.getElementById('island-archive-empty');
+  var list=document.getElementById('island-archive-list');
+  if (!records.length) { if(empty) empty.hidden=false; if(list) list.hidden=true; }
+  else if(list) {
+    if(empty) empty.hidden=true; list.hidden=false;
+    list.innerHTML=records.slice(0,6).map(function(item,index){
+      var round=item.round>1 ? '\u7b2c '+item.round+' \u6b21\u8bbf\u95ee' : '\u9996\u6b21\u70b9\u4eae';
+      return '<button type="button" class="island-archive-card" data-archive-index="'+index+'"><span class="archive-card-star">✦</span><div><b>'+escHtml(item.career_name)+'\u5c0f\u5c9b</b><small>'+round+' · '+formatActivityDate(item.completed_at)+'</small></div><i>\u6253\u5f00\u2192</i></button>';
+    }).join('');
+    list.querySelectorAll('[data-archive-index]').forEach(function(btn){btn.onclick=function(){showIslandDossier(records[Number(btn.dataset.archiveIndex)]);};});
+  }
+  var activeMap={};(activeCareers||[]).forEach(function(x){activeMap[x.career_id]=x;});
+  var recommendation=['doctor','firefighter','teacher','chef','journalist','animal_caretaker'].find(function(id){return !unique[id]&&!activeMap[id];});
+  document.querySelectorAll('.career-map-island').forEach(function(island){var id=island.dataset.careerId, state=island.querySelector('i');island.classList.remove('in-progress','new-task','revisit');if(activeMap[id]){island.classList.add('in-progress');if(state)state.textContent='探索中';island.href='/scenario/'+activeMap[id].session_id+'/'+activeMap[id].scenario_index;}else if(unique[id]){if(unique[id].round>1)island.classList.add('revisit');}else if(id===recommendation){island.classList.add('new-task');if(state)state.textContent='有新任务';}});
+  explored.forEach(function(cid){
+    var island=document.querySelector('.career-map-island[data-career-id="'+cid+'"]');
+    if(island){ var state=island.querySelector('i'); if(state) state.textContent=(unique[cid].round>1 ? '\u518d\u6b21\u63a2\u7d22' : '\u5df2\u70b9\u4eae'); }
+  });
+}
+
+function loadExplorationFeed(){
+  var empty = document.getElementById('exploration-feed-empty');
+  var list = document.getElementById('exploration-feed-list');
+  var history = document.getElementById('experience-history');
+  var historyList = document.getElementById('experience-history-list');
+  identityFetch('/api/exploration/feed').then(function(r){
+    return r.ok ? r.json() : {activities:[], career_history:[]};
+  }).then(function(data){
+    var activities = data.activities || [];
+    var records = data.career_history || [];
+    renderExplorationDashboard(activities, records, data.career_count || 0, data.experience_count || 0, data.active_careers || []);
+    if (!activities.length) {
+      empty.hidden = false; list.hidden = true; history.hidden = true; return;
+    }
+    empty.hidden = true; list.hidden = false;
+    list.innerHTML = activities.slice(0, 6).map(function(item){
+      var repeat = item.round > 1 ? '\u7b2c '+item.round+' \u6b21\u4f53\u9a8c' : '\u70b9\u4eae\u65b0\u804c\u4e1a\u5c9b';
+      var detail = item.round > 1
+        ? '\u518d\u6b21\u56de\u5230 '+escHtml(item.career_name)+' \u7684\u60c5\u5883\uff0c\u7559\u4e0b\u4e86\u4e00\u6bb5\u65b0\u7684\u63a2\u7d22\u8bb0\u5f55\u3002'
+        : '\u5b8c\u6210 '+item.scenario_count+' \u4e2a\u804c\u4e1a\u60c5\u5883\uff0c\u70b9\u4eae\u4e86 '+escHtml(item.career_name)+' \u5c0f\u5c9b\u3002';
+      return '<li class="feed-item"><span class="feed-dot">✦</span><div><div class="feed-meta"><b>'+repeat+'</b><time>'+formatActivityDate(item.completed_at)+'</time></div><p>'+detail+'</p><a href="/report/'+encodeURIComponent(item.session_id)+'">\u56de\u770b\u8fd9\u6b21\u4f53\u9a8c →</a></div></li>';
+    }).join('');
+    if (records.length > 1) {
+      history.hidden = false;
+      historyList.innerHTML = records.map(function(item){
+        return '<a class="history-row" href="/report/'+encodeURIComponent(item.session_id)+'"><span>'+escHtml(item.career_name)+'</span><small>\u7b2c '+item.round+' \u6b21 · '+formatActivityDate(item.completed_at)+'</small><b>\u67e5\u770b →</b></a>';
+      }).join('');
+    } else history.hidden = true;
+  }).catch(function(){
+    renderExplorationDashboard([], [], 0, 0, []);
+    empty.hidden = false; list.hidden = true; history.hidden = true;
+  });
+}
+
+function loadCrossCareerReport(){
+  var loading = document.getElementById('cross-career-loading');
+  var empty = document.getElementById('cross-career-empty');
+  var content = document.getElementById('cross-career-content');
+
+  // 已登录用户：使用服务端 /api/user/summary
+  if (Auth.isLoggedIn()) {
+    Auth.fetch('/api/user/summary')
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(d){
+        if (!d) { showEmpty('报告数据暂时无法加载，请稍后再试。'); return; }
+        if (d.career_count === 0) { showEmpty(d.message || '完成一次职业情境体验后，这里的成长报告会自动更新。'); return; }
+
+        if (loading) loading.style.display = 'none';
+        if (empty) empty.style.display = 'none';
+        if (content) content.style.display = 'block';
+
+        teacherChainsData = d.teacher_chains || [];
+        renderOverview(d);
+        renderWarning(d);
+        renderDimensionGrid(d);
+        renderAISummary(d);
+        renderTeacherToggle(d);
+      })
+      .catch(function(){ showEmpty('报告数据暂时无法加载，请稍后再试。'); });
+    return;
+  }
+
+  // 未登录：回退到旧的 student_token 路径
+  var token = localStorage.getItem('career-student-token-v1');
+  if (!token) {
+    if (loading) loading.style.display = 'none';
+    if (empty) { empty.style.display = 'block'; document.getElementById('cross-career-empty-msg').textContent = '登录后可以跨设备查看你的成长报告；也可以先开始一次职业体验。'; }
+    return;
+  }
+
+  fetch('/api/student/' + encodeURIComponent(token) + '/summary', {headers:{'X-Student-Token': token}})
+    .then(function(r){ return r ? (r.ok ? r.json() : null) : null; })
+    .then(function(d){
+      if (!d) { showEmpty('报告数据暂时无法加载，请稍后再试。'); return; }
+      if (d.career_count === 0) { showEmpty(d.message || '完成一次职业情境体验后，这里的成长报告会自动更新。<br><br>💡 <a href="#" onclick="Auth.showLoginModal(\'login\');return false" style="color:#7b5ea7;font-weight:700">登录账号</a>后，你的数据可以跨设备保存。'); return; }
+
+      if (loading) loading.style.display = 'none';
+      if (empty) empty.style.display = 'none';
+      if (content) content.style.display = 'block';
+
+      teacherChainsData = d.teacher_chains || [];
+      renderOverview(d);
+      renderWarning(d);
+      renderDimensionGrid(d);
+      renderAISummary(d);
+      renderTeacherToggle(d);
+    })
+    .catch(function(){ showEmpty('报告数据暂时无法加载，请稍后再试。'); });
+}
+
+function showEmpty(msg){
+  document.getElementById('cross-career-loading').style.display = 'none';
+  var empty = document.getElementById('cross-career-empty');
+  empty.style.display = 'block';
+  document.getElementById('cross-career-empty-msg').textContent = msg || '完成一次职业情境体验后，这里的成长报告会自动更新。';
+}
+
+function renderOverview(d){
+  var ov = document.getElementById('cross-career-overview');
+  var careers = (d.careers||[]).map(function(c){ return '<span class="cc-career-tag">'+escHtml(c)+'</span>'; }).join(' ');
+  var contextLabel = ((d.developmental_context||{}).label || '');
+  var ageInfo = d.student_age ? (d.student_age+'岁'+(contextLabel ? ' · '+contextLabel : '')) : '';
+  var title = document.getElementById('cross-career-title');
+  if (title) title.textContent = d.career_count >= 3 ? '🌟 我的成长线索' : '🌱 我的成长足迹';
+  ov.innerHTML =
+    '<div class="cc-overview-card">'+
+      '<div class="cc-overview-stat"><b>'+d.career_count+'</b><span>已体验职业</span></div>'+
+      '<div class="cc-overview-stat"><b>'+(d.dimension_summaries||[]).filter(function(s){return s.level==="较明显线索"}).length+'</b><span>较明显线索</span></div>'+
+      '<div class="cc-overview-stat"><b>'+(d.dimension_summaries||[]).filter(function(s){return s.level==="初步线索"}).length+'</b><span>初步线索</span></div>'+
+    '</div>'+
+    '<div class="cc-overview-careers"><span>体验过的职业：</span>'+careers+'</div>'+
+    (ageInfo ? '<div class="cc-overview-age">发展参考：'+escHtml(ageInfo)+'</div>' : '');
+}
+
+function renderWarning(d){
+  var warn = document.getElementById('cross-career-warning');
+  if (d.single_career_warning) {
+    warn.style.display = 'block';
+    warn.innerHTML = '<div class="cc-warning-card"><span>⚠️</span><p>'+escHtml(d.single_career_warning)+'</p></div>';
+  } else {
+    warn.style.display = 'none';
+  }
+}
+
+function renderDimensionGrid(d){
+  var grid = document.getElementById('cross-career-dim-grid');
+  if (!grid) return;
+  var summaries = d.dimension_summaries || [];
+
+  // 学生版精简策略：
+  // - 正文只展示达到「较明显线索」的维度
+  // - 每个维度最多引用1条最典型的证据
+  // - 初步线索和证据不足的维度不出现在正文中
+  var strongDims = summaries.filter(function(s){ return s.level === '较明显线索'; });
+  var weakDims = summaries.filter(function(s){ return s.level === '初步线索'; });
+  var noneDims = summaries.filter(function(s){ return s.level === '证据不足'; });
+
+  var levelIcons = {'较明显线索':'🟢', '初步线索':'🟡', '证据不足':'⚪'};
+  var levelLabels = {'较明显线索':'较明显线索', '初步线索':'初步线索', '证据不足':'证据不足'};
+
+  // 正文：仅展示较明显线索，每条引用1条最佳证据
+  grid.innerHTML = strongDims.length ? strongDims.map(function(s){
+    var traces = s.evidence_traces || [];
+    var bestTrace = traces[0]; // API 已按代表性排序，第一条即最佳
+
+    var traceHtml = '';
+    if (bestTrace) {
+      traceHtml = '<div class="cc-dim-traces">'+
+        '<div class="cc-trace-item cc-trace-best">'+
+          '<span class="cc-trace-career">'+escHtml(bestTrace.career_name)+'</span>'+
+          '<span class="cc-trace-scenario">「'+escHtml(bestTrace.scenario_title)+'」</span>'+
+          '<div class="cc-trace-actions">'+bestTrace.actions.map(function(a){return '<span>· '+escHtml(a)+'</span>';}).join('')+'</div>'+
+        '</div>'+
+        (s.total_traces && s.total_traces > 1
+          ? '<div class="cc-trace-more">… 另有 '+(s.total_traces-1)+' 条相关证据（可在教师观察中查看）</div>'
+          : '')+
+      '</div>';
+    } else {
+      traceHtml = '<div class="cc-dim-traces cc-dim-empty-trace"><span>该维度有 '+s.total_traces+' 条观察记录。</span></div>';
+    }
+
+    var crossBadge = '';
+    if (s.cross_career) {
+      crossBadge = '<div class="cc-cross-badge">🔗 跨职业出现</div>';
+    }
+
+    var crossNote = '';
+    if (s.cross_career_note) {
+      crossNote = '<div class="cc-cross-note">💡 '+escHtml(s.cross_career_note)+'</div>';
+    }
+
+    return '<div class="cc-dim-card cc-dim-'+s.level.replace(/[^a-zA-Z一-鿿]/g,'-')+'">'+
+      '<div class="cc-dim-head">'+
+        '<span class="cc-dim-icon">'+levelIcons[s.level]+'</span>'+
+        '<b>'+escHtml(s.dimension_label)+'</b>'+
+        '<span class="cc-dim-level cc-level-'+s.level.replace(/[^a-zA-Z一-鿿]/g,'-')+'">'+levelLabels[s.level]+'</span>'+
+        crossBadge+
+      '</div>'+
+      '<div class="cc-dim-meta"><span>覆盖 '+s.unique_careers+' 个职业 · '+s.unique_scenarios+' 个情境'+(s.total_traces ? ' · 共'+s.total_traces+'条证据' : '')+'</span></div>'+
+      crossNote+
+      traceHtml+
+    '</div>';
+  }).join('') : '<div class="cc-dim-start-card"><span>🌱</span><div><b>你的成长足迹正在慢慢变清楚</b><p>再体验几种不同的职业情境后，系统会把反复出现的思考方式整理成跨职业观察线索。</p><a href="/careers">去点亮下一座职业小岛 →</a></div></div>';
+
+  // 末尾统一提示：未达标的维度
+  var otherDims = weakDims.concat(noneDims);
+  if (otherDims.length > 0) {
+    var weakNames = weakDims.map(function(s){ return s.dimension_label; });
+    var noneNames = noneDims.map(function(s){ return s.dimension_label; });
+    var parts = [];
+    if (weakNames.length > 0) parts.push('初步线索：'+weakNames.join('、'));
+    if (noneNames.length > 0) parts.push('证据不足：'+noneNames.join('、'));
+    grid.innerHTML += '<div class="cc-dim-footnote">'+
+      '<p><b>🔍 其他方面还需继续观察</b></p>'+
+      '<p class="cc-footnote-detail">以下维度目前还未达到"较明显线索"标准——这不代表能力不足，只是说明我们还需要更多不同的体验来看到更清晰的线索。建议继续体验不同类型的职业！</p>'+
+      '<p class="cc-footnote-list">'+parts.join('<br>')+'</p>'+
+    '</div>';
+  }
+}
+
+function renderAISummary(d){
+  var section = document.getElementById('cross-career-ai-summary');
+  var card = document.getElementById('ai-summary-card');
+  if (!section || !card) return;
+  if (!d.ai_summary) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  card.innerHTML = '<p>'+escHtml(d.ai_summary).replace(/\n/g, '<br>')+'</p>';
+}
+
+function renderTeacherToggle(d){
+  var section = document.getElementById('cross-career-teacher');
+  // 儿童探索中心不展示教师证据链；教师/家长请在单次探索报告的专门视图查看。
+  if (section) section.style.display = 'none';
+}
+
+function toggleTeacherView(){
+  var list = document.getElementById('cross-teacher-list');
+  var btn = document.getElementById('teacher-toggle-btn');
+  if (!list || !btn) return;
+  var isOpen = list.style.display !== 'none';
+  if (isOpen) {
+    list.style.display = 'none';
+    btn.textContent = '📖 查看教师/家长观察记录';
+  } else {
+    list.style.display = 'block';
+    btn.textContent = '📖 收起教师/家长观察记录';
+    if (!list.innerHTML) renderTeacherList();
+  }
+}
+
+function renderTeacherList(){
+  var list = document.getElementById('cross-teacher-list');
+  if (!list || !teacherChainsData.length) return;
+
+  list.innerHTML = teacherChainsData.map(function(chain){
+    var tracesHtml = '';
+    if (chain.traces && chain.traces.length) {
+      tracesHtml = '<details class="cc-teacher-details"' + (chain.traces.length <= 2 ? ' open' : '') + '>'+
+        '<summary>查看行为证据（展示 '+chain.traces.length+' 条'+(chain.total_traces && chain.total_traces > chain.traces.length ? '，共 '+chain.total_traces+' 条' : '')+'）</summary>'+
+        chain.traces.map(function(t){
+          return '<div class="cc-teacher-trace">'+
+            '<b>'+escHtml(t.career)+' · '+escHtml(t.scenario)+'</b>'+
+            '<p>任务主张：'+escHtml(t.claim||'')+'</p>'+
+            '<ul>'+t.actions.map(function(a){return '<li>'+escHtml(a)+'</li>';}).join('')+'</ul>'+
+            (t.answer_preview ? '<em>学生已补充追问回应；原始文本仅应在受权限保护的教师后台查看。</em>' : '')+
+          '</div>';
+        }).join('')+
+      '</details>';
+    } else {
+      tracesHtml = '<p class="cc-teacher-empty">建议在后续相关情境中继续观察。</p>';
+    }
+
+    return '<article class="teacher-evidence-card cc-teacher-card">'+
+      '<div class="teacher-card-head"><b>'+escHtml(chain.dimension)+'</b><span class="teacher-evidence-level">'+escHtml(chain.level)+'</span></div>'+
+      '<p class="teacher-coverage">跨职业覆盖：'+chain.cover_careers+' 个职业 · '+chain.cover_scenarios+' 个情境'+(chain.total_traces ? ' · 共'+chain.total_traces+'条原始证据' : '')+'</p>'+
+      (chain.note ? '<p class="teacher-claim">'+escHtml(chain.note)+'</p>' : '')+
+      tracesHtml+
+    '</article>';
+  }).join('');
+}
+
+function escHtml(str){
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// 页面加载后自动拉取综合成长报告
+// 登录状态变化时重新加载报告
+window.onAuthChanged = function(user){
+  document.getElementById('cross-career-loading').style.display = 'block';
+  document.getElementById('cross-career-empty').style.display = 'none';
+  document.getElementById('cross-career-content').style.display = 'none';
+  loadCrossCareerReport();
+  loadExplorationFeed();
+};
+document.addEventListener('DOMContentLoaded', function(){
+  loadCrossCareerReport();
+  loadExplorationFeed();
+});
+</script>
+<script src="/static/js/exploration-map.js?v=map-v4"></script>{% endblock %}
