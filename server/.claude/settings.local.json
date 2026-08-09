@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Read(//d/Desktop/AI伯乐智能体/游戏demo/**)",
-      "Bash(npx vite *)"
-    ]
-  }
-}
