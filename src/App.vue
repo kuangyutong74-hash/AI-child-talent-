@@ -47,7 +47,6 @@
                    :gameState="gameState"
                    @go-level="handleGoLevel"
                    @complete="handleLevelComplete"
-                   @go-report="handleGoReport"
                    @back-start="handleBackStart" />
       </main>
 
@@ -103,13 +102,11 @@ import LevelOne from './components/LevelOne.vue'
 import LevelTwo from './components/LevelTwo.vue'
 import LevelThree from './components/LevelThree.vue'
 import EndingScreen from './components/EndingScreen.vue'
-import ReportScreen from './components/ReportScreen.vue'
 import navHomeBase from './assets/generated/nav/nav-home-base.png'
 import navCoralApartment from './assets/generated/nav/nav-coral-apartment.png'
 import navCurrentGrid from './assets/generated/nav/nav-current-grid.png'
 import navMediation from './assets/generated/nav/nav-mediation.png'
 import guardianMedal from './assets/generated/guardian-medal.png'
-import navTalentReport from './assets/generated/nav/nav-talent-report.png'
 
 // 🌊 Canvas 海底背景
 import OceanBackground from './components/canvas/OceanBackground.vue'
@@ -130,7 +127,6 @@ const stateLabel = computed(() => {
     LEVEL_2: '⚡ 第二关·洋流电网！铺设管道绕开礁石，连通基地电源！',
     LEVEL_3: '🤝 第三关·海洋议事厅！壳壳和彩彩吵架了，帮它们调解吧！',
     END_CEREMONY: '🎖️ 太棒了！你完成了所有任务！授予你深海基地守护者勋章！',
-    REPORT: '📊 来看看你的多元智能发展报告吧！',
   }
   return map[currentState.value] || currentState.value
 })
@@ -141,7 +137,6 @@ const componentMap = {
   LEVEL_2: LevelTwo,
   LEVEL_3: LevelThree,
   END_CEREMONY: EndingScreen,
-  REPORT: ReportScreen,
 }
 
 const currentComponent = computed(() => componentMap[currentState.value])
@@ -151,7 +146,7 @@ const missionSteps = [
   { state: 'LEVEL_3', icon: '🤝', label: '调解' },
 ]
 const missionProgress = computed(() => {
-  const map = { START: 0, LEVEL_1: 0, LEVEL_2: 1, LEVEL_3: 2, END_CEREMONY: 3, REPORT: 3 }
+  const map = { START: 0, LEVEL_1: 0, LEVEL_2: 1, LEVEL_3: 2, END_CEREMONY: 3 }
   return map[currentState.value] ?? 0
 })
 
@@ -161,7 +156,6 @@ const debugButtons = [
   { state: 'LEVEL_2', label: '第二关', iconSrc: navCurrentGrid, iconAlt: '洋流电网' },
   { state: 'LEVEL_3', label: '第三关', iconSrc: navMediation, iconAlt: '协商调解' },
   { state: 'END_CEREMONY', label: '颁奖', iconSrc: guardianMedal, iconAlt: '守护者勋章' },
-  { state: 'REPORT', label: '报告', iconSrc: navTalentReport, iconAlt: '天赋报告' },
 ]
 
 const gameState = reactive({
@@ -194,7 +188,7 @@ function formatTime(seconds) {
 }
 
 // 📊 关卡顺序映射（用于跳关检测）
-const LEVEL_ORDER = ['START', 'LEVEL_1', 'LEVEL_2', 'LEVEL_3', 'END_CEREMONY', 'REPORT']
+const LEVEL_ORDER = ['START', 'LEVEL_1', 'LEVEL_2', 'LEVEL_3', 'END_CEREMONY']
 
 /** 判断一个状态是否为实际游戏关卡 */
 function isGameLevel(state) {
@@ -261,22 +255,6 @@ function handleLevelComplete(data) {
 
     currentState.value = 'END_CEREMONY'
   }
-}
-
-function handleGoReport() {
-  // 跳关检测：从当前状态到 REPORT 之间跳过的关卡数
-  const currentIdx = LEVEL_ORDER.indexOf(currentState.value)
-  const reportIdx = LEVEL_ORDER.indexOf('REPORT')
-  if (currentIdx >= 0 && reportIdx > currentIdx + 1) {
-    for (let i = currentIdx + 1; i < reportIdx; i++) {
-      const skipped = LEVEL_ORDER[i]
-      if (isGameLevel(skipped)) {
-        gameState.skipLevelDetails.push(skipped)
-        gameState.skipLevelCount++
-      }
-    }
-  }
-  currentState.value = 'REPORT'
 }
 
 function handleBackStart() {

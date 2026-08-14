@@ -112,16 +112,6 @@
         </div>
       </div>
 
-      <!-- 查看报告按钮 -->
-      <button @click="handleGoReport"
-              @mouseenter="playButtonHover"
-              class="report-btn group px-6 py-2.5 md:px-8 md:py-3 bg-gradient-to-r from-amber-400 via-yellow-400 to-orange-400 text-white text-sm md:text-base rounded-full shadow-[0_6px_20px_rgba(251,191,36,0.5)] hover:scale-105 active:scale-95 transition-all font-bold border-2 border-amber-200/50">
-        <span class="inline-flex items-center gap-1.5">
-          <img :src="reportIcon" alt="" class="report-button-icon" />
-          <span v-html="p('查看多维天赋报告')"></span>
-          <span class="group-hover:translate-x-1 transition-transform">→</span>
-        </span>
-      </button>
     </div>
   </div>
 </template>
@@ -135,14 +125,12 @@ import homeBaseIcon from '../assets/generated/nav/nav-home-base.png'
 import coralApartmentIcon from '../assets/generated/nav/nav-coral-apartment.png'
 import currentGridIcon from '../assets/generated/nav/nav-current-grid.png'
 import mediationIcon from '../assets/generated/nav/nav-mediation.png'
-import reportIcon from '../assets/generated/nav/nav-talent-report.png'
 
 const { p } = usePinyinText()
 
 const props = defineProps({
   gameState: { type: Object, default: () => ({}) },
 })
-const emit = defineEmits(['go-report'])
 
 // ── 音效系统（Web Audio API 合成，无需外部文件） ──
 let audioCtx = null
@@ -190,22 +178,6 @@ function playSparkle() {
       osc.start(t)
       osc.stop(t + 0.25)
     }
-  } catch (e) { /* 自动降级 */ }
-}
-
-/** 按钮悬停音效：轻柔叮声 */
-function playButtonHover() {
-  try {
-    const ctx = getCtx()
-    const osc = ctx.createOscillator()
-    const gain = ctx.createGain()
-    osc.type = 'sine'
-    osc.frequency.value = 880
-    gain.gain.setValueAtTime(0.05, ctx.currentTime)
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15)
-    osc.connect(gain).connect(ctx.destination)
-    osc.start()
-    osc.stop(ctx.currentTime + 0.15)
   } catch (e) { /* 自动降级 */ }
 }
 
@@ -435,11 +407,6 @@ function starStyle(i) {
   }
 }
 
-function handleGoReport() {
-  playButtonHover()
-  emit('go-report')
-}
-
 onMounted(() => {
   // 页面载入后播放号角 + 启动礼花
   setTimeout(() => playFanfare(), 300)
@@ -589,16 +556,6 @@ onUnmounted(() => {
   box-shadow: 0 4px 12px rgba(2,6,23,.2);
 }
 
-.report-button-icon {
-  width: 29px;
-  height: 29px;
-  flex: none;
-  object-fit: cover;
-  border-radius: 9px;
-  border: 1px solid rgba(255,255,255,.6);
-  box-shadow: 0 3px 10px rgba(120,53,15,.2);
-}
-
 .badge-bounce {
   animation: badgePop 1s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both;
 }
@@ -688,10 +645,6 @@ onUnmounted(() => {
   animation: sparkle 2s ease-in-out infinite;
 }
 
-.report-btn {
-  animation: btnGlow 2s ease-in-out infinite;
-}
-
 @keyframes ceremonyIn {
   from { opacity: 0; transform: translateY(40px) scale(0.95); }
   to { opacity: 1; transform: translateY(0) scale(1); }
@@ -710,11 +663,6 @@ onUnmounted(() => {
 @keyframes sparkle {
   0%, 100% { box-shadow: 0 0 12px rgba(251, 191, 36, 0.3); }
   50% { box-shadow: 0 0 24px rgba(251, 191, 36, 0.6); }
-}
-
-@keyframes btnGlow {
-  0%, 100% { box-shadow: 0 6px 20px rgba(251, 191, 36, 0.5); }
-  50% { box-shadow: 0 6px 32px rgba(251, 191, 36, 0.75); }
 }
 
 @keyframes twinkle {
