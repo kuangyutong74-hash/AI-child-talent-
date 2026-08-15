@@ -1,9 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import Response
 from pydantic import BaseModel, Field
 
-from app.auth import get_current_user
-from app.models.user import User
 from app.services.tts_service import TTSServiceError, synthesize
 
 
@@ -15,10 +13,7 @@ class TTSRequest(BaseModel):
 
 
 @router.post("")
-async def create_speech(
-    req: TTSRequest,
-    _: User = Depends(get_current_user),
-):
+async def create_speech(req: TTSRequest):
     try:
         audio = await synthesize(req.text)
     except TTSServiceError as exc:

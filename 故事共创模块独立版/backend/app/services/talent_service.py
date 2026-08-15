@@ -1108,7 +1108,6 @@ async def generate_talent_profile(db: AsyncSession, story_id: int) -> TalentProf
             select(Story)
             .join(Character, Story.character_id == Character.id)
             .where(
-                Character.user_id == character.user_id,
                 Character.age_group == age_group,
                 Story.id != story.id,
                 Story.started_at < story.started_at,

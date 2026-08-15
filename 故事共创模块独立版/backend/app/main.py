@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.database import init_db
-from app.routers import auth, characters, dictionary, observations, stories, talents, tts
+from app.routers import characters, dictionary, observations, stories, talents, tts
 
 
 @asynccontextmanager
@@ -40,7 +40,6 @@ async def global_exception_handler(_: Request, exc: Exception):
     )
 
 
-app.include_router(auth.router, prefix="/api/v1")
 app.include_router(characters.router, prefix="/api/v1")
 app.include_router(stories.router, prefix="/api/v1")
 app.include_router(observations.router, prefix="/api/v1")

@@ -45,7 +45,7 @@
 .modal-close {
   width: 36px;
   height: 36px;
-  border-radius: var(--radius-round);
+  border-radius: var(--radius-full);
   background: #F5F0E8;
   color: var(--color-text-light);
   font-size: var(--font-size-sm);

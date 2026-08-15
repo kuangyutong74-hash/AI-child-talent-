@@ -3,23 +3,16 @@ from dataclasses import asdict
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.auth import get_current_user
 from app.database import get_db
-from app.models.character import Character
 from app.models.story import Story
-from app.models.user import User
 from app.services import talent_service
 
 router = APIRouter(prefix="/talents", tags=["talents"])
 
 
-async def _owned_profile(story_id: int, current_user: User, db: AsyncSession):
+async def _story_profile(story_id: int, db: AsyncSession):
     story = await db.get(Story, story_id)
     if not story:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="故事不存在")
-
-    char = await db.get(Character, story.character_id)
-    if not char or char.user_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="故事不存在")
 
     profile = await talent_service.generate_talent_profile(db, story_id)
@@ -32,11 +25,10 @@ async def _owned_profile(story_id: int, current_user: User, db: AsyncSession):
 async def get_child_feedback(
     story_id: int,
     response: Response,
-    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Return child-friendly feedback without scores, levels or scoring evidence."""
-    profile = await _owned_profile(story_id, current_user, db)
+    profile = await _story_profile(story_id, db)
     response.headers["Cache-Control"] = "no-store"
     return {
         "story_id": profile.story_id,
@@ -52,11 +44,10 @@ async def get_child_feedback(
 async def get_talent_profile(
     story_id: int,
     response: Response,
-    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Get three independent 100-point talent reports plus language progress."""
-    p = await _owned_profile(story_id, current_user, db)
+    p = await _story_profile(story_id, db)
 
     response.headers["Cache-Control"] = "no-store"
     return asdict(p)

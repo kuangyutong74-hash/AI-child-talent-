@@ -85,12 +85,7 @@
   .home-actions { margin-bottom: 32px; }
   .home-feature { padding: 20px 16px; }
 
-  .login-page,
-  .channel-page { padding: 14px; }
-  .login-card,
-  .channel-card { padding: 28px 18px; }
-  .channel-options { flex-direction: column; }
-  .channel-option { padding: 18px 14px; }
+  .channel-wrap { padding: 14px; }
 
   .character-page { padding-top: 20px; }
   .start-story-card { padding: 18px 14px; }

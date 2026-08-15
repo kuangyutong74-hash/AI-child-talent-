@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   listCharacters,
@@ -11,24 +11,19 @@ import CharacterCard from "../components/Character/CharacterCard";
 import CharacterCreator from "../components/Character/CharacterCreator";
 import Button from "../components/Shared/Button";
 import Loading from "../components/Shared/Loading";
-import PngIcon, { type StoryPngIconName } from "../components/Shared/PngIcon";
+import PngIcon from "../components/Shared/PngIcon";
+import { AGE_GROUP_LABELS, useChannel, type AgeGroup } from "../contexts/ChannelContext";
+import { AGE_PROFILES } from "../data/ageProfiles";
 import "./CharacterPage.css";
 
-const THEMES = [
-  { value: "", label: "让AI导演决定", icon: "theme-random" },
-  { value: "太空冒险", label: "太空冒险", icon: "theme-space" },
-  { value: "魔法森林", label: "魔法森林", icon: "theme-forest" },
-  { value: "海底世界", label: "海底世界", icon: "theme-ocean" },
-  { value: "恐龙时代", label: "恐龙时代", icon: "theme-dinosaur" },
-  { value: "童话王国", label: "童话王国", icon: "theme-castle" },
-  { value: "超级英雄", label: "超级英雄", icon: "theme-hero" },
-  { value: "__custom__", label: "自定义", icon: "action-write" },
-] satisfies Array<{ value: string; label: string; icon: StoryPngIconName }>;
+type AgeFilter = "all" | AgeGroup;
 
 export default function CharacterPage() {
+  const { ageGroup: channelAgeGroup } = useChannel();
   const [characters, setCharacters] = useState<Character[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedChar, setSelectedChar] = useState<Character | null>(null);
+  const [ageFilter, setAgeFilter] = useState<AgeFilter>("all");
   const [theme, setTheme] = useState("");
   const [customTheme, setCustomTheme] = useState("");
   const [storyTitle, setStoryTitle] = useState("");
@@ -39,6 +34,13 @@ export default function CharacterPage() {
   useEffect(() => {
     loadCharacters();
   }, []);
+
+  // 选中角色切换时，重置故事主题选择
+  useEffect(() => {
+    setTheme("");
+    setCustomTheme("");
+    setError("");
+  }, [selectedChar?.id]);
 
   async function loadCharacters() {
     try {
@@ -56,10 +58,20 @@ export default function CharacterPage() {
     avatar_type: string;
     avatar_color: string;
     personality?: string;
-    age_group: "4-7" | "8-12";
+    age_group: AgeGroup;
   }) {
     const newChar = await createCharacter(data);
     setCharacters((prev) => [...prev, newChar]);
+    // 创建后自动选中新角色，右侧立刻出现「开始故事」卡片，无需再手动点击
+    setSelectedChar(newChar);
+    // 若当前筛选的是其他年龄段，切到新角色所属年龄段，保证左侧列表可见
+    if (
+      ageFilter !== "all" &&
+      (newChar.age_group === "4-7" || newChar.age_group === "8-12") &&
+      ageFilter !== newChar.age_group
+    ) {
+      setAgeFilter(newChar.age_group);
+    }
   }
 
   async function handleDelete(character: Character) {
@@ -78,10 +90,6 @@ export default function CharacterPage() {
 
   async function handleStartStory() {
     if (!selectedChar) return;
-    if (selectedChar.age_group !== "4-7" && selectedChar.age_group !== "8-12") {
-      setError("请先选择年龄创作通道");
-      return;
-    }
     const isCustomTheme = theme === "__custom__";
     if (isCustomTheme && !customTheme.trim()) {
       setError("请填写自定义主题哦~");
@@ -106,6 +114,21 @@ export default function CharacterPage() {
     }
   }
 
+  // 选中角色所属年龄段 → 对应主题选项；未标注年龄段时回退到当前通道
+  const selectedAgeGroup: AgeGroup | null =
+    selectedChar?.age_group === "4-7" || selectedChar?.age_group === "8-12"
+      ? (selectedChar.age_group as AgeGroup)
+      : channelAgeGroup;
+  const themes = useMemo(
+    () => (selectedAgeGroup ? AGE_PROFILES[selectedAgeGroup].themes : []),
+    [selectedAgeGroup],
+  );
+
+  const filteredCharacters = useMemo(() => {
+    if (ageFilter === "all") return characters;
+    return characters.filter((c) => c.age_group === ageFilter);
+  }, [characters, ageFilter]);
+
   if (loading) return <Loading text="加载角色中..." />;
 
   return (
@@ -114,18 +137,48 @@ export default function CharacterPage() {
         {/* Left: Character list */}
         <div className="character-section">
           <h2 className="section-title"> 我的角色</h2>
-          {characters.length === 0 ? (
+
+          {/* 年龄段筛选 */}
+          <div className="age-filter-row">
+            <button
+              className={`age-filter-btn ${ageFilter === "all" ? "age-filter-btn-active" : ""}`}
+              onClick={() => setAgeFilter("all")}
+            >
+              全部（{characters.length}）
+            </button>
+            {(["4-7", "8-12"] as const).map((group) => (
+              <button
+                key={group}
+                className={`age-filter-btn age-filter-btn-${group} ${ageFilter === group ? "age-filter-btn-active" : ""}`}
+                onClick={() => setAgeFilter(group)}
+              >
+                {AGE_GROUP_LABELS[group]}
+              </button>
+            ))}
+          </div>
+
+          {filteredCharacters.length === 0 ? (
             <div className="character-empty">
               <PngIcon name="avatar-explorer" size={150} />
               <p>
-                还没有角色哦，
-                <br />
-                在右边创建一个吧！
+                {ageFilter === "all" ? (
+                  <>
+                    还没有角色哦，
+                    <br />
+                    在右边创建一个吧！
+                  </>
+                ) : (
+                  <>
+                    这个年龄段还没有角色哦，
+                    <br />
+                    在右边创建一个吧！
+                  </>
+                )}
               </p>
             </div>
           ) : (
             <div className="character-list">
-              {characters.map((char) => (
+              {filteredCharacters.map((char) => (
                 <CharacterCard
                   key={char.id}
                   character={char}
@@ -151,6 +204,13 @@ export default function CharacterPage() {
                   <p className="start-story-char">
                     角色：<strong>{selectedChar.nickname}</strong>
                   </p>
+                  {selectedAgeGroup && (
+                    <p className="start-story-channel">
+                      {selectedChar.age_group
+                        ? `故事主题按「${AGE_GROUP_LABELS[selectedAgeGroup]}」推荐`
+                        : `该角色未标注年龄段，按当前通道「${AGE_GROUP_LABELS[selectedAgeGroup]}」推荐主题`}
+                    </p>
+                  )}
 
                   <div className="start-field">
                     <label><PngIcon name="action-write" size={24} /> 故事名字（可选）</label>
@@ -166,7 +226,7 @@ export default function CharacterPage() {
                   <div className="theme-selector">
                     <label>选择故事主题</label>
                     <div className="theme-grid">
-                      {THEMES.map((t) => (
+                      {themes.map((t) => (
                         <button
                           key={t.value}
                           className={`theme-option ${theme === t.value ? "theme-option-selected" : ""}`}

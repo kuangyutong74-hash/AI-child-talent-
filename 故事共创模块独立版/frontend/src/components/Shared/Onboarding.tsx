@@ -18,12 +18,12 @@ const STEPS: Step[] = [
   {
     icon: 'story-director',
     title: '选择你的故事通道',
-    desc: '创建角色时，先选择「幼儿通道（4-7岁）」或「学龄通道（8-12岁）」。AI 会根据你的年龄调整故事难度和互动方式。',
+    desc: '「幼儿通道（4-7岁）」和「学龄通道（8-12岁）」拥有不同的角色形象、人设和故事主题。AI 会根据你的年龄调整故事难度和互动方式。',
   },
   {
     icon: 'theme-hero',
     title: '创建你的专属角色',
-    desc: '给你的角色取个名字、选个形象、写一段人设（比如"一位善良勇敢的小精灵"），还可以自定义形象和故事主题！',
+    desc: '给你的角色取个名字、选个形象、点选一段人设（比如"一位善良勇敢的小精灵"），还可以自定义形象和故事主题！',
   },
   {
     icon: 'story-director',
@@ -83,18 +83,4 @@ export default function Onboarding({ onFinish }: OnboardingProps) {
       </div>
     </div>
   );
-}
-
-const ONBOARDING_PREFIX = 'ai_bole_onboarding_';
-
-function onboardingKey(userId: number): string {
-  return ONBOARDING_PREFIX + userId;
-}
-
-export function isOnboardingDone(userId: number): boolean {
-  return localStorage.getItem(onboardingKey(userId)) === 'true';
-}
-
-export function markOnboardingDone(userId: number): void {
-  localStorage.setItem(onboardingKey(userId), 'true');
 }

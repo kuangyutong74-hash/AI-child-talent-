@@ -21,11 +21,6 @@ class Settings(BaseSettings):
     edge_tts_rate: str = "-8%"
     edge_tts_pitch: str = "+3Hz"
 
-    # JWT
-    jwt_secret_key: str = "story-cocreate-secret-change-in-production"
-    jwt_algorithm: str = "HS256"
-    jwt_expire_minutes: int = 60 * 24 * 7  # 7 days
-
     # Story config
     max_turns: int = 15  # Soft safety cap; AI decides ending dynamically
 

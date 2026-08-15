@@ -22,31 +22,53 @@ async def get_db() -> AsyncSession:
 async def init_db():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    # Auto-migrate: add new columns for schema upgrades
     async with engine.connect() as conn:
-        migrations = [
-            "ALTER TABLE users ADD COLUMN age_group VARCHAR(10)",
-            "ALTER TABLE users ADD COLUMN has_seen_onboarding BOOLEAN DEFAULT 0",
-            "ALTER TABLE characters ADD COLUMN personality TEXT",
-            "ALTER TABLE characters ADD COLUMN age_group VARCHAR(10)",
-            "ALTER TABLE users ADD COLUMN has_seen_onboarding BOOLEAN NOT NULL DEFAULT 0",
-            "UPDATE users SET has_seen_onboarding = 1 WHERE has_seen_onboarding = 0",
-            "ALTER TABLE observations ADD COLUMN vocabulary_semantic INTEGER",
-            "ALTER TABLE observations ADD COLUMN vocabulary_semantic_examples TEXT",
-            "ALTER TABLE observations ADD COLUMN sentence_fluency INTEGER",
-            "ALTER TABLE observations ADD COLUMN sentence_fluency_examples TEXT",
-            "ALTER TABLE observations ADD COLUMN narrative_completeness INTEGER",
-            "ALTER TABLE observations ADD COLUMN narrative_structure_note TEXT",
-            "ALTER TABLE observations ADD COLUMN character_empathy INTEGER",
-            "ALTER TABLE observations ADD COLUMN character_empathy_examples TEXT",
-            "ALTER TABLE observations ADD COLUMN creative_initiative INTEGER",
-            "ALTER TABLE observations ADD COLUMN creative_initiative_examples TEXT",
-            "ALTER TABLE stories ADD COLUMN is_deleted BOOLEAN DEFAULT 0",
-            "ALTER TABLE stories ADD COLUMN safety_violation_count INTEGER NOT NULL DEFAULT 0",
-        ]
-        for sql in migrations:
-            try:
-                await conn.exec_driver_sql(sql)
-                await conn.commit()
-            except Exception:
-                pass  # Column already exists
+        await _migrate(conn)
+
+
+async def _migrate(conn):
+    """SQLite 增量迁移。
+
+    注意：PRAGMA table_info 需要在单独的事务中执行，旧版自动迁移里的
+    无条件 ALTER + try/except 已不再需要；新增迁移按顺序追加即可。
+    """
+    # v2：移除账号体系 —— 删除 users 表，重建不含 user_id 的 characters 表。
+    # 保留角色、故事、消息与观察数据（去除的只是登录账号相关数据）。
+    users_exist = (
+        await conn.exec_driver_sql(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='users'"
+        )
+    ).fetchone()
+    if users_exist:
+        await conn.exec_driver_sql("DROP TABLE users")
+
+    char_columns = {
+        row[1]
+        for row in (await conn.exec_driver_sql("PRAGMA table_info(characters)")).fetchall()
+    }
+    if "user_id" in char_columns:
+        # SQLite 缺少 DROP COLUMN 之前的重建套路，兼容旧版本 SQLite。
+        await conn.exec_driver_sql(
+            """
+            CREATE TABLE characters_new (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nickname VARCHAR(100) NOT NULL,
+                avatar_type VARCHAR(50) NOT NULL,
+                avatar_color VARCHAR(7) NOT NULL,
+                personality TEXT,
+                age_group VARCHAR(10),
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+            """
+        )
+        await conn.exec_driver_sql(
+            """
+            INSERT INTO characters_new
+                (id, nickname, avatar_type, avatar_color, personality, age_group, created_at)
+            SELECT id, nickname, avatar_type, avatar_color, personality, age_group, created_at
+            FROM characters
+            """
+        )
+        await conn.exec_driver_sql("DROP TABLE characters")
+        await conn.exec_driver_sql("ALTER TABLE characters_new RENAME TO characters")
+        await conn.commit()

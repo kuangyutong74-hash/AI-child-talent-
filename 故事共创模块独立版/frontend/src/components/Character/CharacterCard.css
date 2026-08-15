@@ -49,8 +49,30 @@
   font-size: var(--font-size-xs); color: var(--color-text-light);
   white-space: nowrap;
 }
+
+/* ── 角色标签：年龄段 / 创建时间 / 故事名称 ── */
+.character-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.age-chip, .time-chip {
+  display: inline-flex; align-items: center; gap: 2px;
+  padding: 3px 10px; border-radius: var(--radius-full);
+  font-size: 11px; font-weight: 700; white-space: nowrap;
+}
+.age-chip-young { background: #d9f7ee; color: #0e9f7c; border: 1px solid #aeeadb; }
+.age-chip-older { background: #ece9ff; color: #5f52a8; border: 1px solid #d4ccfb; }
+.age-chip-none { background: #f3f1f8; color: #9a92b8; border: 1px dashed #d8d3ea; }
+.time-chip { background: rgba(255,255,255,.85); color: #9a92b8; border: 1px solid #ece8f7; }
+
+.character-stories { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.story-chip {
+  display: inline-flex; align-items: center; gap: 2px;
+  padding: 3px 10px; border-radius: var(--radius-full);
+  font-size: 11px; color: #8a5a2b; background: #fff3e0; border: 1px solid #ffe0b8;
+  white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis;
+}
+.story-chip-empty { color: #b8b0d0; background: #f7f5fc; border: 1px dashed #e2ddf2; }
+
 .character-delete {
-  width: 32px; height: 32px; border-radius: var(--radius-round);
+  width: 32px; height: 32px; border-radius: var(--radius-full);
   background: transparent; font-size: 14px;
   display: flex; align-items: center; justify-content: center;
   opacity: 0; transition: all 0.2s ease;

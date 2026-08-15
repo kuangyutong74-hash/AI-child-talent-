@@ -21,13 +21,13 @@ class CharacterUpdate(BaseModel):
 
 class CharacterOut(BaseModel):
     id: int
-    user_id: int
     nickname: str
     avatar_type: str
     avatar_color: str
     personality: str | None = None
     age_group: str | None = None
     created_at: str | None = None
+    story_titles: list[str] = []
 
     @field_validator("created_at", mode="before")
     @classmethod

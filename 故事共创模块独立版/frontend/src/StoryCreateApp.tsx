@@ -1,111 +1,83 @@
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
-import { AuthProvider, useAuth } from './contexts/AuthContext'
+import { ChannelProvider, useChannel } from './contexts/ChannelContext'
 import { StoryProvider } from './contexts/StoryContext'
 import Background from './components/Layout/Background'
 import Header from './components/Layout/Header'
 import MusicPlayer from './components/Layout/MusicPlayer'
-import Loading from './components/Shared/Loading'
 import ChannelPage from './pages/ChannelPage'
 import CharacterPage from './pages/CharacterPage'
 import GalleryPage from './pages/GalleryPage'
 import HomePage from './pages/HomePage'
 import StoryPlayPage from './pages/StoryPlayPage'
 import TalentPage from './pages/TalentPage'
-import LoginPage from './pages/LoginPage'
 
 const STORY_ROOT = '/story-create'
 
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth()
-  if (loading) return <Loading text="加载中..." />
-  if (!user) return <Navigate to={`${STORY_ROOT}/login`} replace />
-  return <>{children}</>
-}
-
+/** 未选择年龄段通道时，先引导去选择。 */
 function ChannelGuard({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth()
-  if (loading) return <Loading text="加载中..." />
-  if (!user) return <Navigate to={`${STORY_ROOT}/login`} replace />
-  const isWaitingForOnboarding = sessionStorage.getItem('ai_bole_show_onboarding') === 'true'
-  if (!user.age_group && isWaitingForOnboarding) return <>{children}</>
-  if (!user.age_group) return <Navigate to={`${STORY_ROOT}/channel`} replace />
+  const { ageGroup } = useChannel()
+  if (!ageGroup) return <Navigate to={`${STORY_ROOT}/channel`} replace />
   return <>{children}</>
 }
 
 function StoryRoutes() {
-  const { loading } = useAuth()
-
-  if (loading) return <Loading text="正在启动故事世界..." />
-
   return (
     <Routes>
-      <Route path="login" element={<LoginPage />} />
-      <Route
-        path="channel"
-        element={
-          <ProtectedRoute>
-            <ChannelPage />
-          </ProtectedRoute>
-        }
-      />
+      <Route path="channel" element={<ChannelPage />} />
       <Route
         index
         element={
-          <ProtectedRoute>
-            <ChannelGuard>
-              <HomePage />
-            </ChannelGuard>
-          </ProtectedRoute>
+          <ChannelGuard>
+            <HomePage />
+          </ChannelGuard>
         }
       />
       <Route
         path="characters"
         element={
-          <ProtectedRoute>
+          <ChannelGuard>
             <CharacterPage />
-          </ProtectedRoute>
+          </ChannelGuard>
         }
       />
       <Route
         path="play/:storyId"
         element={
-          <ProtectedRoute>
-            <StoryProvider>
-              <StoryPlayPage />
-            </StoryProvider>
-          </ProtectedRoute>
+          <StoryProvider>
+            <StoryPlayPage />
+          </StoryProvider>
         }
       />
       <Route
         path="gallery"
         element={
-          <ProtectedRoute>
+          <ChannelGuard>
             <GalleryPage />
-          </ProtectedRoute>
+          </ChannelGuard>
         }
       />
       <Route
         path="talent/:storyId"
         element={
-          <ProtectedRoute>
+          <ChannelGuard>
             <TalentPage />
-          </ProtectedRoute>
+          </ChannelGuard>
         }
       />
       <Route
         path="parent"
         element={
-          <ProtectedRoute>
+          <ChannelGuard>
             <GalleryPage parentMode />
-          </ProtectedRoute>
+          </ChannelGuard>
         }
       />
       <Route
         path="parent/talent/:storyId"
         element={
-          <ProtectedRoute>
+          <ChannelGuard>
             <TalentPage parentView />
-          </ProtectedRoute>
+          </ChannelGuard>
         }
       />
       <Route path="*" element={<Navigate to={STORY_ROOT} replace />} />
@@ -118,11 +90,11 @@ export default function StoryCreateApp() {
   const isStoryPlayPage = pathname.startsWith(`${STORY_ROOT}/play/`)
 
   return (
-    <AuthProvider>
+    <ChannelProvider>
       <Background />
       {!isStoryPlayPage && <Header />}
       <MusicPlayer />
       <StoryRoutes />
-    </AuthProvider>
+    </ChannelProvider>
   )
 }

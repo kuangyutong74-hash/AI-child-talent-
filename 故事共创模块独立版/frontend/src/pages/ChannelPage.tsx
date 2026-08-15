@@ -1,28 +1,18 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import { apiFetch } from '../api/client';
+import { useChannel, type AgeGroup } from '../contexts/ChannelContext';
 import PngIcon from '../components/Shared/PngIcon';
 import './ChannelPage.css';
 
 export default function ChannelPage() {
-  const { user, setUser } = useAuth();
+  const { ageGroup, setAgeGroup } = useChannel();
   const navigate = useNavigate();
-  const [selected, setSelected] = useState<string>(user?.age_group || '');
-  const [saving, setSaving] = useState(false);
+  const [selected, setSelected] = useState<AgeGroup | null>(ageGroup);
 
-  async function handleConfirm() {
-    if (!selected || !user) return;
-    setSaving(true);
-    try {
-      await apiFetch(`/auth/me/channel?age_group=${selected}`, { method: 'PATCH' });
-      setUser({ ...user, age_group: selected });
-      navigate('/story-create');
-    } catch {
-      // fallback: save anyway and continue
-      setUser({ ...user, age_group: selected });
-      navigate('/story-create');
-    }
+  function handleConfirm() {
+    if (!selected) return;
+    setAgeGroup(selected);
+    navigate('/story-create');
   }
 
   return (
@@ -68,16 +58,16 @@ export default function ChannelPage() {
 
         <button
           className="channel-confirm-btn"
-          disabled={!selected || saving}
+          disabled={!selected}
           onClick={handleConfirm}
         >
-          {!saving && <PngIcon name="celebration" size={30} />}
-          {saving ? '保存中...' : '确认，进入故事世界'}
+          <PngIcon name="celebration" size={30} />
+          确认，进入故事世界
         </button>
 
         <div className="channel-hint">
           <PngIcon name="safety-shield" size={24} />
-          <span>首次选择后，仍可返回主页随时切换年龄段</span>
+          <span>选择会保存在本设备上，之后仍可在主页随时切换年龄段</span>
         </div>
       </div>
     </div>

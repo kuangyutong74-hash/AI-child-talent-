@@ -1,30 +1,16 @@
-import { apiFetch, BASE_URL, getToken } from './client';
+import { apiFetch, BASE_URL } from './client';
 
 // ── Types ──
 
-export interface User {
-  id: number;
-  username: string;
-  display_name: string | null;
-  age_group: string | null;
-  created_at: string | null;
-}
-
-export interface AuthResponse {
-  token: string;
-  user: User;
-  show_onboarding: boolean;
-}
-
 export interface Character {
   id: number;
-  user_id: number;
   nickname: string;
   avatar_type: string;
   avatar_color: string;
   personality: string | null;
   age_group: string | null;
   created_at: string | null;
+  story_titles: string[];
 }
 
 export interface Story {
@@ -74,26 +60,6 @@ export interface ObservationSummary {
   avg_story_structure: number | null;
   all_creativity_flags: string[];
   highlights: string[];
-}
-
-// ── Auth ──
-
-export function register(username: string, password: string, displayName?: string) {
-  return apiFetch<AuthResponse>('/auth/register', {
-    method: 'POST',
-    body: JSON.stringify({ username, password, display_name: displayName }),
-  });
-}
-
-export function login(username: string, password: string) {
-  return apiFetch<AuthResponse>('/auth/login', {
-    method: 'POST',
-    body: JSON.stringify({ username, password }),
-  });
-}
-
-export function getMe() {
-  return apiFetch<User>('/auth/me');
 }
 
 // ── Characters ──
@@ -164,13 +130,9 @@ export function sendStoryTurn(
   signal?: AbortSignal,
   forceEnding = false,
 ): Promise<Response> {
-  const token = getToken();
   return fetch(`${BASE_URL}/stories/${storyId}/turn`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ child_input: childInput, force_ending: forceEnding }),
     signal,
   });
@@ -187,13 +149,9 @@ export function getObservationSummary(storyId: number) {
 }
 
 export async function synthesizeSpeech(text: string, signal?: AbortSignal): Promise<Blob> {
-  const token = getToken();
   const response = await fetch(`${BASE_URL}/tts`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ text }),
     signal,
   });

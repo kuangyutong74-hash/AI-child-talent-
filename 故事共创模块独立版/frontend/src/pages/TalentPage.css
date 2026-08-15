@@ -18,7 +18,7 @@
 .talent-card-btn {
   display: flex; flex-direction: column; align-items: center; gap: 6px;
   padding: 24px 16px; border-radius: var(--radius-card); border: 2px solid #F0E8DC;
-  background: white; cursor: pointer; font-family: var(--font-family);
+  background: white; cursor: pointer; font-family: var(--font-body);
   transition: all 0.2s ease;
 }
 .talent-card-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
@@ -61,7 +61,7 @@
 .talent-evidence-analysis p { margin: 0; color: var(--color-text-light); font-size: 12px; line-height: 1.65; }
 @keyframes talentEvidenceIn { from { opacity: 0; transform: translateY(-4px); } }
 
-.talent-detail-close { margin-top: 18px; padding: 8px 20px; border-radius: var(--radius-button); border: 1px solid #ddd; background: #f8f8f8; font-size: 13px; cursor: pointer; font-family: var(--font-family); }
+.talent-detail-close { margin-top: 18px; padding: 8px 20px; border-radius: var(--radius-button); border: 1px solid #ddd; background: #f8f8f8; font-size: 13px; cursor: pointer; font-family: var(--font-body); }
 .talent-card-invalid { border-color: #dfd8cf; background: #f8f6f3; }
 .talent-card-invalid .talent-card-score strong { color: #9c8d7b; }
 .talent-invalid-notice {

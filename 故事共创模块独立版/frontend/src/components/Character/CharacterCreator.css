@@ -27,27 +27,37 @@
 .avatar-option-selected { border-color: var(--color-primary); background: #f0edff; }
 .avatar-option-custom { background: #f5f5ff; border-style: dashed; }
 .avatar-option-emoji { font-size: 24px; }
-.avatar-option-label { font-size: 10px; color: var(--color-text-light); }
+.avatar-option-label { font-size: 12px; color: var(--color-text-light); }
 
 .custom-avatar-input { margin-top: 8px; width: 100%; }
 
-.color-row { display: flex; gap: 8px; }
+.color-row { display: flex; gap: 10px; }
 .color-dot {
-  width: 30px; height: 30px; border-radius: 50%; border: 3px solid transparent;
+  width: 32px; height: 32px; border-radius: 50%; border: 3px solid transparent;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 16px; font-weight: 900;
   transition: all var(--transition-fast); box-shadow: var(--shadow-sm);
 }
 .color-dot:hover { transform: scale(1.15); }
 .color-dot-selected { border-color: var(--color-text); box-shadow: 0 0 0 4px rgba(100,80,180,.1); }
+/* 选中颜色打勾，孩子一眼就能看到选择生效 */
+.color-dot-selected::after { content: '✓'; }
 
 .creator-preview {
   display: flex; align-items: center; gap: 12px; padding: 14px;
   background: linear-gradient(135deg, #faf8ff, #fff5f8);
   border-radius: var(--radius-md); border: 2px dashed #e7e1fa;
 }
-.preview-emoji { font-size: 36px; }
+/* 预览头像实时展示所选颜色，选色立即可见 */
+.preview-emoji {
+  width: 84px; height: 84px; border-radius: 22px;
+  display: flex; align-items: center; justify-content: center;
+  border: 3px solid transparent; flex-shrink: 0;
+}
 .preview-info { display: flex; flex-direction: column; gap: 2px; }
 .preview-name { font-size: var(--font-size-sm); color: var(--color-text); font-weight: 700; }
 .preview-type { font-size: 11px; color: var(--color-text-light); }
+.preview-color { font-size: 11px; color: var(--color-text-light); font-weight: 700; }
 
 .channel-toggle {
   display: flex; align-items: center; gap: 6px;
@@ -57,7 +67,7 @@
 .channel-toggle-btn {
   flex: 1; padding: 6px 10px; border-radius: var(--radius-sm);
   background: transparent; border: none;
-  font-size: var(--font-size-xs); font-family: var(--font-family); color: var(--color-text-light);
+  font-size: var(--font-size-xs); font-family: var(--font-body); color: var(--color-text-light);
   transition: all var(--transition-fast);
 }
 .channel-toggle-btn:hover { background: rgba(255,255,255,.6); }
@@ -65,3 +75,40 @@
 .channel-toggle-older { background: var(--color-primary); color: white; font-weight: 700; }
 
 .creator-error { color: var(--color-danger); text-align: center; font-size: var(--font-size-xs); }
+
+/* ── 当前年龄段通道提示 ── */
+.creator-channel-note {
+  display: inline-flex; align-items: center; gap: 6px; align-self: center;
+  padding: 5px 14px; border-radius: var(--radius-full);
+  background: linear-gradient(135deg, #f3efff, #fdf0f7);
+  border: 1px solid rgba(117,102,217,.2);
+  font-size: var(--font-size-xs); font-weight: 700; color: #5f52a8;
+}
+
+/* ── 起名灵感：纯文字标签 ── */
+.preset-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.preset-option {
+  padding: 8px 18px; border-radius: var(--radius-full);
+  background: rgba(248,246,255,.7); border: 2px solid transparent;
+  font-size: 14px; font-family: var(--font-body); font-weight: 700; color: var(--color-text);
+  transition: all var(--transition-fast); cursor: pointer;
+}
+.preset-option:hover { background: #eeeaff; transform: translateY(-2px); }
+.preset-option-selected { border-color: var(--color-primary); background: #f0edff; }
+
+/* ── 形象说明 ── */
+.avatar-note { margin: 0; font-size: 12px; color: #9a8fd0; }
+
+/* ── 人设快捷选项 ── */
+.personality-presets { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.personality-chip {
+  padding: 6px 12px; border-radius: var(--radius-full);
+  border: 1px solid #e7e1fa; background: rgba(255,255,255,.85);
+  font-size: 12px; font-family: var(--font-body); color: var(--color-text-light);
+  transition: all var(--transition-fast);
+}
+.personality-chip:hover { border-color: var(--color-primary-light); color: var(--color-text); }
+.personality-chip-selected {
+  background: #f0edff; border-color: var(--color-primary);
+  color: var(--color-text); font-weight: 700;
+}

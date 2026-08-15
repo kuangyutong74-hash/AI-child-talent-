@@ -1,26 +1,23 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
+import { AGE_GROUP_LABELS, useChannel } from "../contexts/ChannelContext";
 import Button from "../components/Shared/Button";
 import Onboarding from "../components/Shared/Onboarding";
 import PngIcon from "../components/Shared/PngIcon";
 import "./HomePage.css";
 
-const CHANNEL_LABEL: Record<string, string> = { "4-7": "4-7 岁通道", "8-12": "8-12 岁通道" };
+const ONBOARDING_DONE_KEY = "story_create_onboarding_done";
 
 export default function HomePage() {
-  const { user } = useAuth();
+  const { ageGroup } = useChannel();
   const navigate = useNavigate();
   const [showOnboarding, setShowOnboarding] = useState(
-    () => sessionStorage.getItem("ai_bole_show_onboarding") === "true"
+    () => localStorage.getItem(ONBOARDING_DONE_KEY) !== "true"
   );
 
   function handleOnboardingFinish() {
-    sessionStorage.removeItem("ai_bole_show_onboarding");
+    localStorage.setItem(ONBOARDING_DONE_KEY, "true");
     setShowOnboarding(false);
-    if (!user?.age_group) {
-      navigate("/story-create/channel", { replace: true });
-    }
   }
 
   return (
@@ -35,12 +32,12 @@ export default function HomePage() {
           </h1>
           <div className="home-intro">
             <p className="home-subtitle">和故事导演一起创造角色、展开冒险，写出只属于你的奇妙结局。</p>
-            {user && <p className="home-welcome">嗨，{user.display_name || user.username}，今天想从哪里开始冒险？</p>}
+            <p className="home-welcome">嗨，小作家，今天想从哪里开始冒险？</p>
           </div>
-          {user?.age_group && (
+          {ageGroup && (
             <div className="home-channel">
               <button className="home-channel-button" onClick={() => navigate('/story-create/channel')}>
-                <span>{CHANNEL_LABEL[user.age_group]}</span>
+                <span>{AGE_GROUP_LABELS[ageGroup]}</span>
                 <small>点击切换年龄段 ›</small>
               </button>
             </div>

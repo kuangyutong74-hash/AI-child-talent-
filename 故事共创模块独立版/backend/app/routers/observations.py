@@ -1,26 +1,20 @@
 import json
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import func, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.auth import get_current_user
 from app.database import get_db
-from app.models.character import Character
 from app.models.observation import Observation
 from app.models.story import Story
-from app.models.user import User
 from app.schemas.observation import ObservationOut, ObservationSummary
 
 router = APIRouter(prefix="/observations", tags=["observations"])
 
 
-async def _verify_story_ownership(story_id: int, user: User, db: AsyncSession) -> Story:
+async def _verify_story_exists(story_id: int, db: AsyncSession) -> Story:
     story = await db.get(Story, story_id)
     if not story:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="故事不存在")
-    char = await db.get(Character, story.character_id)
-    if not char or char.user_id != user.id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="故事不存在")
     return story
 
@@ -28,10 +22,9 @@ async def _verify_story_ownership(story_id: int, user: User, db: AsyncSession) -
 @router.get("", response_model=list[ObservationOut])
 async def get_observations(
     story_id: int,
-    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    await _verify_story_ownership(story_id, current_user, db)
+    await _verify_story_exists(story_id, db)
     result = await db.execute(
         select(Observation)
         .where(Observation.story_id == story_id)
@@ -43,10 +36,9 @@ async def get_observations(
 @router.get("/summary/{story_id}", response_model=ObservationSummary)
 async def get_observation_summary(
     story_id: int,
-    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    await _verify_story_ownership(story_id, current_user, db)
+    await _verify_story_exists(story_id, db)
 
     result = await db.execute(
         select(Observation).where(Observation.story_id == story_id)

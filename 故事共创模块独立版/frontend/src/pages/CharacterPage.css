@@ -1,8 +1,20 @@
-.character-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; }
+.character-layout { display: grid; grid-template-columns: 2fr 3fr; gap: 20px; width: 100%; }
 .character-section { display: flex; flex-direction: column; gap: 18px; }
 .character-section-right { overflow: visible; }
 
 .section-title { font-size: var(--font-size-md); color: var(--color-text); margin: 0; }
+
+/* ── 年龄段筛选 ── */
+.age-filter-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.age-filter-btn {
+  padding: 6px 14px; border-radius: var(--radius-full);
+  border: 1px solid #e7e1fa; background: rgba(255,255,255,.85);
+  font-size: var(--font-size-xs); font-family: var(--font-body); font-weight: 600;
+  color: var(--color-text-light); transition: all var(--transition-fast);
+}
+.age-filter-btn:hover { border-color: var(--color-primary-light); color: var(--color-text); }
+.age-filter-btn-active { background: #f0edff; border-color: var(--color-primary); color: var(--color-text); }
+.age-filter-btn-4-7.age-filter-btn-active { background: #d9f7ee; border-color: #2ec4a3; color: #0e9f7c; }
 
 .character-list { display: flex; flex-direction: column; gap: 8px; }
 .character-empty {
@@ -22,6 +34,11 @@
   display: flex; flex-direction: column; gap: 14px;
 }
 .start-story-char { font-size: var(--font-size-sm); color: var(--color-text-light); }
+.start-story-channel {
+  margin: -6px 0 0; font-size: 11px; color: #9a8fd0;
+  background: #f7f5fc; border: 1px dashed #e2ddf2; border-radius: var(--radius-sm);
+  padding: 6px 10px;
+}
 .start-field { display: flex; flex-direction: column; gap: 5px; }
 .start-field label { font-size: var(--font-size-xs); color: var(--color-text-light); font-weight: 700; }
 .start-field input { width: 100%; font-size: var(--font-size-sm); padding: 10px 14px; border: 2px solid #e7e1fa; border-radius: var(--radius-md); }
@@ -33,8 +50,8 @@
 .theme-option {
   display: flex; flex-direction: column; align-items: center; gap: 4px;
   padding: 8px 4px; border-radius: var(--radius-sm);
-  background: rgba(248,246,255,.7); border: 2px solid transparent; font-size: 11px;
-  color: var(--color-text-light); font-family: var(--font-family); transition: all var(--transition-fast);
+  background: rgba(248,246,255,.7); border: 2px solid transparent; font-size: 12px;
+  color: var(--color-text-light); font-family: var(--font-body); transition: all var(--transition-fast);
 }
 .theme-option:hover { background: #eeeaff; }
 .theme-option-selected { border-color: var(--color-accent); background: #fff8dc; }

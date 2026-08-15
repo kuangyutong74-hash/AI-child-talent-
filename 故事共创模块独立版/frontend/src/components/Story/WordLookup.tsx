@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { getToken } from '../../api/client';
+import { useChannel } from '../../contexts/ChannelContext';
 import './WordLookup.css';
 import PngIcon from '../Shared/PngIcon';
 
@@ -9,21 +9,18 @@ interface WordLookupProps {
   onClose: () => void;
 }
 
-async function lookupWord(word: string): Promise<string> {
+async function lookupWord(word: string, ageGroup?: string): Promise<string> {
   const key = word.trim();
   if (!key) return '';
 
   // Call backend DeepSeek-powered dictionary API
   try {
-    const token = getToken();
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 10000);
+    const ageParam = ageGroup ? `&age_group=${encodeURIComponent(ageGroup)}` : '';
     const resp = await fetch(
-      `/api/v1/dictionary/lookup?word=${encodeURIComponent(key)}`,
-      {
-        signal: controller.signal,
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      }
+      `/api/v1/dictionary/lookup?word=${encodeURIComponent(key)}${ageParam}`,
+      { signal: controller.signal },
     );
     clearTimeout(timeout);
     if (resp.ok) {
@@ -38,19 +35,20 @@ async function lookupWord(word: string): Promise<string> {
 }
 
 export default function WordLookup({ selectedText, position, onClose }: WordLookupProps) {
+  const { ageGroup } = useChannel();
   const [definition, setDefinition] = useState('正在问故事导演...');
   const popupRef = useRef<HTMLDivElement>(null);
   const word = selectedText.trim();
 
   useEffect(() => {
     let cancelled = false;
-    lookupWord(word).then((def) => {
+    lookupWord(word, ageGroup ?? undefined).then((def) => {
       if (!cancelled) {
         setDefinition(def || `暂时没有找到「${word}」的释义~`);
       }
     });
     return () => { cancelled = true; };
-  }, [word]);
+  }, [word, ageGroup]);
 
   // Close on outside click
   useEffect(() => {

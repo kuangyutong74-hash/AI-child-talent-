@@ -1,25 +1,39 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from '../Shared/Button';
 import PngIcon from '../Shared/PngIcon';
-import { useAuth } from '../../contexts/AuthContext';
+import { AGE_GROUP_LABELS, useChannel, type AgeGroup } from '../../contexts/ChannelContext';
 import { AVATAR_ICONS, AVATAR_LABELS } from './CharacterCard';
+import { AGE_PROFILES, AVATAR_COLORS, AVATAR_COLOR_NAMES, type CharacterPreset } from '../../data/ageProfiles';
 import './CharacterCreator.css';
 
-const AVATAR_TYPES = Object.keys(AVATAR_ICONS);
+const ALL_AVATAR_TYPES = Object.keys(AVATAR_ICONS);
 
 interface CharacterCreatorProps {
-  onCreate: (data: { nickname: string; avatar_type: string; avatar_color: string; personality?: string; age_group: '4-7' | '8-12' }) => Promise<void>;
+  onCreate: (data: { nickname: string; avatar_type: string; avatar_color: string; personality?: string; age_group: AgeGroup }) => Promise<void>;
 }
 
 export default function CharacterCreator({ onCreate }: CharacterCreatorProps) {
-  const { user } = useAuth();
+  const { ageGroup } = useChannel();
   const [nickname, setNickname] = useState('');
-  const [avatarType, setAvatarType] = useState(AVATAR_TYPES[0]);
+  const [avatarType, setAvatarType] = useState(ALL_AVATAR_TYPES[0]);
   const [customAvatarType, setCustomAvatarType] = useState('');
   const [isCustomAvatar, setIsCustomAvatar] = useState(false);
   const [personality, setPersonality] = useState('');
+  const [color, setColor] = useState(AVATAR_COLORS[0]);
+  const [presetName, setPresetName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const profile = ageGroup ? AGE_PROFILES[ageGroup] : null;
+  const avatarTypes = profile ? profile.avatarTypes : ALL_AVATAR_TYPES;
+
+  // 切换年龄段通道时，重置为当前通道的默认形象
+  useEffect(() => {
+    if (profile && !profile.avatarTypes.includes(avatarType) && !isCustomAvatar) {
+      setAvatarType(profile.avatarTypes[0]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ageGroup]);
 
   function getEffectiveAvatarType(): string {
     return isCustomAvatar ? customAvatarType.trim() : avatarType;
@@ -30,6 +44,14 @@ export default function CharacterCreator({ onCreate }: CharacterCreatorProps) {
     return AVATAR_LABELS[avatarType] || avatarType;
   }
 
+  // 起名灵感只填入「昵称 + 人设」，不触碰形象与颜色 —— 名字和形象自由搭配
+  function applyPreset(preset: CharacterPreset) {
+    setPresetName(preset.name);
+    setNickname(preset.name);
+    setPersonality(preset.personality);
+    setError('');
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
@@ -37,7 +59,7 @@ export default function CharacterCreator({ onCreate }: CharacterCreatorProps) {
       setError('给你的角色取个名字吧！');
       return;
     }
-    if (user?.age_group !== '4-7' && user?.age_group !== '8-12') {
+    if (!ageGroup) {
       setError('请先选择 4-7 岁或 8-12 岁创作通道');
       return;
     }
@@ -50,11 +72,13 @@ export default function CharacterCreator({ onCreate }: CharacterCreatorProps) {
       await onCreate({
         nickname: nickname.trim(),
         avatar_type: getEffectiveAvatarType(),
-        avatar_color: '#FF8C42',
+        avatar_color: color,
         personality: personality.trim() || undefined,
-        age_group: user.age_group,
+        age_group: ageGroup,
       });
       setNickname('');
+      setPersonality('');
+      setPresetName('');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : '创建失败');
     } finally {
@@ -62,23 +86,56 @@ export default function CharacterCreator({ onCreate }: CharacterCreatorProps) {
     }
   }
 
+  if (!ageGroup || !profile) {
+    return (
+      <form className="character-creator" onSubmit={handleSubmit}>
+        <h3 className="creator-title">创建一个新角色</h3>
+        <p className="creator-error">请先选择 4-7 岁或 8-12 岁创作通道</p>
+      </form>
+    );
+  }
+
   return (
     <form className="character-creator" onSubmit={handleSubmit}>
       <h3 className="creator-title">创建一个新角色</h3>
+
+      <div className="creator-channel-note">
+        <PngIcon name="child-explorer" size={24} />
+        <span>当前通道：{AGE_GROUP_LABELS[ageGroup]}</span>
+      </div>
+
+      {/* 起名灵感（纯文字标签，只填名字和人设，形象自由搭配） */}
+      <div className="creator-field">
+        <label>起名灵感（点击填入名字和人设）</label>
+        <div className="preset-grid">
+          {profile.characterPresets.map((preset) => (
+            <button
+              key={preset.name}
+              type="button"
+              className={`preset-option ${presetName === preset.name ? 'preset-option-selected' : ''}`}
+              onClick={() => applyPreset(preset)}
+              title={preset.personality}
+            >
+              {preset.name}
+            </button>
+          ))}
+        </div>
+      </div>
 
       <div className="creator-field">
         <label>角色昵称</label>
         <input
           type="text" value={nickname}
-          onChange={(e) => setNickname(e.target.value)}
+          onChange={(e) => { setNickname(e.target.value); setPresetName(''); }}
           placeholder="给你的角色取个名字" maxLength={20}
         />
       </div>
 
       <div className="creator-field">
         <label>选择形象</label>
+        <p className="avatar-note">{profile.avatarNote}</p>
         <div className="avatar-grid">
-          {AVATAR_TYPES.map((type) => (
+          {avatarTypes.map((type) => (
             <button key={type} type="button"
               className={`avatar-option ${!isCustomAvatar && avatarType === type ? 'avatar-option-selected' : ''}`}
               onClick={() => { setIsCustomAvatar(false); setAvatarType(type); }}
@@ -107,16 +164,47 @@ export default function CharacterCreator({ onCreate }: CharacterCreatorProps) {
       <div className="creator-field">
         <label>角色人设（可选）</label>
         <input type="text" value={personality}
-          onChange={(e) => setPersonality(e.target.value)}
+          onChange={(e) => { setPersonality(e.target.value); setPresetName(''); }}
           placeholder="例如：一位善良勇敢的小精灵、一只来自未来的机器猫" maxLength={100}
         />
+        <div className="personality-presets">
+          {profile.personalityPresets.map((text) => (
+            <button
+              key={text}
+              type="button"
+              className={`personality-chip ${personality === text ? 'personality-chip-selected' : ''}`}
+              onClick={() => setPersonality(text)}
+            >
+              {text}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="creator-field">
+        <label>角色颜色（当前：{AVATAR_COLOR_NAMES[color] ?? color}）</label>
+        <div className="color-row">
+          {AVATAR_COLORS.map((c) => (
+            <button
+              key={c}
+              type="button"
+              className={`color-dot ${color === c ? 'color-dot-selected' : ''}`}
+              style={{ backgroundColor: c }}
+              onClick={() => setColor(c)}
+              aria-label={`颜色 ${AVATAR_COLOR_NAMES[c] ?? c}`}
+            />
+          ))}
+        </div>
       </div>
 
       <div className="creator-preview">
-        <span className="preview-emoji"><PngIcon name={isCustomAvatar ? 'theme-hero' : AVATAR_ICONS[avatarType]} size={74} /></span>
+        <span className="preview-emoji" style={{ backgroundColor: color + '2E', borderColor: color }}>
+          <PngIcon name={isCustomAvatar ? 'theme-hero' : (AVATAR_ICONS[avatarType] || 'child-explorer')} size={74} />
+        </span>
         <div className="preview-info">
           <span className="preview-name">{nickname || '你的角色'}</span>
           <span className="preview-type">{getPreviewLabel()}</span>
+          <span className="preview-color">颜色：{AVATAR_COLOR_NAMES[color] ?? color}</span>
         </div>
       </div>
 

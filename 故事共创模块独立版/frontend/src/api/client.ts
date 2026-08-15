@@ -1,24 +1,15 @@
-// Dev: Vite proxy handles /api → localhost:8000
+// Dev: Vite proxy handles /api → localhost:8010
 // Prod: set VITE_API_URL to your backend URL, e.g. https://your-backend.onrender.com
 const BASE_URL = (import.meta.env.VITE_API_URL || '') + '/api/v1';
-
-function getToken(): string | null {
-  return localStorage.getItem('auth_token');
-}
 
 export async function apiFetch<T = unknown>(
   path: string,
   options: RequestInit = {},
 ): Promise<T> {
-  const token = getToken();
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...((options.headers as Record<string, string>) || {}),
   };
-
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
 
   const response = await fetch(`${BASE_URL}${path}`, {
     ...options,
@@ -55,4 +46,4 @@ export class ApiError extends Error {
   }
 }
 
-export { BASE_URL, getToken };
+export { BASE_URL };

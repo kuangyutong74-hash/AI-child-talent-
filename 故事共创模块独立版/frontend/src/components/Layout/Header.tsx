@@ -1,12 +1,12 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
+import { Link, useNavigate } from 'react-router-dom';
+import { useChannel } from '../../contexts/ChannelContext';
 import './Header.css';
 import PngIcon from '../Shared/PngIcon';
+
 export default function Header() {
-  const { user, logout } = useAuth();
+  const { ageGroup } = useChannel();
   const navigate = useNavigate();
-  const location = useLocation();
-  const isHome = location.pathname.replace(/\/+$/, '') === '/story-create';
+
   return (
     <header className="app-header">
       <div className="header-brand">
@@ -17,20 +17,18 @@ export default function Header() {
           <span className="logo-text">AI 伯乐</span>
         </Link>
       </div>
-      {user && (
-        <div className="header-user">
-          <span className="header-greeting">{user.display_name || user.username}</span>
-          {!isHome && (
-            <button className="header-home" onClick={() => navigate('/story-create')}>
-              <span aria-hidden="true">←</span> 返回主页
-            </button>
-          )}
-          <button className="header-logout" onClick={async () => {
-            await logout();
-            navigate('/story-create/login', { replace: true });
-          }}>退出</button>
-        </div>
-      )}
+      <div className="header-user">
+        {ageGroup && (
+          <button
+            className="header-platform"
+            onClick={() => navigate('/story-create/channel')}
+            title="点击切换年龄段通道"
+          >
+            <PngIcon name="child-explorer" size={24} />
+            {ageGroup === '4-7' ? '4-7 岁 · 幼儿通道' : '8-12 岁 · 学龄通道'}
+          </button>
+        )}
+      </div>
     </header>
   );
 }

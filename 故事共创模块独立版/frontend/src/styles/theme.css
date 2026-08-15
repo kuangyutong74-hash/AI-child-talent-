@@ -58,8 +58,8 @@
   --font-body: 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
   --font-story: 'Noto Serif SC', 'STSong', 'SimSun', 'KaiTi', 'PingFang SC', serif;
   --font-size-tiny: 0.75rem; --font-size-xs: 0.875rem; --font-size-sm: 1rem;
-  --font-size-base: 1.125rem; --font-size-md: 1.375rem; --font-size-lg: 1.875rem;
-  --font-size-xl: 2.5rem; --font-size-xxl: 3.2rem;
+  --font-size-base: 1.125rem; --font-size-body: 1.0625rem; --font-size-md: 1.375rem;
+  --font-size-lg: 1.875rem; --font-size-xl: 2.5rem; --font-size-xxl: 3.2rem;
 
   /* ── Radii ── */
   --radius-xs: 8px;

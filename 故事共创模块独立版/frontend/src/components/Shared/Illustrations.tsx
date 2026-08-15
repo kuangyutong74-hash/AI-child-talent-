@@ -135,41 +135,6 @@ export function EmptyCharactersIllo({ width = 200, height = 160, className }: Il
 }
 
 /* ═══════════════════════════════════════════
-   Stars Background — for login/channel pages
-   ═══════════════════════════════════════════ */
-export function StarsBackground({ width = 400, height = 300, className }: IlloProps) {
-  return (
-    <svg className={className} width={width} height={height} viewBox="0 0 400 300" fill="none" aria-hidden="true">
-      {/* Large star */}
-      <path d="M200 40l8 18 20 2-15 14 4 20-17-10-17 10 4-20-15-14 20-2 8-18z"
-        fill="#FFD66D" opacity=".25" />
-      {/* Medium stars */}
-      <path d="M60 80l5 12 14 1-10 10 2 13-11-6-11 6 2-13-10-10 14-1 5-12z"
-        fill="#FFEAA7" opacity=".2" />
-      <path d="M340 60l4 10 11 1-8 8 2 11-9-5-9 5 2-11-8-8 11-1 4-10z"
-        fill="#FFD66D" opacity=".18" />
-      {/* Small stars */}
-      <path d="M120 120l3 6 7 1-5 5 1 7-5-2-5 2 1-7-5-5 7-1 3-6z"
-        fill="#CBC4E8" opacity=".2" />
-      <path d="M320 140l3 5 5 1-4 4 1 5-4-2-4 2 1-5-4-4 5-1 3-5z"
-        fill="#CBC4E8" opacity=".18" />
-      <path d="M80 200l2 5 5 1-3 3 1 5-4-2-4 2 1-5-3-3 5-1 2-5z"
-        fill="#FFEAA7" opacity=".15" />
-      <path d="M350 200l3 5 5 1-4 3 1 5-4-2-4 2 1-5-4-3 5-1 3-5z"
-        fill="#FFD66D" opacity=".12" />
-      <path d="M160 220l2 4 4 1-3 3 1 4-3-2-3 2 1-4-3-3 4-1 2-4z"
-        fill="#CBC4E8" opacity=".15" />
-      {/* Tiny dots */}
-      <circle cx="40" cy="160" r="2" fill="#FFD66D" opacity=".15" />
-      <circle cx="280" cy="30" r="1.5" fill="#FFEAA7" opacity=".15" />
-      <circle cx="370" cy="120" r="2" fill="#CBC4E8" opacity=".12" />
-      <circle cx="30" cy="260" r="1.5" fill="#FFEAA7" opacity=".1" />
-      <circle cx="220" cy="250" r="2" fill="#FFD66D" opacity=".12" />
-    </svg>
-  );
-}
-
-/* ═══════════════════════════════════════════
    Magic Storybook — Open glowing book
    ═══════════════════════════════════════════ */
 export function MagicStorybookIllo({ width = 180, height = 140, className }: IlloProps) {

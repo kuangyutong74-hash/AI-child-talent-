@@ -46,7 +46,5 @@ export const ASSETS = {
     emptyGallery:  '/assets/illustrations/empty-gallery.svg',
     /** 角色 — 没有角色时 */
     emptyCharacters: '/assets/illustrations/empty-characters.svg',
-    /** 登录页 — 星空背景 */
-    stars:        '/assets/illustrations/stars.svg',
   },
 } as const;

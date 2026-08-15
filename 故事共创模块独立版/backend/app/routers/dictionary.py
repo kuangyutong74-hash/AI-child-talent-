@@ -1,21 +1,12 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import APIRouter
 
-from app.auth import get_current_user
-from app.database import get_db
-from app.models.user import User
 from app.services.llm_service import get_llm_service
 
 router = APIRouter(prefix="/dictionary", tags=["dictionary"])
 
 
 @router.get("/lookup")
-async def lookup_word(
-    word: str,
-    age_group: str = "8-12",
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-):
+async def lookup_word(word: str, age_group: str = "8-12"):
     """Look up a word's definition using DeepSeek, explained in child-friendly language."""
     if not word or not word.strip():
         return {"word": word, "definition": ""}
