@@ -126,17 +126,14 @@ async def page_workday(request: Request, career_id: str):
     if not career: raise HTTPException(404, detail="职业未找到")
     return templates.TemplateResponse("workday.html", {"request": request, "career": career})
 
-@app.get("/login", response_class=HTMLResponse)
 async def page_login(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
-@app.get("/report/{session_id}", response_class=HTMLResponse)
 async def page_report(request: Request, session_id: str):
     return templates.TemplateResponse("report.html", {"request": request, "session_id": session_id})
 
 # === API: AUTH ===
 
-@app.post("/api/auth/register")
 async def api_auth_register(payload: dict = Body(...)):
     """注册新账号。Body: {username, password, display_name, age}。返回 token。"""
     username = str(payload.get("username", "")).strip()
@@ -172,7 +169,6 @@ async def api_auth_register(payload: dict = Body(...)):
         }
 
 
-@app.post("/api/auth/login")
 async def api_auth_login(payload: dict = Body(...)):
     """登录。Body: {username, password}。返回 token。"""
     username = str(payload.get("username", "")).strip()
@@ -198,7 +194,6 @@ async def api_auth_login(payload: dict = Body(...)):
         }
 
 
-@app.post("/api/auth/logout")
 async def api_auth_logout(user: User = Depends(get_current_user), authorization: str = Header("")):
     """登出，使当前 token 失效。"""
     token = authorization.removeprefix("Bearer ").strip()
@@ -208,7 +203,6 @@ async def api_auth_logout(user: User = Depends(get_current_user), authorization:
     return {"success": True}
 
 
-@app.get("/api/auth/me")
 async def api_auth_me(user: User | None = Depends(get_current_user_optional)):
     """检查登录状态，返回当前用户信息。未登录返回 authenticated: false。"""
     if user is None:
@@ -224,7 +218,6 @@ async def api_auth_me(user: User | None = Depends(get_current_user_optional)):
 
 # === API: USER DATA (authenticated) ===
 
-@app.get("/api/user/summary")
 async def api_user_summary(user: User = Depends(get_current_user)):
     """已登录用户的跨职业综合成长报告。"""
     async with async_session() as db:
@@ -296,7 +289,6 @@ async def api_user_summary(user: User = Depends(get_current_user)):
     }
 
 
-@app.get("/api/user/explored-careers")
 async def api_user_explored_careers(user: User = Depends(get_current_user)):
     """返回该用户已完成的职业列表和对应的报告 session_id 映射。"""
     async with async_session() as db:
@@ -315,7 +307,6 @@ async def api_user_explored_careers(user: User = Depends(get_current_user)):
     return {"explored_careers": list(seen), "career_session_map": career_map}
 
 
-@app.post("/api/user/mark-explored")
 async def api_user_mark_explored(
     payload: dict = Body(...),
     user: User = Depends(get_current_user),
@@ -329,35 +320,25 @@ async def api_user_mark_explored(
 
 @app.get("/api/exploration/feed")
 async def api_exploration_feed(
-    user: User | None = Depends(get_current_user_optional),
     x_student_token: str = Header("", alias="X-Student-Token"),
 ):
     """A child-safe activity feed and repeat-experience history for the current owner only."""
     student_token = x_student_token.strip()[:64] if len(x_student_token.strip()) >= 8 else ""
     async with async_session() as db:
-        if user is not None:
-            query = select(Session).where(
-                Session.user_id == user.id, Session.status == "completed"
-            ).order_by(Session.completed_at.desc())
-        elif student_token:
+        if student_token:
             query = select(Session).where(
                 Session.student_token == student_token, Session.status == "completed"
             ).order_by(Session.completed_at.desc())
         else:
             return {"activities": [], "career_history": [], "career_count": 0}
         sessions = (await db.execute(query)).scalars().all()
-        if user is not None:
-            active_query = select(Session).where(Session.user_id == user.id, Session.status == "in_progress")
-        else:
-            active_query = select(Session).where(Session.student_token == student_token, Session.status == "in_progress")
+        active_query = select(Session).where(Session.student_token == student_token, Session.status == "in_progress")
         active_sessions = (await db.execute(active_query)).scalars().all()
         session_ids = [item.id for item in sessions]
-        workday_map, report_map = {}, {}
+        workday_map = {}
         if session_ids:
             workdays = (await db.execute(select(WorkdayProcessRecord).where(WorkdayProcessRecord.session_id.in_(session_ids)))).scalars().all()
-            reports = (await db.execute(select(Report).where(Report.session_id.in_(session_ids)))).scalars().all()
             workday_map = {item.session_id: (item.process_data or {}) for item in workdays}
-            report_map = {item.session_id: item for item in reports}
 
     seen_careers = set()
     repeat_counts = {}
@@ -388,8 +369,8 @@ async def api_exploration_feed(
             "completed_at": item.completed_at.isoformat() if item.completed_at else "",
             "scenario_count": len(SCENARIOS.get(item.career_id, [])),
             "workday_process": workday_map.get(item.id, {}),
-            "evidence_clues": [str(x.get("name", "")) for x in ((report_map.get(item.id).strengths if report_map.get(item.id) else []) or [])[:3]],
-            "student_feedback": (report_map.get(item.id).personalized_message if report_map.get(item.id) else "") or "",
+            "evidence_clues": [],
+            "student_feedback": "",
         }
         for idx, item in enumerate(chronological)
     ]
@@ -415,21 +396,13 @@ async def api_get_careers():
 
 @app.get("/api/sessions/latest-by-career")
 async def api_latest_sessions_by_career(
-    user: User | None = Depends(get_current_user_optional),
     x_student_token: str = Header("", alias="X-Student-Token"),
 ):
     """Return only the current student's latest completed session for each career."""
     result_map = {}
     student_token = x_student_token.strip()[:64] if len(x_student_token.strip()) >= 8 else ""
     async with async_session() as db:
-        if user is not None:
-            completed = await db.execute(
-                select(Session).where(
-                    Session.user_id == user.id,
-                    Session.status == "completed",
-                ).order_by(Session.completed_at.desc())
-            )
-        elif student_token:
+        if student_token:
             completed = await db.execute(
                 select(Session).where(
                     Session.student_token == student_token,
@@ -450,13 +423,7 @@ async def api_latest_sessions_by_career(
 async def api_start_session(
     student_name: str=Form(...), age: int=Form(...), career_id: str=Form(...),
     student_token: str=Form(""),
-    user: User | None = Depends(get_current_user_optional),
 ):
-    # 已登录用户：自动用账号信息覆盖表单（表单参数仍有值作为 fallback）
-    if user is not None:
-        student_name = user.display_name
-        age = user.age
-
     if not student_name or len(student_name.strip())<1 or len(student_name.strip())>30:
         raise HTTPException(400, detail="名字长度需要在1-30个字符之间")
     if age<MIN_AGE or age>MAX_AGE:
@@ -469,8 +436,7 @@ async def api_start_session(
     async with async_session() as db:
         s = Session(id=sid, student_name=student_name.strip(), age=age,
             career_id=career_id, career_name=career["name"],
-            student_token=token if token else None,
-            user_id=user.id if user else None)
+            student_token=token if token else None)
         db.add(s); await db.commit()
     return {"session_id":sid, "career":{"id":career["id"],"name":career["name"],
         "total_scenarios":len(SCENARIOS[career_id])}, "redirect_url":f"/scenario/{sid}/0"}
@@ -650,7 +616,6 @@ async def api_submit_follow_up(session_id:str, scenario_index:int,
 @app.get("/api/session/{session_id}/safety-status")
 async def api_get_safety_status(
     session_id: str,
-    user: User | None = Depends(get_current_user_optional),
     x_student_token: str = Header("", alias="X-Student-Token"),
 ):
     """学生端只可查看自己的保护状态；不返回教师摘要或任何敏感原文。"""
@@ -659,9 +624,8 @@ async def api_get_safety_status(
         if not session:
             raise HTTPException(404, detail="体验记录未找到")
         student_token = x_student_token.strip()[:64] if len(x_student_token.strip()) >= 8 else ""
-        owned_by_user = user is not None and session.user_id == user.id
-        owned_by_browser = user is None and bool(student_token) and session.student_token == student_token
-        if not (owned_by_user or owned_by_browser):
+        owned_by_browser = bool(student_token) and session.student_token == student_token
+        if not owned_by_browser:
             raise HTTPException(404, detail="体验记录未找到")
         result = await db.execute(select(SafetyEvent).where(SafetyEvent.session_id == session_id).order_by(SafetyEvent.created_at.desc()))
         events = result.scalars().all()
@@ -676,16 +640,13 @@ async def api_get_safety_status(
 
 @app.get("/api/observer/safety-summary")
 async def api_observer_safety_summary(
-    user: User | None = Depends(get_current_user_optional),
     x_student_token: str = Header("", alias="X-Student-Token"),
 ):
     """观察台的最小化安全状态汇总：只返回类别和处理状态，不返回学生原始表达。"""
     student_token = x_student_token.strip()[:64] if len(x_student_token.strip()) >= 8 else ""
     async with async_session() as db:
         query = select(SafetyEvent, Session).join(Session, SafetyEvent.session_id == Session.id)
-        if user is not None:
-            query = query.where(Session.user_id == user.id)
-        elif student_token:
+        if student_token:
             query = query.where(Session.student_token == student_token)
         else:
             return {"events": [], "pending_count": 0}
@@ -839,22 +800,19 @@ async def api_save_workday_process(session_id: str, payload: dict = Body(...)):
             db.add(WorkdayProcessRecord(id=str(uuid.uuid4()), session_id=session_id,
                 career_id=career_id, process_data=safe))
         await db.commit()
-        return {"success": True, "message": "职业日常过程记录已纳入本次体验报告"}
+        return {"success": True, "message": "职业日常过程记录已保存"}
 
 # === API: REPORT ===
-@app.get("/api/report/{session_id}")
 async def api_get_report(
     session_id: str,
-    user: User | None = Depends(get_current_user_optional),
     x_student_token: str = Header("", alias="X-Student-Token"),
 ):
     async with async_session() as db:
         session = await db.get(Session, session_id)
         if not session: raise HTTPException(404, detail="会话未找到")
         student_token = x_student_token.strip()[:64] if len(x_student_token.strip()) >= 8 else ""
-        owned_by_user = user is not None and session.user_id == user.id
-        owned_by_browser = user is None and bool(student_token) and session.student_token == student_token
-        if not (owned_by_user or owned_by_browser):
+        owned_by_browser = bool(student_token) and session.student_token == student_token
+        if not owned_by_browser:
             # Use 404 rather than disclosing whether another student's report exists.
             raise HTTPException(404, detail="报告未找到")
         result = await db.execute(select(Report).where(Report.session_id==session_id))
@@ -977,9 +935,9 @@ async def api_get_report(
         return report_data
 
 # === API: STUDENT CROSS-CAREER SUMMARY ===
-@app.get("/api/student/{student_token}/summary")
+@app.get("/api/observer/{student_token}/summary")
 async def api_student_summary(student_token: str):
-    """查询同一 student_token 关联的所有已完成会话，生成跨职业综合成长报告。
+    """查询同一 student_token 关联的已完成会话，整理观察台所需数据。
 
     已知限制：student_token 存储在浏览器 localStorage 中，
     更换浏览器或清除缓存会导致 token 丢失，历史记录无法关联。

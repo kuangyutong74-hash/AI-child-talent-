@@ -31,14 +31,12 @@
 <script>
 function observerEsc(value){return String(value||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function observerFetch(url){
-  if(typeof Auth!=='undefined'&&Auth.isLoggedIn()) return Auth.fetch(url);
   var token=localStorage.getItem('career-student-token-v1')||'';
   return fetch(url,{headers:token?{'X-Student-Token':token}:{}});
 }
 function observerSummaryUrl(){
-  if(typeof Auth!=='undefined'&&Auth.isLoggedIn()) return '/api/user/summary';
   var token=localStorage.getItem('career-student-token-v1')||'';
-  return token?'/api/student/'+encodeURIComponent(token)+'/summary':'';
+  return token?'/api/observer/'+encodeURIComponent(token)+'/summary':'';
 }
 function observerDate(value){if(!value)return '刚刚记录';var d=new Date(value);return isNaN(d.getTime())?'刚刚记录':(d.getMonth()+1)+'月'+d.getDate()+'日';}
 function observerEmpty(text){document.getElementById('observer-loading').hidden=true;document.getElementById('observer-empty').hidden=false;document.getElementById('observer-empty-text').textContent=text||'完成一次职业情境体验后，这里会出现过程观察。';}
@@ -77,7 +75,7 @@ function renderObserverSafety(events){
   box.innerHTML=events.map(function(e){return '<article class="observer-safety-card level-'+observerEsc(e.level)+'"><div><b>'+observerEsc(labels[e.level]||'内容保护提示')+'</b><span>'+observerEsc(states[e.status]||e.status)+'</span></div><p>'+observerEsc(e.career_name)+' · '+observerDate(e.created_at)+'</p><small>系统动作：'+observerEsc(e.student_action||'已进行保护处理')+'；原始内容未保存到观察页面。</small></article>';}).join('');
 }
 async function loadObserver(){
-  var summaryUrl=observerSummaryUrl();if(!summaryUrl){observerEmpty('请先在当前浏览器完成一次职业体验，或登录账号后查看已保存的记录。');return;}
+  var summaryUrl=observerSummaryUrl();if(!summaryUrl){observerEmpty('请先在当前浏览器完成一次职业体验。');return;}
   try{
     var results=await Promise.all([observerFetch(summaryUrl),observerFetch('/api/exploration/feed'),observerFetch('/api/observer/safety-summary')]);
     if(!results[0].ok)throw new Error('summary');

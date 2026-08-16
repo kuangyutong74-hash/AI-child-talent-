@@ -7,7 +7,7 @@ const API={
     const studentToken=localStorage.getItem('career-student-token-v1')||'';
     options.headers=options.headers||{};
     if(studentToken)options.headers['X-Student-Token']=studentToken;
-    const r=(window.Auth&&Auth.isLoggedIn())?await Auth.fetch(url,options):await fetch(url,options);
+    const r=await fetch(url,options);
     if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error||e.detail||'请求失败')}
     return r.json();
   },
@@ -264,7 +264,7 @@ function showCurrentPageGuide(){
   showCompletion(){
     this.state='complete';this.$completionScreen.style.display='flex';
     this.$completionMessage.textContent='你完成了「'+this.progress.career_name+'」的全部'+this.progress.total+'个情境体验！';
-    this.$reportLink.href='/report/'+this.sessionId;
+    this.$reportLink.href='/my-exploration';
   }
   hideAll(){
     this.$dialogueBox.style.display='none';this.$choicePanel.style.display='none';
@@ -312,7 +312,7 @@ class ReportPage{
     const names={"社区医生":"doctor","医生":"doctor","消防员":"firefighter","小学教师":"teacher","教师":"teacher","餐厅厨师":"chef","报社记者":"journalist","动物保护员":"animal_caretaker"};
     const careerId=d.career_id||names[d.career_name];if(!careerId)return;
     try{const key='career-explored-v1';const saved=JSON.parse(localStorage.getItem(key)||'[]');const next=Array.from(new Set([...saved,careerId]));localStorage.setItem(key,JSON.stringify(next));}catch(e){}
-    try{const mapKey='career-session-map-v1';const map=JSON.parse(localStorage.getItem(mapKey)||'{}');map[careerId]=this.sessionId;localStorage.setItem(mapKey,JSON.stringify(map));}catch(e){}if(typeof Auth!=='undefined'&&Auth.isLoggedIn()){Auth.fetch('/api/user/mark-explored',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({career_id:careerId,session_id:this.sessionId})}).catch(function(){});}
+    try{const mapKey='career-session-map-v1';const map=JSON.parse(localStorage.getItem(mapKey)||'{}');map[careerId]=this.sessionId;localStorage.setItem(mapKey,JSON.stringify(map));}catch(e){}
   }
   renderWorkdayEvidence(d){
     const section=document.getElementById('workday-evidence-section'),card=document.getElementById('workday-evidence-card'),wd=d.workday_evidence||{};if(!section||!card||!wd.available)return;
@@ -386,5 +386,4 @@ class ReportPage{
 document.addEventListener('DOMContentLoaded',()=>{
   const guideButton=document.getElementById('replay-guide-btn');if(guideButton)guideButton.onclick=showCurrentPageGuide;
   if(window.VN_CONFIG){const vn=new VisualNovelEngine();vn.start();window.submitMentorAnswer=(e)=>vn.submitMentorAnswer(e);window.skipMentor=()=>vn.skipMentor()}if(document.body.classList.contains('page-careers'))setTimeout(()=>showCoachTip('career-island-guide-v1',document.querySelector('.career-card'),'\u6bcf\u5ea7\u804c\u4e1a\u5c0f\u5c9b\u90fd\u85cf\u7740\u4e0d\u540c\u7684\u4f53\u9a8c\u3002\u70b9\u4e00\u5ea7\u5c0f\u5c9b\uff0c\u518d\u9009\u62e9\u60c5\u5883\u5bf9\u8bdd\u6216\u804c\u4e1a\u65e5\u5e38\u3002','\u4ece\u4e00\u5ea7\u804c\u4e1a\u5c0f\u5c9b\u51fa\u53d1'),350);
-  if(window.REPORT_CONFIG){const rp=new ReportPage();rp.start()}
 });

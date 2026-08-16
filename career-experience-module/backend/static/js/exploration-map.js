@@ -18,9 +18,7 @@
       island.classList.toggle('explored',done);
       island.querySelector('i').textContent=done?'已点亮':'未探索';
       island.setAttribute('aria-label',(labels[cid]||'职业岛')+'，'+(done?'已点亮':'尚未点亮'));
-      if(done && sessionMap[cid]){
-        island.setAttribute('href','/report/'+sessionMap[cid]);
-      }
+      if(done) island.setAttribute('href','/careers');
     });
     ['explored-career-count','explored-career-count-copy'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=String(explored.size);});
     var msg=document.getElementById('my-map-message');
@@ -54,10 +52,8 @@
     hydrateIslands(explored, getLocalMap());
     bindChestAnimation();
 
-    // 服务端是点亮状态的权威来源：登录后跨设备恢复，匿名时只读取本浏览器 token 的记录。
-    var request=(typeof Auth !== 'undefined' && Auth.isLoggedIn())
-      ? Auth.fetch('/api/sessions/latest-by-career')
-      : fetch('/api/sessions/latest-by-career',{headers:identityHeaders()});
+    // 服务端按当前浏览器标识恢复已完成的体验记录。
+    var request=fetch('/api/sessions/latest-by-career',{headers:identityHeaders()});
     request
       .then(function(r){return r.ok?r.json():null})
       .then(function(d){

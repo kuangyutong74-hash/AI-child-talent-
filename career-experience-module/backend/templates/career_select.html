@@ -77,29 +77,8 @@ function showSessionForm(){
   document.getElementById('session-form').style.display='flex';
   document.getElementById('modal-description').style.display='none';
   document.getElementById('modal-skills').style.display='none';
-  // 已登录用户：自动用账号信息填充姓名和年龄
-  var user = Auth.getUser();
-  if (user) {
-    document.getElementById('student-name').value = user.display_name || '';
-    document.getElementById('student-name').readOnly = true;
-    document.getElementById('student-name').style.background = '#f5f5f5';
-    document.getElementById('student-age').value = String(user.age || 10);
-    // select 被 disabled 后不会进入 FormData；保留提交值，只禁止孩子在这里改动。
-    document.getElementById('student-age').disabled = false;
-    document.getElementById('student-age').style.background = '#f5f5f5';
-    document.getElementById('student-age').style.pointerEvents = 'none';
-    document.getElementById('student-age').setAttribute('aria-readonly','true');
-    // 显示提示
-    var note = document.getElementById('workday-bridge-note');
-    if (note) { note.style.display = 'block'; note.innerHTML = '🌱 使用账号信息：「' + (user.display_name||'') + '，' + (user.age||'') + '岁」。体验记录将保存到你的账号。'; }
-  } else {
-    document.getElementById('student-name').readOnly = false;
-    document.getElementById('student-name').style.background = '';
-    document.getElementById('student-age').disabled = false;
-    document.getElementById('student-age').style.background = '';
-    document.getElementById('student-age').style.pointerEvents = '';
-    document.getElementById('student-age').removeAttribute('aria-readonly');
-  }
+  document.getElementById('student-name').readOnly = false;
+  document.getElementById('student-age').disabled = false;
   document.getElementById('student-name').focus();
 }
 
@@ -122,13 +101,10 @@ async function startSession(e){
   e.preventDefault();
   document.getElementById('student-token-input').value = getStudentToken();
   const fd=new FormData(document.getElementById('session-form'));
-  // 已登录时以账号资料为准；即使界面字段的可交互状态改变，也确保提交完整。
-  const activeUser=Auth.getUser();
-  if(activeUser){fd.set('student_name',activeUser.display_name||'');fd.set('age',String(activeUser.age||10));}
   document.getElementById('loading-overlay').style.display='flex';
   document.getElementById('loading-msg').textContent='正在准备你的体验之旅...';
   try{
-    const r=await Auth.fetch('/api/session/start',{method:'POST',body:fd});
+    const r=await fetch('/api/session/start',{method:'POST',body:fd});
     if(!r.ok){const err=await r.json();const detail=err.error||err.detail||err;
       const message=Array.isArray(detail)?detail.map(x=>x.msg||x.message||'提交信息不完整').join('；'):(typeof detail==='object'?(detail.message||'创建体验失败，请检查填写的信息'):String(detail));
       alert(message);document.getElementById('loading-overlay').style.display='none';return}
