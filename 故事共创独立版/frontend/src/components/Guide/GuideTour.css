@@ -1,0 +1,234 @@
+/* 场景化新手引导遮罩层（portal 到 body，z-index 与既有顶层遮罩一致） */
+.guide-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+/* 4 块阻挡区围出目标"洞口"：洞内可点击、洞外被挡（引导操作制，防误触） */
+.guide-blocker {
+  position: absolute;
+  background: rgba(46, 38, 72, 0.55);
+  backdrop-filter: blur(2px);
+  pointer-events: auto;
+}
+
+.guide-blocker-full {
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* 目标高亮描边框：白色描边 + 柔光脉冲 */
+.guide-ring {
+  position: absolute;
+  border-radius: var(--radius-md);
+  pointer-events: none;
+  animation: guideRingPulse 2s ease-in-out infinite;
+}
+
+@keyframes guideRingPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 4px #fff, 0 0 12px rgba(155, 143, 212, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 4px #fff, 0 0 28px rgba(155, 143, 212, 0.6);
+  }
+}
+
+/* 指向箭头 */
+.guide-arrow {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.guide-arrow line {
+  stroke: var(--color-primary);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.guide-arrow polygon {
+  fill: var(--color-primary);
+}
+
+/* 步骤说明卡片 */
+.guide-card {
+  position: absolute;
+  width: min(360px, calc(100vw - 24px));
+  padding: 18px 20px 14px;
+  border-radius: var(--radius-lg);
+  background: #fff;
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  pointer-events: auto;
+  font-family: var(--font-body);
+  /* 跟随目标小范围移动时平滑过渡（步骤切换时组件重挂载，不会出现大段滑行） */
+  transition: left 0.18s ease, top 0.18s ease;
+}
+
+.guide-card-center {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* 定位尚未计算完成时先隐藏，避免在左上角闪一下 */
+.guide-card-hidden {
+  opacity: 0;
+}
+
+.guide-emoji {
+  display: block;
+  font-size: 42px;
+  line-height: 1.1;
+  margin-bottom: 6px;
+}
+
+.guide-title {
+  font-family: var(--font-display);
+  font-size: var(--font-size-md);
+  color: var(--color-text);
+  margin: 0 0 6px;
+}
+
+.guide-desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-light);
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* 等待目标元素出现时的提示胶囊 */
+.guide-waiting-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 8px 0 4px;
+}
+
+.guide-waiting {
+  background: #f6f3ff;
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-light);
+  margin: 4px 0 0;
+}
+
+.guide-progress {
+  display: flex;
+  gap: 6px;
+  margin: 12px 0 10px;
+}
+
+.guide-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #e3dcf2;
+}
+
+.guide-dot.active {
+  width: 18px;
+  border-radius: 4px;
+  background: var(--color-primary);
+}
+
+.guide-dot.done {
+  background: var(--color-secondary);
+}
+
+.guide-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.guide-actions-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.guide-skip {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.guide-skip:hover {
+  color: var(--color-primary);
+}
+
+/* 幼儿通道：加大字号与点击区，识字有限的孩子也能看懂 + 配合自动朗读 */
+.guide-card-young {
+  width: min(400px, calc(100vw - 24px));
+  padding: 22px 24px 18px;
+}
+
+.guide-card-young .guide-emoji {
+  font-size: 52px;
+  margin-bottom: 8px;
+}
+
+.guide-card-young .guide-title {
+  font-size: 1.35rem;
+  margin-bottom: 8px;
+}
+
+.guide-card-young .guide-desc {
+  font-size: 1.05rem;
+  line-height: 1.75;
+}
+
+.guide-card-young .guide-progress {
+  margin: 14px 0 12px;
+}
+
+.guide-card-young .guide-skip {
+  font-size: var(--font-size-sm);
+  padding: 10px 12px;
+}
+
+/* 移动端：卡片变底部弹层、隐藏箭头 */
+@media (max-width: 640px) {
+  .guide-card {
+    position: fixed;
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    top: auto;
+    width: auto;
+    max-height: 45dvh;
+    overflow-y: auto;
+    border-radius: var(--radius-card) var(--radius-card) 0 0;
+  }
+
+  .guide-card-center {
+    transform: none;
+  }
+
+  /* 目标在下半屏（如底部输入框）时卡片移到顶部 */
+  .guide-card-top {
+    top: 8px;
+    bottom: auto;
+    border-radius: 0 0 var(--radius-card) var(--radius-card);
+  }
+
+  .guide-arrow {
+    display: none;
+  }
+}
