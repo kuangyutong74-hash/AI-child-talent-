@@ -5,7 +5,7 @@
  * - X-Content-Type-Options: nosniff
  * - X-Frame-Options: DENY
  * - Referrer-Policy: strict-origin-when-cross-origin
- * - Permissions-Policy: camera=(), microphone=(), geolocation=()
+ * - Permissions-Policy: camera=(), microphone=(self), geolocation=()
  *
  * 暂不设置：
  * - Content-Security-Policy（需先做 report-only 兼容审查）
@@ -23,7 +23,8 @@ function securityHeadersMiddleware(_req, res, next) {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  // 语音输入需要访问麦克风，但只授权当前站点自身，避免第三方内容使用。
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(self), geolocation=()');
   next();
 }
 

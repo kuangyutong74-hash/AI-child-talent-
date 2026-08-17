@@ -337,13 +337,13 @@ describe('E. 安全响应头', function () {
     assert.ok(result.headers['Referrer-Policy']);
   });
 
-  it('29. 中间件设置 Permissions-Policy（禁用 camera/microphone/geolocation）', function () {
+  it('29. 中间件设置 Permissions-Policy（仅允许本站麦克风，禁用 camera/geolocation）', function () {
     var result = simulateMiddleware();
     var pp = result.headers['Permissions-Policy'];
     assert.ok(pp);
     var ppStr = pp.join(', ');
     assert.ok(ppStr.indexOf('camera=()') >= 0);
-    assert.ok(ppStr.indexOf('microphone=()') >= 0);
+    assert.ok(ppStr.indexOf('microphone=(self)') >= 0);
     assert.ok(ppStr.indexOf('geolocation=()') >= 0);
   });
 
