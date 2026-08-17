@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>手账本 · 小新</title>
+<style>
+:root{
+  --ink:#4d2a21;--ink-2:#70483b;--muted:#a27f71;
+  --paper:#fffdf8;--paper-2:#fff8ee;
+  --orange:#ff7b3f;--orange-2:#f45a27;--orange-deep:#d9441d;
+  --pink:#ffd8df;--pink-2:#fff0f3;--yellow:#ffe48a;--yellow-2:#fff7d7;
+  --blue:#bfe7ff;--blue-2:#eef9ff;--green:#bfe6a8;--green-2:#effbe9;
+  --purple:#d9c8ff;--purple-2:#f5f0ff;
+  --line:rgba(111,72,54,.13);
+}
+*{box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{margin:0;color:var(--ink);font-size:14px;
+  font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;background:#bfe8ff;}
+button,input{font:inherit}button{color:inherit}
+.sky-shell{height:100vh;padding:8px;position:relative;overflow:hidden;
+  background:radial-gradient(circle at 8% 12%,rgba(255,255,255,.85) 0 24px,transparent 26px),
+    radial-gradient(circle at 92% 9%,rgba(255,255,255,.80) 0 20px,transparent 22px),
+    linear-gradient(180deg,#76ccf6 0%,#bcecff 48%,#eaf9ff 70%,#dff3c5 100%);}
+.sky-shell::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(circle at 16% 16%,#fff 0 3px,transparent 4px),
+    radial-gradient(circle at 32% 7%,#ffe57c 0 4px,transparent 5px),
+    radial-gradient(circle at 68% 10%,#fff 0 3px,transparent 4px),
+    radial-gradient(circle at 84% 18%,#ffd5de 0 4px,transparent 5px),
+    radial-gradient(circle at 93% 31%,#fff 0 3px,transparent 4px);opacity:.9;}
+.grass{position:absolute;left:-5vw;right:-5vw;bottom:-50px;height:160px;
+  border-radius:50% 50% 0 0;
+  background:radial-gradient(circle at 15% 25%,#ff9fb1 0 5px,transparent 6px),
+    radial-gradient(circle at 23% 45%,#fff 0 4px,transparent 5px),
+    radial-gradient(circle at 78% 33%,#ffd765 0 5px,transparent 6px),
+    radial-gradient(circle at 88% 48%,#fff 0 4px,transparent 5px),
+    linear-gradient(180deg,#bfe891,#8dd06b);
+  filter:drop-shadow(0 -6px 16px rgba(74,132,65,.10));}
+.cloud{position:absolute;width:60px;height:24px;border-radius:999px;
+  background:rgba(255,255,255,.92);
+  box-shadow:18px -8px 0 -4px rgba(255,255,255,.95),-18px -4px 0 -6px rgba(255,255,255,.9);
+  filter:drop-shadow(0 5px 7px rgba(92,127,146,.10));}
+.cloud.c1{left:4%;top:10%}.cloud.c2{right:4%;top:12%;transform:scale(.8)}
+.cloud.c3{left:48%;top:4%;transform:scale(.55)}
+.rainbow{position:absolute;width:160px;height:80px;right:4%;top:2%;
+  border-radius:160px 160px 0 0;border:14px solid #ff9ba8;border-bottom:0;opacity:.85;}
+.rainbow::before,.rainbow::after{content:"";position:absolute;border-radius:inherit;border-style:solid;border-bottom:0;}
+.rainbow::before{inset:10px;border-width:12px;border-color:#ffd66e;}
+.rainbow::after{inset:30px;border-width:10px;border-color:#8fdcc9;}
+.sticker-star{position:absolute;font-size:22px;filter:drop-shadow(0 3px 5px rgba(112,83,38,.13));}
+.sticker-star.s1{left:9%;top:5%}.sticker-star.s2{left:62%;top:7%;font-size:17px}
+.sticker-star.s3{right:12%;top:18%;font-size:18px}
+.book{position:relative;z-index:2;width:min(1480px,calc(100vw - 16px));height:calc(100vh - 16px);
+  margin:0 auto;display:flex;flex-direction:column;
+  border:1.5px solid rgba(255,255,255,.85);border-radius:22px;
+  background:linear-gradient(90deg,rgba(247,224,204,.48) 0 1px,transparent 1px) 0 0/28px 100%,
+    linear-gradient(180deg,rgba(247,224,204,.34) 0 1px,transparent 1px) 0 0/100% 22px,
+    rgba(255,252,246,.96);
+  box-shadow:0 20px 50px rgba(74,82,83,.20);overflow:hidden;}
+.book::before{content:"";position:absolute;left:0;top:0;bottom:0;width:18px;
+  background:linear-gradient(180deg,#fff5e7,#f5ddc8);border-right:1px solid rgba(113,75,57,.10);}
+.rings{position:absolute;z-index:3;left:6px;top:80px;display:grid;gap:38px;}
+.ring{width:30px;height:13px;border:5px solid #9f6e48;border-left:0;border-radius:0 13px 13px 0;
+  filter:drop-shadow(0 3px 3px rgba(71,47,33,.10));}
+.side-tabs{position:absolute;z-index:3;left:0;top:180px;display:grid;gap:7px;}
+.side-tab{width:42px;height:50px;display:grid;place-items:center;border-radius:0 14px 14px 0;
+  box-shadow:0 5px 10px rgba(88,59,40,.08);font-size:18px;}
+.side-tab.pink{background:#ffb6c0}.side-tab.yellow{background:#ffd96d}
+.side-tab.blue{background:#8bd4f6}.side-tab.purple{background:#c6a9ff}.side-tab.green{background:#a8dd89}
+.page-inner{position:relative;z-index:2;flex:1;overflow-y:auto;padding:14px 18px 16px 46px;}
+.page-inner::-webkit-scrollbar{width:4px}
+.page-inner::-webkit-scrollbar-thumb{background:#e0d0c0;border-radius:3px}
+.header{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px;margin-bottom:10px;}
+.brand{display:flex;align-items:center;gap:8px;min-width:0;}
+.brand img{width:32px;height:32px;object-fit:contain;filter:drop-shadow(0 4px 6px rgba(93,61,39,.10));}
+.title-plate{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;
+  border:1.5px dashed rgba(232,144,94,.30);border-radius:12px;
+  background:rgba(255,253,248,.90);box-shadow:0 4px 10px rgba(102,67,45,.06);}
+.title-plate h1{margin:0;font-size:clamp(15px,1.8vw,20px);line-height:1;letter-spacing:.4px;font-weight:950;}
+.title-plate h1 span{color:var(--orange-2)}
+.toolbar{display:flex;align-items:center;justify-content:flex-end;gap:7px;flex-wrap:wrap;}
+.search{position:relative;width:min(300px,36vw);}
+.search input{width:100%;height:32px;padding:0 12px 0 32px;font-size:12px;
+  border:1.5px solid rgba(224,157,116,.24);border-radius:999px;
+  background:rgba(255,253,249,.95);box-shadow:0 4px 10px rgba(102,67,45,.06);color:var(--ink-2);}
+.search span{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:13px;}
+.action{min-height:30px;display:inline-flex;align-items:center;justify-content:center;gap:4px;
+  padding:0 10px;font-size:12px;font-weight:900;cursor:pointer;transition:.14s ease;text-decoration:none;color:inherit;
+  border:1.5px solid rgba(224,157,116,.20);border-radius:999px;
+  background:rgba(255,253,249,.96);box-shadow:0 3px 8px rgba(102,67,45,.05);}
+.action:hover{transform:translateY(-1px);border-color:rgba(232,144,94,.40)}
+.action.primary{color:white;border-color:rgba(255,255,255,.82);
+  background:linear-gradient(180deg,var(--orange),var(--orange-2));
+  box-shadow:0 5px 0 var(--orange-deep),0 8px 16px rgba(216,69,24,.16);}
+.action.primary:hover{box-shadow:0 3px 0 var(--orange-deep),0 6px 12px rgba(216,69,24,.14);transform:translateY(2px);}
+.summary{position:relative;display:grid;grid-template-columns:1.2fr .8fr;gap:14px;align-items:stretch;
+  margin-bottom:14px;padding:16px;border:1.5px dashed rgba(231,157,113,.28);border-radius:20px;
+  background:radial-gradient(circle at 100% 0%,rgba(185,229,255,.36),transparent 35%),rgba(255,251,241,.92);
+  box-shadow:0 4px 12px rgba(102,67,45,.06);}
+.summary h2{margin:0 0 4px;font-size:18px}
+.summary p{margin:0;color:var(--ink-2);line-height:1.6;font-size:13px}
+.summary-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.stat{display:grid;place-items:center;text-align:center;gap:2px;padding:10px 6px;border-radius:14px;
+  background:rgba(255,255,255,.78);border:1px solid var(--line);}
+.stat .emoji{font-size:22px}.stat strong{font-size:16px}.stat span{font-size:11px;color:var(--muted)}
+.tape{position:absolute;width:60px;height:18px;opacity:.85;transform:rotate(-8deg);
+  background:linear-gradient(90deg,rgba(255,255,255,.35) 0 6px,transparent 6px 12px),#ffb9c3;}
+.tape.t1{left:60px;top:-9px}.tape.t2{right:60px;top:-8px;transform:rotate(8deg);background-color:#b9e99c}
+.footer-note{display:flex;justify-content:center;margin-top:14px;}
+.note-bubble{padding:10px 18px;border:1.5px dashed rgba(231,157,113,.28);border-radius:999px;
+  background:rgba(255,253,248,.90);box-shadow:0 4px 10px rgba(102,67,45,.06);font-weight:900;font-size:13px;}
+
+.journal-list{display:grid;gap:8px}
+.journal-list .empty-state{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px;}
+.journal-row{display:grid;grid-template-columns:110px 108px minmax(0,1fr) 190px 44px;gap:10px;align-items:center;
+  min-height:70px;padding:8px 10px;border:1.5px solid rgba(231,157,113,.18);border-radius:18px;
+  background:rgba(255,253,249,.94);box-shadow:0 4px 12px rgba(109,71,49,.04);transition:.14s ease;cursor:pointer;position:relative;}
+.journal-row:hover{transform:translateY(-1px);border-color:rgba(255,123,63,.30);box-shadow:0 8px 20px rgba(109,71,49,.08);}
+.date-card{position:relative;padding:8px 6px;border-radius:12px;text-align:center;
+  background:linear-gradient(180deg,#fff4f1,#ffe0df);box-shadow:inset 0 0 0 1px rgba(233,144,122,.16);}
+.date-card::before,.date-card::after{content:"";position:absolute;top:-5px;width:6px;height:10px;border-radius:999px;background:#8bc1df;}
+.date-card::before{left:18px}.date-card::after{right:18px}
+.date-card strong{display:block;font-size:16px}.date-card span{font-size:11px;color:var(--muted)}
+.weather-card{display:flex;align-items:center;justify-content:center;gap:5px;padding:8px 6px;border-radius:14px;
+  background:var(--yellow-2);border:1px solid rgba(224,181,76,.15);font-weight:900;font-size:13px;}
+.weather-card .weather-emoji{font-size:22px}
+.journal-text{min-width:0}.journal-text strong{display:block;margin-bottom:4px;font-size:14px;line-height:1.4;}
+.tags{display:flex;gap:5px;flex-wrap:wrap}.tag{padding:3px 7px;border-radius:999px;font-size:11px;font-weight:850;}
+.tag.green{background:var(--green-2);color:#4c8b46}.tag.pink{background:var(--pink-2);color:#c05f72}
+.tag.blue{background:var(--blue-2);color:#5987a7}.tag.yellow{background:var(--yellow-2);color:#a67618}
+.tag.purple{background:var(--purple-2);color:#7b5fa6}
+.thumbs{display:flex;justify-content:flex-end;gap:5px}
+.thumb{width:46px;height:38px;display:grid;place-items:center;border-radius:10px;border:1.5px solid white;
+  background:linear-gradient(180deg,#d7f1ff,#9bd8f2);box-shadow:0 4px 8px rgba(73,116,134,.08);font-size:20px;}
+.thumb.flower{background:linear-gradient(180deg,#fff4c7,#ffd5df)}.thumb.night{background:linear-gradient(180deg,#4d5a91,#192348)}
+.thumb.book{background:linear-gradient(180deg,#fff4df,#f0c890)}
+.open-circle{width:38px;height:38px;display:grid;place-items:center;border:2px solid rgba(255,255,255,.78);
+  border-radius:50%;color:white;background:linear-gradient(180deg,var(--orange),var(--orange-2));
+  box-shadow:0 4px 0 var(--orange-deep),0 7px 12px rgba(216,69,24,.14);font-size:18px;font-weight:950;cursor:pointer;transition:.12s ease;}
+.open-circle:active{transform:translateY(2px);box-shadow:0 2px 0 var(--orange-deep),0 4px 7px rgba(216,69,24,.10)}
+.group-del{position:absolute;top:6px;right:8px;width:20px;height:20px;border-radius:50%;border:none;
+  background:transparent;color:#d0c8c0;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:.2s;z-index:1;}
+.group-del:hover{background:#e04040;color:#fff}
+
+.event-panel{display:none;flex-direction:column;gap:10px}.event-panel.show{display:flex}
+.event-panel-header{display:flex;align-items:center;gap:8px;padding:4px 0;}
+.event-panel-header .btn-back{display:inline-flex;align-items:center;gap:3px;padding:5px 12px;font-size:12px;
+  border:1.5px solid rgba(224,157,116,.20);border-radius:999px;background:rgba(255,253,249,.96);
+  box-shadow:0 3px 8px rgba(102,67,45,.05);font-weight:900;cursor:pointer;color:var(--ink-2);}
+.event-panel-header .btn-back:hover{color:var(--orange-2)}
+.event-panel-header .ptitle{font-size:14px;font-weight:950;color:var(--ink)}
+.event-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;}
+.event-card{aspect-ratio:1/1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:6px;padding:14px;border:1.5px solid rgba(231,157,113,.18);border-radius:16px;
+  background:rgba(255,253,249,.95);box-shadow:0 4px 12px rgba(109,71,49,.04);cursor:pointer;transition:.14s ease;}
+.event-card:hover{transform:translateY(-2px);border-color:rgba(255,123,63,.32);box-shadow:0 10px 22px rgba(109,71,49,.08);}
+.event-card .event-icon{width:40px;height:40px;border-radius:50%;background:var(--orange);color:white;
+  display:grid;place-items:center;font-size:18px;font-weight:950;}
+.event-card .event-title{font-size:12px;font-weight:700;color:var(--ink);text-align:center;line-height:1.3;}
+.event-card .event-gen{font-size:10px;color:var(--muted)}
+
+.detail-overlay{position:fixed;z-index:300;top:0;left:0;right:0;bottom:0;
+  background:rgba(253,247,240,.985);display:none;flex-direction:column;align-items:center;justify-content:center;padding:30px 20px;}
+.detail-overlay.show{display:flex}
+.detail-close{position:absolute;top:16px;right:20px;width:34px;height:34px;border-radius:50%;
+  border:1.5px solid var(--orange);background:white;color:var(--orange);font-size:18px;cursor:pointer;
+  display:grid;place-items:center;transition:.2s;z-index:301;}
+.detail-close:hover{background:var(--orange);color:white}
+.detail-content{max-width:400px;width:100%;display:flex;flex-direction:column;align-items:center;gap:14px;}
+.detail-image{width:100%;max-width:300px;aspect-ratio:1/1;border-radius:16px;overflow:hidden;
+  background:var(--paper-2);border:1.5px dashed rgba(232,144,94,.24);display:grid;place-items:center;}
+.detail-image img{width:100%;height:100%;object-fit:cover}.detail-image .ph{font-size:13px;color:var(--muted)}
+.detail-desc{font-size:14px;color:var(--ink);line-height:1.7;text-align:center;max-width:340px;}
+.detail-meta{font-size:12px;color:var(--muted)}
+
+@media(max-width:1000px){.header{grid-template-columns:1fr}.toolbar{justify-content:flex-start}.search{width:min(400px,100%)}.summary{grid-template-columns:1fr}}
+@media(max-width:890px){.journal-row{grid-template-columns:100px minmax(0,1fr) 40px}.thumbs{display:none}.weather-card{grid-column:1}.journal-text{grid-column:2}.open-circle{grid-column:3;grid-row:1/3}}
+@media(max-width:760px){.sky-shell{padding:0}.book{width:100%;height:100vh;border-radius:0}.page-inner{padding:12px 10px 16px 20px}.rings,.side-tabs{display:none}.book::before{width:8px}.brand img{width:28px;height:28px}.title-plate{padding:4px 8px}.title-plate h1{font-size:16px}.summary-stats{grid-template-columns:repeat(2,1fr)}.rainbow{transform:scale(.65);transform-origin:top right}.event-grid{grid-template-columns:repeat(auto-fill,minmax(100px,1fr))}}
+@media(max-width:540px){.journal-row{grid-template-columns:1fr 38px}.date-card,.weather-card,.journal-text{grid-column:1}.open-circle{grid-column:2;grid-row:1/5}.event-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.27.0/dist/index.js"></script>
+<script src="/js/global-pinyin.js"></script>
+<script src="/assets/avatars/avatar-config.js"></script>
+</head>
+<body>
+<div class="sky-shell">
+  <div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
+  <div class="rainbow"></div>
+  <div class="sticker-star s1">⭐</div><div class="sticker-star s2">✨</div><div class="sticker-star s3">🌸</div>
+  <div class="grass"></div>
+  <main class="book">
+    <div class="rings"><span class="ring"></span><span class="ring"></span><span class="ring"></span><span class="ring"></span><span class="ring"></span><span class="ring"></span></div>
+    <div class="side-tabs"><span class="side-tab pink">❤</span><span class="side-tab yellow">★</span><span class="side-tab blue">☁</span><span class="side-tab purple">☺</span><span class="side-tab green">✿</span></div>
+    <div class="page-inner">
+      <header class="header">
+        <div class="brand">
+          <img id="journalLogo" src="assets/characters/xiaoxin-logo.png" alt="小新">
+          <div class="title-plate"><h1><span>小新</span>的手账本</h1></div>
+        </div>
+        <div class="toolbar">
+          <label class="search"><span>🔎</span><input placeholder="搜索日期、心情、关键词……" id="searchInput"></label>
+          <button class="action" id="btnPinyin">🔤 拼音</button>
+          <a class="action primary" href="/home.html">⌂ 返回首页</a>
+        </div>
+      </header>
+
+      <section class="summary">
+        <span class="tape t1"></span><span class="tape t2"></span>
+        <div><h2>🌙 最近的小手账</h2><p id="summaryText">打开手账本，看看温暖的小日记 💗</p></div>
+        <div class="summary-stats">
+          <div class="stat"><span class="emoji" id="statEmoji1">☀️</span><strong id="statVal1">-</strong><span id="statLabel1">晴天</span></div>
+          <div class="stat"><span class="emoji" id="statEmoji2">☁️</span><strong id="statVal2">-</strong><span id="statLabel2">多云</span></div>
+          <div class="stat"><span class="emoji" id="statEmoji3">🌈</span><strong id="statVal3">-</strong><span id="statLabel3">彩虹天</span></div>
+          <div class="stat"><span class="emoji">💗</span><strong id="statEvents">0</strong><span>小日记</span></div>
+        </div>
+      </section>
+
+      <section class="journal-list" id="groupList"><div class="empty-state">正在翻开手账本...</div></section>
+      <section class="event-panel" id="eventPanel">
+        <div class="event-panel-header">
+          <button class="btn-back" id="btnEventBack">← 返回列表</button>
+          <span class="ptitle" id="eventPanelTitle"></span>
+        </div>
+        <div class="event-grid" id="eventGrid"></div>
+      </section>
+      <div class="detail-overlay" id="detailOverlay">
+        <button class="detail-close" id="btnDetailClose">×</button>
+        <div class="detail-content" id="detailContent"></div>
+      </div>
+      <div class="footer-note"><div class="note-bubble">🌟 每一页小手账，都是你成长的小宝藏 🌟</div></div>
+    </div>
+  </main>
+</div>
+<script>
+// 动态设置品牌 logo（匹配用户选择的形象）
+(function(){var b=document.getElementById('journalLogo');if(b&&window.getXiaoxinLogo){b.src=window.getXiaoxinLogo();b.onerror=function(){b.src='assets/characters/xiaoxin-logo.png'}}})();
+function escapeHTML(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function fmtDate(iso){const d=new Date(iso);return d.getMonth()+1+'月'+d.getDate()+'日 '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
+function fmtDateCard(iso){const d=new Date(iso);const w=['周日','周一','周二','周三','周四','周五','周六'];return `<strong>${d.getMonth()+1}月${d.getDate()}日</strong><span>${w[d.getDay()]} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}</span>`}
+const TAG_COLORS=['green','pink','blue','yellow','purple'];
+const WEATHER_EMOJI={'晴天':'☀️','多云':'☁️','小雨':'🌧️','彩虹':'🌈','微风':'🍃','雪':'❄️','雾':'🌫️','月亮':'🌙','暴风雨':'🌧️','雷阵雨':'⛈️'};
+const WEATHER_BG={'晴天':'var(--yellow-2)','多云':'var(--blue-2)','小雨':'var(--blue-2)','彩虹':'var(--pink-2)','微风':'var(--green-2)','雪':'var(--purple-2)','雾':'var(--blue-2)','月亮':'linear-gradient(180deg,#1a2450,#3d5078)','暴风雨':'var(--purple-2)','雷阵雨':'var(--purple-2)'};
+const THUMB_TYPES=['thumb','thumb flower','thumb night','thumb book','thumb','thumb flower','thumb night','thumb book'];
+const THUMB_EMOJIS=['🌳','🌺','☁️','🧸','🎁','🎉','🏮','📖','⛺','🌟'];
+let allData=[],activeGroup=null;
+const groupList=document.getElementById('groupList'),eventPanel=document.getElementById('eventPanel'),eventPanelTitle=document.getElementById('eventPanelTitle'),eventGrid=document.getElementById('eventGrid'),btnEventBack=document.getElementById('btnEventBack'),detailOverlay=document.getElementById('detailOverlay'),detailContent=document.getElementById('detailContent'),btnDetailClose=document.getElementById('btnDetailClose'),searchInput=document.getElementById('searchInput');
+btnDetailClose.onclick=()=>detailOverlay.classList.remove('show');
+detailOverlay.addEventListener('click',e=>{if(e.target===detailOverlay)detailOverlay.classList.remove('show')});
+btnEventBack.onclick=()=>{eventPanel.classList.remove('show');groupList.style.display=''};
+searchInput.addEventListener('input',()=>renderGroupList());
+async function load(){try{const r=await fetch('/api/journal');const d=await r.json();if(!Array.isArray(d)||d.length===0){groupList.innerHTML='<div class="empty-state">还没有手账记录<br><span style="font-size:12px">完成一段对话后，这里就会出现温暖的记录 🌱</span></div>';updateSummary([]);return}allData=d;updateSummary(allData);renderGroupList()}catch(e){groupList.innerHTML='<div class="empty-state">翻开失败，等会儿再试试～</div>'}}
+function updateSummary(d){let e=0;const w={};d.forEach(g=>{e+=(g.events?g.events.length:0);const we=g.mood||'晴天';w[we]=(w[we]||0)+1});document.getElementById('statEvents').textContent=e;const s=Object.entries(w).sort((a,b)=>b[1]-a[1]);for(let i=1;i<=3;i++){const elE=document.getElementById('statEmoji'+i),elV=document.getElementById('statVal'+i),elL=document.getElementById('statLabel'+i);if(s[i-1]){const[wn,cn]=s[i-1];elE.textContent=WEATHER_EMOJI[wn]||'📝';elV.textContent=cn+'天';elL.textContent=wn}else{elE.textContent='·';elV.textContent='-';elL.textContent='-'}}if(d.length>0){document.getElementById('summaryText').innerHTML=`最近记录了 <strong style="color:var(--orange-2)">${d.length}</strong> 页小手账，<strong style="color:var(--orange-2)">${e}</strong> 篇小日记 💗`}else{document.getElementById('summaryText').textContent='打开手账本，看看温暖的小日记 💗'}}
+function renderGroupList(){const q=(searchInput.value||'').trim().toLowerCase();let f=allData;if(q)f=allData.filter(g=>{const m=(g.mood||'').toLowerCase(),ds=fmtDate(g.date).toLowerCase(),et=(g.events||[]).map(e=>(e.title||'')).join(' ').toLowerCase();return m.includes(q)||ds.includes(q)||et.includes(q)});if(f.length===0){groupList.innerHTML='<div class="empty-state">没有找到匹配的手账～</div>';return}groupList.innerHTML=f.map((g,i)=>{const c=g.events?g.events.length:0,weather=g.mood||'晴天';let tags='',thumbs='';if(g.events){tags=g.events.slice(0,3).map((ev,j)=>`<span class="tag ${TAG_COLORS[j%5]}">${escapeHTML(ev.title||'小事')}</span>`).join('')}const tc=Math.min(c,3);for(let t=0;t<tc;t++)thumbs+=`<div class="${THUMB_TYPES[(i*3+t)%8]}">${THUMB_EMOJIS[(i*3+t)%10]}</div>`;return `<article class="journal-row" data-id="${escapeHTML(g.id)}"><button class="group-del" data-del="${escapeHTML(g.id)}" title="删除">&times;</button><div class="date-card">${fmtDateCard(g.date)}</div><div class="weather-card" style="background:${WEATHER_BG[weather]||'var(--yellow-2)'}"><span class="weather-emoji">${WEATHER_EMOJI[weather]||'📝'}</span>${weather}</div><div class="journal-text"><strong>${escapeHTML((g.events&&g.events[0]?g.events[0].title:'')||'温暖的一天～')}</strong><div class="tags">${tags||'<span class="tag green">日常</span>'}</div></div><div class="thumbs">${thumbs}</div><button class="open-circle">➜</button></article>`}).join('');groupList.querySelectorAll('.journal-row').forEach(c=>c.addEventListener('click',function(e){if(e.target.closest('.group-del'))return;openGroup(this.dataset.id)}));groupList.querySelectorAll('.group-del').forEach(b=>b.addEventListener('click',function(e){e.stopPropagation();if(!confirm('确定要删除这页手账吗？'))return;const id=this.dataset.del;fetch('/api/journal/'+id,{method:'DELETE'}).then(r=>r.json()).then(d=>{if(d.ok)load()})}))}
+function openGroup(id){const g=allData.find(x=>x.id===id);if(!g)return;activeGroup=g;const weather=g.mood||'晴天';eventPanelTitle.textContent=fmtDate(g.date)+' · '+weather;const events=g.events||[];if(events.length===0){eventGrid.innerHTML='<div class="empty-state" style="grid-column:1/-1">这一页还没有小日记</div>'}else{eventGrid.innerHTML=events.map(ev=>`<div class="event-card" data-evid="${escapeHTML(ev.id)}"><div class="event-icon">📝</div><div class="event-title">${escapeHTML(ev.title||'小日记')}</div>${ev.createdAt?'<div class="event-gen">'+fmtDate(ev.createdAt)+'</div>':''}</div>`).join('');eventGrid.querySelectorAll('.event-card').forEach(c=>c.addEventListener('click',function(){openDetail(this.dataset.evid)}))}eventPanel.classList.add('show');groupList.style.display='none'}
+function openDetail(evId){if(!activeGroup||!activeGroup.events)return;const ev=activeGroup.events.find(x=>x.id===evId);if(!ev)return;const hasImg=ev.imageUrl;detailContent.innerHTML='<div class="detail-image">'+(hasImg?'<img src="'+escapeHTML(ev.imageUrl)+'" onerror="this.style.display=\'none\';this.parentElement.querySelector(\'.ph\').style.display=\'block\';">':'')+'<div class="ph"'+(hasImg?' style="display:none"':'')+'>暂时没有图片</div></div><div class="detail-desc">'+escapeHTML(ev.description||'一段温暖的小记录 💗')+'</div><div class="detail-meta">'+escapeHTML(ev.title||'')+'</div>';detailOverlay.classList.add('show')}
+load();
+</script>
+<script>
+// 左上角Logo跟随选中的小新形象
+(function(){
+  var el=document.getElementById('journalLogo');
+  if(el&&window.getXiaoxinAvatar){el.src=getXiaoxinAvatar();}
+  window.addEventListener('storage',function(e){
+    if(e.key==='xiaoxin_avatar'&&el){el.src=e.newValue||getXiaoxinAvatar();}
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "ai-talent-scout",
+  "version": "1.0.0",
+  "description": "AI 伯乐 · 小新自然语言聊天模块（单机 guest，无账号体系）",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "init-data": "node scripts/init-data.js",
+    "fetch-vosk-model": "node scripts/fetch-vosk-model.js",
+    "test": "node --test \"test/*.test.js\""
+  },
+  "dependencies": {
+    "dotenv": "^16.4.0",
+    "express": "^4.21.0"
+  }
+}

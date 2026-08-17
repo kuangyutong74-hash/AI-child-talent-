@@ -1,0 +1,822 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>小新 · 我的收藏</title>
+  <link rel="stylesheet" href="/css/common.css">
+  <style>
+    /* ===== Childlike Design Tokens ===== */
+    :root{
+      --bg-mint:#f3ffe6;
+      --bg-cream:#fff9ef;
+      --panel:#fffdf8;
+      --brown:#5c2e1f;
+      --brown-2:#8f6e62;
+      --line:rgba(126,86,66,.12);
+      --orange:#ff8a57;
+      --orange-deep:#e66031;
+      --green:#69bc5a;
+      --green-soft:#eaf9df;
+      --pink:#ef6a86;
+      --pink-soft:#fff0f4;
+      --purple:#8b72da;
+      --purple-soft:#f4efff;
+      --yellow:#f0c85f;
+      --shadow:0 16px 40px rgba(106,76,54,.10);
+      --shadow-soft:0 8px 20px rgba(106,76,54,.08);
+    }
+
+    /* ===== Override common.css body ===== */
+    html, body {
+      height: auto; min-height: 100vh; overflow: auto;
+    }
+    body{
+      margin:0;
+      color:var(--brown);
+      font-family:"Microsoft YaHei","PingFang SC","Noto Sans SC",sans-serif;
+      background:
+        radial-gradient(circle at 10% 8%, rgba(255,255,255,.7) 0 26px, transparent 27px),
+        radial-gradient(circle at 88% 14%, rgba(255,255,255,.72) 0 22px, transparent 23px),
+        linear-gradient(180deg,#ebffd3 0%, #f7ffe8 15%, #fff9ef 45%, #fffaf3 100%);
+      background-attachment: fixed;
+    }
+
+    .page{
+      max-width:1560px;
+      margin:12px auto;
+      min-height:calc(100vh - 24px);
+      border-radius:30px;
+      overflow:hidden;
+      border:2px solid rgba(255,255,255,.95);
+      background:rgba(255,252,246,.92);
+      box-shadow:0 22px 70px rgba(80,96,64,.18);
+      backdrop-filter: blur(8px);
+      display:flex; flex-direction:column;
+    }
+
+    /* ===== Top Bar ===== */
+    .topbar{
+      min-height:88px;
+      display:grid;
+      grid-template-columns:minmax(0,1fr) auto auto;
+      align-items:center;
+      gap:16px;
+      padding:0 28px;
+      background:rgba(255,245,240,.92);
+      border-bottom:1px solid var(--line);
+      flex-shrink:0;
+    }
+
+    .title-wrap{display:flex; align-items:center; gap:14px}
+    .title-badge{
+      width:48px;height:48px;border-radius:16px;
+      display:grid;place-items:center;
+      background:linear-gradient(180deg,#fff3ea,#ffe4d4);
+      box-shadow:var(--shadow-soft);
+      font-size:24px;
+    }
+    .page-title{
+      margin:0;
+      font-size:26px;
+      font-weight:900;
+      letter-spacing:.5px;
+    }
+    .page-subtitle{
+      margin-top:5px;
+      color:var(--brown-2);
+      font-size:13px;
+    }
+
+    /* Pinyin button — keep common.css styling */
+    .topbar .btn-pinyin{ flex-shrink:0; }
+
+    .back-btn{
+      height:44px;
+      padding:0 20px;
+      border:2px solid rgba(255,117,59,.7);
+      border-radius:16px;
+      background:#fffdf9;
+      color:var(--orange-deep);
+      font-size:16px;
+      font-weight:900;
+      cursor:pointer;
+      box-shadow:var(--shadow-soft);
+      text-decoration:none;
+      display:inline-flex; align-items:center; gap:4px;
+      transition:.18s ease;
+    }
+    .back-btn:hover{ background:#fff5ed; transform:translateY(-1px); }
+
+    /* ===== Content ===== */
+    .content{
+      padding:28px 28px 36px;
+      flex:1;
+    }
+
+    /* ===== Hero ===== */
+    .hero{
+      position:relative;
+      overflow:hidden;
+      padding:26px 28px 24px;
+      border-radius:30px;
+      background:
+        radial-gradient(circle at 90% 18%, rgba(255,216,122,.45) 0 18px, transparent 19px),
+        radial-gradient(circle at 12% 24%, rgba(255,186,213,.35) 0 12px, transparent 13px),
+        linear-gradient(180deg,#f6ffd9,#fff7db);
+      border:2px solid rgba(255,255,255,.9);
+      box-shadow:var(--shadow);
+      margin-bottom:22px;
+    }
+
+    .hero::before{
+      content:"☁️";
+      position:absolute;
+      top:16px; right:180px;
+      font-size:34px;
+      opacity:.85;
+    }
+    .hero::after{
+      content:"🌼";
+      position:absolute;
+      right:30px; bottom:22px;
+      font-size:36px;
+      opacity:.9;
+    }
+
+    .hero-heading{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    .hero-chip{
+      padding:8px 14px;
+      border-radius:999px;
+      background:#fffefa;
+      border:2px solid rgba(255,255,255,.9);
+      box-shadow:var(--shadow-soft);
+      font-size:14px;
+      font-weight:900;
+      color:#7aa852;
+    }
+    .hero h2{
+      margin:0;
+      font-size:32px;
+      font-weight:950;
+    }
+    .hero p{
+      margin:0;
+      color:var(--brown-2);
+      font-size:15px;
+      line-height:1.9;
+      max-width:760px;
+    }
+
+    /* ===== Summary Row ===== */
+    .summary-row{
+      margin-top:18px;
+      display:grid;
+      grid-template-columns:repeat(4, minmax(0,1fr));
+      gap:14px;
+    }
+    .summary-card{
+      padding:16px 18px;
+      border-radius:22px;
+      background:rgba(255,255,255,.82);
+      border:1px solid rgba(255,255,255,.9);
+      box-shadow:var(--shadow-soft);
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+    .summary-icon{
+      width:56px;height:56px;border-radius:18px;
+      display:grid;place-items:center;
+      flex:0 0 auto;
+      font-size:28px;
+      background:#fff;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.85);
+    }
+    .summary-card.all .summary-icon{background:linear-gradient(180deg,#fff7eb,#ffe5d0)}
+    .summary-card.nature .summary-icon{background:var(--green-soft)}
+    .summary-card.emotion .summary-icon{background:var(--pink-soft)}
+    .summary-card.safety .summary-icon{background:var(--purple-soft)}
+    .summary-label{font-size:13px;color:var(--brown-2);font-weight:700}
+    .summary-num{font-size:30px;font-weight:950;line-height:1.1}
+    .summary-note{font-size:12px;color:#a18578}
+
+    /* ===== Filter Row ===== */
+    .filter-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:18px;
+      flex-wrap:wrap;
+    }
+    .filter-left{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .filter-btn{
+      min-height:44px;
+      padding:0 18px;
+      border-radius:999px;
+      border:2px solid rgba(160,132,117,.12);
+      background:#fffdf9;
+      color:#8c6b5d;
+      font-size:15px;
+      font-weight:900;
+      box-shadow:var(--shadow-soft);
+      cursor:pointer;
+      transition:.18s ease;
+    }
+    .filter-btn:hover{transform:translateY(-2px)}
+    .filter-btn.active{
+      color:#fff;
+      background:linear-gradient(180deg,var(--orange),#ff7341);
+      border-color:transparent;
+      box-shadow:0 12px 22px rgba(255,120,67,.24);
+    }
+    .filter-tip{
+      color:var(--brown-2);
+      font-size:13px;
+      font-weight:700;
+    }
+
+    /* ===== Sections ===== */
+    .sections{
+      display:grid;
+      gap:20px;
+    }
+
+    .section-block{
+      padding:20px;
+      border-radius:28px;
+      background:rgba(255,254,249,.95);
+      border:2px solid rgba(255,255,255,.92);
+      box-shadow:var(--shadow);
+    }
+
+    .section-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom:16px;
+      flex-wrap:wrap;
+    }
+
+    .section-title-wrap{
+      display:flex;align-items:center;gap:12px;
+    }
+    .section-icon{
+      width:48px;height:48px;border-radius:16px;
+      display:grid;place-items:center;
+      font-size:24px;
+      box-shadow:var(--shadow-soft);
+      background:#fff;
+    }
+    .section-block.nature .section-icon{background:var(--green-soft)}
+    .section-block.emotion .section-icon{background:var(--pink-soft)}
+    .section-block.safety .section-icon{background:var(--purple-soft)}
+
+    .section-title{
+      margin:0;
+      font-size:24px;
+      font-weight:950;
+    }
+    .section-desc{
+      margin-top:4px;
+      color:var(--brown-2);
+      font-size:13px;
+    }
+
+    .section-count{
+      padding:10px 14px;
+      border-radius:999px;
+      background:#fff8ef;
+      border:1px solid rgba(233,197,156,.42);
+      color:#a17d67;
+      font-weight:900;
+      font-size:13px;
+    }
+
+    /* ===== Cards Grid ===== */
+    .cards-grid{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0,1fr));
+      gap:16px;
+    }
+
+    .fav-card{
+      position:relative;
+      min-height:234px;
+      padding:16px;
+      border-radius:26px;
+      border:1px solid rgba(235,226,210,.9);
+      background:#fffefc;
+      box-shadow:var(--shadow-soft);
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      overflow:hidden;
+    }
+
+    .fav-card::before{
+      content:"";
+      position:absolute;
+      right:-22px; top:-18px;
+      width:110px; height:110px;
+      border-radius:50%;
+      background:rgba(255,247,227,.65);
+    }
+
+    .card-tag{
+      position:relative;
+      z-index:1;
+      width:max-content;
+      padding:7px 14px;
+      border-radius:999px;
+      color:#fff;
+      font-size:13px;
+      font-weight:900;
+      box-shadow:0 6px 14px rgba(123,96,74,.10);
+    }
+    .tag-green{background:linear-gradient(180deg,#75c95d,#5daf4e)}
+    .tag-pink{background:linear-gradient(180deg,#f57f99,#ea5d7d)}
+    .tag-purple{background:linear-gradient(180deg,#9c84e7,#836ad4)}
+
+    .card-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+    }
+
+    .heart-btn{
+      position:relative;
+      z-index:1;
+      width:38px;height:38px;border-radius:50%;
+      border:1px solid rgba(218,197,182,.6);
+      background:#fff;
+      color:#d7bdae;
+      font-size:18px;
+      cursor:pointer;
+      box-shadow:var(--shadow-soft);
+      transition:.18s ease;
+      display:grid;place-items:center;
+      flex-shrink:0;
+    }
+    .heart-btn.active{
+      color:#ff7f93;
+      background:#fff3f6;
+      border-color:#ffd3de;
+    }
+
+    .card-body{
+      display:grid;
+      grid-template-columns:minmax(0,1fr) 110px;
+      gap:12px;
+      align-items:center;
+      flex:1;
+    }
+
+    .card-title{
+      margin:0 0 10px;
+      font-size:22px;
+      line-height:1.35;
+      font-weight:950;
+      color:#5b2d1f;
+      word-break:break-word;
+    }
+    .card-text{
+      margin:0;
+      color:#6e5144;
+      font-size:16px;
+      line-height:1.7;
+      font-weight:700;
+      word-break:break-word;
+    }
+
+    .illus-box{
+      height:110px;width:110px;
+      border-radius:28px;
+      display:grid;place-items:center;
+      font-size:58px;
+      background:#fff7e8;
+      position:relative;
+      z-index:1;
+      overflow:hidden;
+    }
+    .illus-box.green{background:#f5fbef}
+    .illus-box.pink{background:#fff3f6}
+    .illus-box.purple{background:#f4f0ff}
+
+    .card-footer{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      color:#a1897e;
+      font-size:12px;
+      font-weight:800;
+      position:relative;
+      z-index:1;
+    }
+
+    /* ===== Empty State ===== */
+    .cute-empty{
+      display:none;
+      padding:46px 20px;
+      border:2px dashed rgba(234,208,189,.8);
+      border-radius:28px;
+      text-align:center;
+      background:#fffdf9;
+    }
+    .cute-empty.show{display:block}
+    .cute-empty .emoji{font-size:54px; margin-bottom:10px}
+    .cute-empty h3{
+      margin:0 0 8px;
+      font-size:24px;
+    }
+    .cute-empty p{
+      margin:0;
+      color:var(--brown-2);
+      font-size:14px;
+      line-height:1.8;
+    }
+
+    /* ===== Loading / Error ===== */
+    .loading-state{
+      padding:60px 20px;
+      text-align:center;
+      color:var(--brown-2);
+      font-size:16px;
+      font-weight:700;
+    }
+
+    /* ===== Tips Box ===== */
+    .tips-box{
+      margin-top:18px;
+      padding:16px 18px;
+      border-radius:20px;
+      background:linear-gradient(180deg,#fff8ec,#fffdf6);
+      border:1px dashed rgba(229,191,150,.85);
+      color:#8b6a58;
+      font-size:13px;
+      line-height:1.8;
+      font-weight:700;
+    }
+
+    /* ===== Responsive ===== */
+    @media (max-width:1200px){
+      .summary-row{grid-template-columns:repeat(2, minmax(0,1fr))}
+      .cards-grid{grid-template-columns:repeat(2, minmax(0,1fr))}
+    }
+
+    @media (max-width:760px){
+      .page{margin:0; min-height:100vh; border-radius:0}
+      .topbar{
+        grid-template-columns:minmax(0,1fr) auto;
+        padding:14px 16px;
+      }
+      .topbar .btn-pinyin{ display:none; }
+      .content{padding:16px}
+      .hero{padding:18px}
+      .hero h2{font-size:24px}
+      .hero::before{ right:120px; font-size:26px; }
+      .hero::after{ right:16px; bottom:14px; font-size:28px; }
+      .summary-row{grid-template-columns:1fr}
+      .cards-grid{grid-template-columns:1fr}
+      .card-body{grid-template-columns:1fr}
+      .illus-box{width:96px;height:96px;font-size:48px}
+      .page-title{font-size:22px}
+      .section-title{font-size:20px}
+      .filter-tip{display:none}
+      .heart-btn{ width:44px;height:44px;font-size:20px; }
+      .filter-btn{ padding:0 14px; font-size:14px; min-height:44px; }
+    }
+
+    @media (max-width:400px){
+      .topbar{ padding:10px 12px; }
+      .content{ padding:10px; }
+      .hero{ padding:14px; }
+      .hero h2{ font-size:20px; }
+      .hero p{ font-size:14px; }
+      .cards-grid{ gap:10px; }
+      .fav-card{ padding:12px; min-height:auto; border-radius:20px; }
+      .card-title{ font-size:18px; }
+      .card-text{ font-size:14px; }
+      .card-body{ gap:8px; }
+      .illus-box{ width:80px;height:80px;font-size:40px;border-radius:20px;}
+      .page-title{ font-size:18px; }
+      .section-title{ font-size:18px; }
+      .section-block{ padding:14px; }
+      .summary-card{ padding:12px 14px; gap:10px; }
+      .summary-icon{ width:44px;height:44px;font-size:22px;border-radius:14px;}
+      .summary-num{ font-size:24px; }
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.27.0/dist/index.js"></script>
+  <script src="/js/global-pinyin.js"></script>
+</head>
+<body>
+
+<div class="page" id="app-content">
+  <header class="topbar">
+    <div class="title-wrap">
+      <div class="title-badge">🤎</div>
+      <div>
+        <h1 class="page-title">我的收藏</h1>
+        <div class="page-subtitle">把你喜欢的"小发现"收进自己的宝盒里吧～</div>
+      </div>
+    </div>
+
+    <button class="btn-pinyin" id="btnPinyin" title="拼音开关">拼</button>
+    <a class="back-btn" href="/home.html">← 返回首页</a>
+  </header>
+
+  <main class="content">
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-heading">
+        <div class="hero-chip">🍀 收藏宝盒</div>
+        <div class="hero-chip">🌈 童真分类</div>
+      </div>
+      <h2>小新的收藏小天地</h2>
+      <p>
+        这里专门收集你在首页里点了"小爱心"的内容。收藏只分成 3 个方向：
+        <strong>自然科普</strong>、<strong>情绪小贴士</strong>、<strong>安全知识</strong>，
+        分类更清楚，小朋友也更容易找到自己喜欢的内容。
+      </p>
+
+      <div class="summary-row">
+        <div class="summary-card all">
+          <div class="summary-icon">💛</div>
+          <div>
+            <div class="summary-label">全部收藏</div>
+            <div class="summary-num" id="countAll">0</div>
+            <div class="summary-note">正在加载…</div>
+          </div>
+        </div>
+
+        <div class="summary-card nature">
+          <div class="summary-icon">🌿</div>
+          <div>
+            <div class="summary-label">自然科普</div>
+            <div class="summary-num" id="countNature">0</div>
+            <div class="summary-note">会长知识的小发现</div>
+          </div>
+        </div>
+
+        <div class="summary-card emotion">
+          <div class="summary-icon">🌦️</div>
+          <div>
+            <div class="summary-label">情绪小贴士</div>
+            <div class="summary-num" id="countEmotion">0</div>
+            <div class="summary-note">陪你认识自己的心情</div>
+          </div>
+        </div>
+
+        <div class="summary-card safety">
+          <div class="summary-icon">🚇</div>
+          <div>
+            <div class="summary-label">安全知识</div>
+            <div class="summary-num" id="countSafety">0</div>
+            <div class="summary-note">学会保护自己</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Filter -->
+    <div class="filter-row">
+      <div class="filter-left">
+        <button class="filter-btn active" data-filter="all">全部收藏</button>
+        <button class="filter-btn" data-filter="nature">自然科普</button>
+        <button class="filter-btn" data-filter="emotion">情绪小贴士</button>
+        <button class="filter-btn" data-filter="safety">安全知识</button>
+      </div>
+      <div class="filter-tip">点击分类切换你想看的收藏内容 ✨</div>
+    </div>
+
+    <!-- Dynamic Sections -->
+    <section class="sections" id="sectionsContainer">
+      <div class="loading-state">🍀 正在打开你的收藏宝盒…</div>
+    </section>
+
+    <!-- Empty State -->
+    <div class="cute-empty" id="emptyState">
+      <div class="emoji">📭</div>
+      <h3>还没有收藏任何内容哦</h3>
+      <p>
+        你可以先回到首页，在卡片右上角点一下小爱心，<br>
+        喜欢的内容就会跑到这里来啦～
+      </p>
+    </div>
+
+    <!-- Tips -->
+    <div class="tips-box">
+      小建议：收藏会保存在你的账户里，随时回来都能看到。
+      点卡片上的 <strong>♥</strong> 可以取消收藏。
+    </div>
+  </main>
+</div>
+
+<script>
+
+// ===== Category Definitions (childlike 3-category system) =====
+const CAT_META = {
+  nature:  { label:'自然科普', icon:'🌿', tagClass:'tag-green',  illusClass:'green',  sectionIcon:'🌿', desc:'观察自然、发现有趣知识的小卡片', footerNote:'好奇探索 · 自然观察' },
+  emotion: { label:'情绪小贴士', icon:'🌦️', tagClass:'tag-pink',  illusClass:'pink',   sectionIcon:'🌦️', desc:'学着说出感受、画出心情的小卡片', footerNote:'表达情绪 · 心情观察' },
+  safety:  { label:'安全知识', icon:'🚇', tagClass:'tag-purple', illusClass:'purple', sectionIcon:'🚇', desc:'关于生活安全和自我保护的小提醒', footerNote:'出行安全 · 自我保护' },
+};
+
+const CAT_ORDER = ['nature','emotion','safety'];
+
+// Fallback emoji per category for the illus box
+const CAT_EMOJI = {
+  nature: ['🐜','🌿','🐛','🦋','🌻','🐝','🍄','🌍'],
+  emotion: ['🌦️','🌈','💭','🎨','😊','💝','☀️','⭐'],
+  safety: ['🚇','🛡️','🚦','🔒','⚠️','🦺','🚸','🏥'],
+};
+
+function escapeHTML(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function pickEmoji(cat, id) {
+  const pool = CAT_EMOJI[cat] || ['✨'];
+  // Deterministic pick based on id
+  let hash = 0;
+  const str = String(id || cat);
+  for (let i = 0; i < str.length; i++) hash = ((hash << 5) - hash) + str.charCodeAt(i);
+  return pool[Math.abs(hash) % pool.length];
+}
+
+// ===== Update summary counts =====
+function updateCounts(grouped, totalCount) {
+  document.getElementById('countAll').textContent = totalCount;
+  document.getElementById('countNature').textContent = (grouped['nature'] || []).length;
+  document.getElementById('countEmotion').textContent = (grouped['emotion'] || []).length;
+  document.getElementById('countSafety').textContent = (grouped['safety'] || []).length;
+  var noteEl = document.querySelector('.summary-card.all .summary-note');
+  if (noteEl) noteEl.textContent = totalCount === 0 ? '还没有收藏卡片哦' : '一共收好了 ' + totalCount + ' 张卡片';
+}
+
+// ===== Render =====
+async function init() {
+  const container = document.getElementById('sectionsContainer');
+  const emptyState = document.getElementById('emptyState');
+
+  try {
+    // 直接获取用户收藏的完整 tip 数据
+    const resp = await fetch('/api/favorites');
+    const favTips = await resp.json();
+
+    if (!Array.isArray(favTips) || favTips.length === 0) {
+      container.innerHTML = '';
+      emptyState.classList.add('show');
+      updateCounts({}, 0);
+      return;
+    }
+    emptyState.classList.remove('show');
+
+    // Group by category (only our 3 childlike cats)
+    const grouped = {};
+    let totalCount = 0;
+    favTips.forEach(tip => {
+      const cat = tip.cat;
+      if (!CAT_META[cat]) return;
+      if (!grouped[cat]) grouped[cat] = [];
+      grouped[cat].push(tip);
+      totalCount++;
+    });
+
+    updateCounts(grouped, totalCount);
+
+    if (totalCount === 0) {
+      container.innerHTML = '';
+      emptyState.classList.add('show');
+      return;
+    }
+
+    // Build section HTML for each category in order
+    let html = '';
+    CAT_ORDER.forEach(cat => {
+      const meta = CAT_META[cat];
+      const tips = grouped[cat] || [];
+      html += `
+      <section class="section-block ${cat}" data-section="${cat}">
+        <div class="section-head">
+          <div class="section-title-wrap">
+            <div class="section-icon">${meta.sectionIcon}</div>
+            <div>
+              <h2 class="section-title">${meta.label}</h2>
+              <div class="section-desc">${meta.desc}</div>
+            </div>
+          </div>
+          <div class="section-count">已收藏 ${tips.length} 张</div>
+        </div>`;
+
+      if (tips.length === 0) {
+        html += `<div style="padding:20px;text-align:center;color:var(--brown-2);font-size:14px;">这个分类暂时还没有收藏哦～</div>`;
+      } else {
+        html += `<div class="cards-grid">`;
+        tips.forEach(t => {
+          const emoji = pickEmoji(cat, t.id);
+          const title = t.title || '无标题';
+          const text = t.text || '';
+          html += `
+          <article class="fav-card">
+            <div class="card-top">
+              <div class="card-tag ${meta.tagClass}">${meta.label}</div>
+              <button class="heart-btn active" type="button" data-id="${t.id}" title="取消收藏">♥</button>
+            </div>
+            <div class="card-body">
+              <div>
+                <h3 class="card-title">${escapeHTML(title)}</h3>
+                <p class="card-text">${escapeHTML(text)}</p>
+              </div>
+              <div class="illus-box ${meta.illusClass}">${emoji}</div>
+            </div>
+            <div class="card-footer">
+              <span>适合：${meta.footerNote}</span>
+            </div>
+          </article>`;
+        });
+        html += `</div>`;
+      }
+      html += `</section>`;
+    });
+
+    container.innerHTML = html;
+
+    // Bind unfav (heart) buttons
+    container.querySelectorAll('.heart-btn').forEach(btn => {
+      btn.addEventListener('click', async function() {
+        const id = this.dataset.id;
+        try {
+          await fetch('/api/favorites', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, action: 'remove' })
+          });
+          init();
+        } catch (_) { /* ignore */ }
+      });
+    });
+
+    // Apply current filter (default "all")
+    applyFilter(currentFilter);
+
+  } catch (_) {
+    container.innerHTML = '<div class="loading-state">😢 加载失败了，请刷新页面重试</div>';
+  }
+}
+
+// ===== Filter Logic =====
+let currentFilter = 'all';
+
+function applyFilter(type) {
+  const sections = document.querySelectorAll('[data-section]');
+  const emptyState = document.getElementById('emptyState');
+  let visibleCount = 0;
+
+  sections.forEach(section => {
+    const show = type === 'all' || section.dataset.section === type;
+    section.style.display = show ? '' : 'none';
+    if (show) visibleCount++;
+  });
+
+  // Show empty state only if there are truly no favorites at all
+  // (not just filtered empty — that's handled per-section)
+  if (type === 'all' && visibleCount === 0) {
+    emptyState.classList.add('show');
+  } else {
+    emptyState.classList.remove('show');
+  }
+}
+
+// Bind filter buttons
+document.addEventListener('click', function(e) {
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentFilter = btn.dataset.filter;
+  applyFilter(currentFilter);
+});
+
+// ===== Start =====
+init();
+
+</script>
+</body>
+</html>

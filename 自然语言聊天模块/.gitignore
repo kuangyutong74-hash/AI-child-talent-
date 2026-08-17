@@ -1,0 +1,12 @@
+node_modules/
+.env
+
+# 运行时数据（由 scripts/init-data.js 从 data.example/ 初始化，含个人对话与画像数据，勿提交）
+/data/history.json
+/data/journal.json
+/data/chat-log.jsonl
+/data/tips.json
+/data/tip-favorites.json
+
+# 离线语音识别模型（44MB，不入库；npm run fetch-vosk-model 一键下载）
+/public/assets/vosk/*.zip
